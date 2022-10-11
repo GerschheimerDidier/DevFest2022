@@ -5,9 +5,9 @@ contract Allowance {
     address[] public allowance;
     address private owner;
 
-    event AllowanceChanged(address indexed _forWho, address indexed _byWhom, uint64 _oldAmount, uint64 _newAmount);
+    event AllowanceChanged(address indexed _forWho, address indexed _byWhom, uint _oldAmount, uint _newAmount);
 
-    mapping(address => uint64) public accountBeneficiary;
+    mapping(address => uint) public accountBeneficiary;
 
     constructor() {
         owner = msg.sender;
@@ -27,13 +27,13 @@ contract Allowance {
         return owner == msg.sender;
     }
 
-    function addAllowance(address _who, uint64 _amount) public ownerOrAllowed(_who) {
+    function addAllowance(address _who, uint _amount) public ownerOrAllowed(_who) {
         emit AllowanceChanged(_who, msg.sender, accountBeneficiary[_who], _amount);
         allowance.push(_who);
         accountBeneficiary[_who] = _amount;
     }
 
-    function updateAllowance(address _who, uint64 _newAmount) public ownerOrAllowed(_who) {
+    function updateAllowance(address _who, uint _newAmount) public ownerOrAllowed(_who) {
         emit AllowanceChanged(_who, msg.sender, accountBeneficiary[_who], _newAmount);
 
         // - If new amount is 0 so the beneficiary can be deleted
