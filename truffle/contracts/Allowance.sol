@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.17 < 0.9.0;
+pragma solidity ^0.8.10 < 0.9.0;
 
 contract Allowance {
     address[] public allowance;
