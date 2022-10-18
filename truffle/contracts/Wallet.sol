@@ -2,17 +2,14 @@
 pragma solidity ^0.8.17 < 0.9.0;
 
 import "./Allowance.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract Wallet is Allowance {
-    using SafeMath for uint;
-
     event MoneySpent(address indexed _beneficiary, uint _amount);
     event MoneyReceive(address indexed _from, uint _amount);
 
     function withdrawMoney(uint _amount) public ownerOrAllowed(msg.sender) {
         require(accountBeneficiary[msg.sender] >= _amount, "not enough funds has been allowed for your account");
-        uint newAmount = accountBeneficiary[msg.sender].sub(_amount);
+        uint newAmount = accountBeneficiary[msg.sender] - _amount;
 
         updateAllowance(msg.sender, newAmount);
 
@@ -23,6 +20,5 @@ contract Wallet is Allowance {
     // - Only the owner can be send the ether on this smart contract
     receive () external payable {
         emit MoneyReceive(msg.sender, msg.value);
-        require(isOwner(), "You are not the owner of this wallet !");
     }
 }
