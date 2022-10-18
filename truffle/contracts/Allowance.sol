@@ -13,29 +13,23 @@ contract Allowance {
         owner = msg.sender;
     }
 
-    // - Only the owner can be send the ether on this smart contract
-    receive () external payable {
-        require(isOwner(), "You are not the owner of this wallet !");
-    }
-
     modifier ownerOrAllowed(address _who)  {
-        require(isOwner() || accountBeneficiary[_who] > 0, "You are not the owner or this address is already on this wallet, please update it");
+        require(accountBeneficiary[_who] > 0, "This address is already on this wallet, please update it");
         _;
     }
 
-    function isOwner() internal view returns(bool) {
-        return owner == msg.sender;
+    modifier isOwner {
+        require(owner == msg.sender, "You are not the owner");
+        _;
     }
 
-    function addAllowance(address _who, uint _amount) public ownerOrAllowed(_who) {
-        emit AllowanceChanged(_who, msg.sender, accountBeneficiary[_who], _amount);
+    function addAllowance(address _who, uint _amount) public isOwner {
         allowance.push(_who);
         accountBeneficiary[_who] = _amount;
+        emit AllowanceChanged(_who, msg.sender, accountBeneficiary[_who], _amount);
     }
 
-    function updateAllowance(address _who, uint _newAmount) public ownerOrAllowed(_who) {
-        emit AllowanceChanged(_who, msg.sender, accountBeneficiary[_who], _newAmount);
-
+    function updateAllowance(address _who, uint _newAmount) public isOwner {
         // - If new amount is 0 so the beneficiary can be deleted
         if(_newAmount == 0) {
             delete accountBeneficiary[_who];
@@ -45,6 +39,7 @@ contract Allowance {
         else {
             accountBeneficiary[_who] = _newAmount;
         }
+        emit AllowanceChanged(_who, msg.sender, accountBeneficiary[_who], _newAmount);
     }
 
     // - Allow to find the index of allowed address
@@ -54,6 +49,6 @@ contract Allowance {
                 return i;
             }
         }
-        revert();
+        revert('Not found');
     }
 }
