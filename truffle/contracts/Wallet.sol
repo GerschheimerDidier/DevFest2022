@@ -14,10 +14,10 @@ contract Wallet is Allowance {
         updateAllowance(msg.sender, newAmount);
 
         payable(msg.sender).transfer(_amount);
-        emit MoneySpent(msg.sender, _amount);
+        emit MoneyWithdrawn(msg.sender, _amount);
     }
 
     receive () external payable {
-        emit MoneyReceive(msg.sender, msg.value);
+        emit MoneyDeposited(msg.sender, msg.value);
     }
 }
