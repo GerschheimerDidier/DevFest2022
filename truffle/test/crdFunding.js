@@ -32,34 +32,12 @@ contract('Crdfunding', (accounts) => {
     assert.equal(value, 10, "goal not at 10 Wei, contract not correctly initialized");
   });
 
-  it('should read the updated goal', async() => {
-
-    const crowdfundingInstance = await Crowdfunding.deployed();
-
-    await crowdfundingInstance.setGoal(1000, {from: owner});
-    var value = (await crowdfundingInstance.getGoal.call());
-    assert.equal(value, 1000, "goal not at 1000 Wei, goal not updated");
-
-  });
-
   it('should read the initial deployement endDate', async() => {
 
     const crowdfundingInstance = await Crowdfunding.deployed();
     
     var value = (await crowdfundingInstance.getEndDate.call());
     assert.equal(value, 1665570954, "endDate not at 1665570954, endDate not initialized");
-
-  });
-
-  it('should read the updated endDate', async() => {
-
-    const crowdfundingInstance = await Crowdfunding.deployed();
-
-    const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600)
-    
-    await crowdfundingInstance.setEndDate(secondsSinceEpochPlusHour, {from: owner});
-    var value = (await crowdfundingInstance.getEndDate.call());
-    assert.equal(value, secondsSinceEpochPlusHour, "endDate not at 1665591954, endDate not updated");
 
   });
 
@@ -72,12 +50,12 @@ contract('Crdfunding', (accounts) => {
 
   });
 
-  it('should read the initial Donation from deployer (account[0])', async() => {
+  it('should read the initial Donation from deployer (account[0]) as 0', async() => {
 
     const crowdfundingInstance = await Crowdfunding.deployed();
     
     var value = (await crowdfundingInstance.getMyParticipation.call());
-    assert.equal(value.total, 0, "accounts[0] participation not initialized at 0");
+    assert.equal(value.totalClaimable, 0, "accounts[0] participation not initialized at 0");
 
   });
 
@@ -86,7 +64,7 @@ contract('Crdfunding', (accounts) => {
     const crowdfundingInstance = await Crowdfunding.deployed();
     
     var value = (await crowdfundingInstance.getAllActiveRanks.call());
-    assert.equal(value.length, 0, "ActiveRanks not initialized as empty");
+    assert.equal(value.length, 1, "ActiveRanks not initialized with '_noRank'");
 
   });
 
@@ -94,21 +72,23 @@ contract('Crdfunding', (accounts) => {
 
     const crowdfundingInstance = await Crowdfunding.deployed();
     
+    // ID 1
     await crowdfundingInstance.createRank(
       'testRankActive',
-      true,
       100,
       "_description",
+      -1,
       {from: owner}
     );
     var value = (await crowdfundingInstance.getAllActiveRanks.call());
-    assert.equal(value.length, 1, "ActiveRanks not updated with one active Rank");
-    assert.strictEqual(value[0], "testRankActive", "Active Rank added is not the provided 'testRankActive'");
+    assert.equal(value.length, 2, "ActiveRanks not updated with a second active Rank (_noRank is always active)");
+    assert.strictEqual(value[1].rankName, "testRankActive", "Active Rank added is not the provided 'testRankActive'");
     
-    var rankInfo = (await crowdfundingInstance.getRankInfo("testRankActive"));
+    var rankInfo = (await crowdfundingInstance.getRankInfo(1));
+    assert.strictEqual(rankInfo.name, "testRankActive", "testRankActive name expected 'testRankActive' is '" + rankInfo.name + "'");
     assert.equal(rankInfo.minimumInvestment, 100, "testRankActive minimumInvestment is not 100");
     assert.strictEqual(rankInfo.description, "_description", "testRankActive description expected '_description' is '" + rankInfo.description + "'");
-    assert.ok(rankInfo.active, "testRankActive active status expected true, is false");
+    assert.ok(Number(rankInfo.usesLeft) != 0, "testRankActive has no available/unlimited spots");
 
   });
 
@@ -116,22 +96,24 @@ contract('Crdfunding', (accounts) => {
 
     const crowdfundingInstance = await Crowdfunding.deployed();
     
+    // ID 2
     await crowdfundingInstance.createRank(
       "testRankUnactive",
-      false,
       100,
       "_description",
+      0,
       {from: owner}
     );
 
     var value = (await crowdfundingInstance.getAllActiveRanks.call());
-    assert.equal(value.length, 1, "ActiveRanks should contain 1 Rank : testRankActive from previous test");
-    assert.strictEqual(value[0], "testRankActive", "Active Rank is not 'testRankActive' from previous test");
+    assert.equal(value.length, 2, "ActiveRanks should contain 2 Rank : testRankActive and _noRank from previous test");
+    assert.strictEqual(value[1].rankName, "testRankActive", "Active Rank is not 'testRankActive' from previous test");
 
-    var rankInfo = (await crowdfundingInstance.getRankInfo("testRankUnactive"));
+    var rankInfo = (await crowdfundingInstance.getRankInfo(2));
+    assert.strictEqual(rankInfo.name, "testRankUnactive", "testRankUnactive name expected 'testRankUnactive' is '" + rankInfo.name + "'");
     assert.equal(rankInfo.minimumInvestment, 100, "testRankUnactive minimumInvestment is not 100")
     assert.strictEqual(rankInfo.description, "_description", "testRankUnactive description expected '_description' is '" + rankInfo.description + "'")
-    assert.ok(!rankInfo.active, "testRankUnactive active status expected false, is true")
+    assert.ok(Number(rankInfo.usesLeft) == 0, "testRankUnactive has available/unlimited spots");
 
   });
 
@@ -139,24 +121,26 @@ contract('Crdfunding', (accounts) => {
 
     const crowdfundingInstance = await Crowdfunding.deployed();
     
+    // ID 3
     await crowdfundingInstance.createRank(
       "testRankToDeactivate",
-      true,
       100,
       "_description",
+      -1,
       {from: owner}
     );
 
-    await crowdfundingInstance.deactivateRank("testRankToDeactivate", {from: owner})
+    await crowdfundingInstance.deactivateRank(3, {from: owner})
 
     var value = (await crowdfundingInstance.getAllActiveRanks.call());
-    assert.equal(value.length, 1, "ActiveRanks should contain 1 Rank : testRankActive from previous test");
-    assert.strictEqual(value[0], "testRankActive", "Active Rank is not 'testRankActive' from previous test");
+    assert.equal(value.length, 2, "ActiveRanks should contain 2 Rank : testRankActive and _noRank from previous test");
+    assert.strictEqual(value[1].rankName, "testRankActive", "Active Rank is not 'testRankActive' from previous test");
     
-    var rankInfo = (await crowdfundingInstance.getRankInfo("testRankToDeactivate"));
+    var rankInfo = (await crowdfundingInstance.getRankInfo(3));
+    assert.strictEqual(rankInfo.name, "testRankToDeactivate", "testRankToDeactivate name expected 'testRankToDeactivate' is '" + rankInfo.name + "'");
     assert.equal(rankInfo.minimumInvestment, 100, "testRankToDeactivate minimumInvestment is not 100")
     assert.strictEqual(rankInfo.description, "_description", "testRankToDeactivate description expected '_description' is '" + rankInfo.description + "'")
-    assert.ok(!rankInfo.active, "testRankToDeactivate active status expected false, is true")
+    assert.ok(Number(rankInfo.usesLeft) == 0, "testRankToDeactivate has available/unlimited spots");
 
   });
 
@@ -164,24 +148,26 @@ contract('Crdfunding', (accounts) => {
 
     const crowdfundingInstance = await Crowdfunding.deployed();
     
+    // ID 4
     await crowdfundingInstance.createRank(
       "testRankToActivate",
-      false,
       100,
       "_description",
+      0,
       {from: owner}
     );
 
-    await crowdfundingInstance.activateRank("testRankToActivate", {from: owner});
+    await crowdfundingInstance.activateRank(4, {from: owner});
 
     var value = (await crowdfundingInstance.getAllActiveRanks.call());
-    assert.equal(value.length, 2, "ActiveRanks should contain 2 Ranks (one from previous test)");
-    assert.strictEqual(value[1], "testRankToActivate", "Active Rank is not 'testRankToActivate' from previous test");
+    assert.equal(value.length, 3, "ActiveRanks should contain 2 Ranks (one from previous test and _noRank)");
+    assert.strictEqual(value[2].rankName, "testRankToActivate", "Active Rank is not 'testRankToActivate' from previous test");
     
-    var rankInfo = (await crowdfundingInstance.getRankInfo("testRankToActivate"));
+    var rankInfo = (await crowdfundingInstance.getRankInfo(4));
+    assert.strictEqual(rankInfo.name, "testRankToActivate", "testRankToActivate name expected 'testRankToActivate' is '" + rankInfo.name + "'");
     assert.equal(rankInfo.minimumInvestment, 100, "testRankToActivate minimumInvestment is not 100");
     assert.strictEqual(rankInfo.description, "_description", "testRankToActivate description expected '_description' is '" + rankInfo.description + "'");
-    assert.ok(rankInfo.active, "testRankToActivate active status expected false, is true");
+    assert.ok(Number(rankInfo.usesLeft) != 0, "testRankToActivate has no available/unlimited spots");
 
   });
 
@@ -189,25 +175,28 @@ contract('Crdfunding', (accounts) => {
 
     const crowdfundingInstance = await Crowdfunding.deployed();
     
+    // ID 5
     await crowdfundingInstance.createRank(
       "testRankToEdit",
-      false,
       100,
       "_description",
+      25,
       {from: owner}
     );
 
     await crowdfundingInstance.editRank(
-      "testRankToEdit",
+      5,
       500,
       "_description_edited",
+      50,
       {from: owner}
     );
 
-    var rankInfo = (await crowdfundingInstance.getRankInfo("testRankToEdit"));
+    var rankInfo = (await crowdfundingInstance.getRankInfo(5));
+    assert.strictEqual(rankInfo.name, "testRankToEdit", "testRankToEdit name expected 'testRankToEdit' is '" + rankInfo.name + "'");
     assert.equal(rankInfo.minimumInvestment, 500, "testRankToEdit minimumInvestment is not 100");
     assert.strictEqual(rankInfo.description, "_description_edited", "testRankToEdit description expected '_description' is '" + rankInfo.description + "'");
-    assert.ok(!rankInfo.active, "testRankToEdit active status expected false, is true");
+    assert.ok(Number(rankInfo.usesLeft) == 50, "testRankToEdit has not 50 available spots");
 
   });
 
@@ -217,11 +206,14 @@ contract('Crdfunding', (accounts) => {
   it('should send a donation from owner', async() => {
 
     const crowdfundingInstance = await Crowdfunding.deployed();
+
+    const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600)
+    await crowdfundingInstance.setEndDate(secondsSinceEpochPlusHour, {from: owner});
     
-    await crowdfundingInstance.sendDonation("_noRank", false, {from: owner, value: 100})
+    await crowdfundingInstance.sendDonation(0, false, {from: owner, value: 100})
 
     var value = (await crowdfundingInstance.getMyParticipation.call({from: owner}));
-    assert.equal(value.total, 100, "owner participation not updated to 100");
+    assert.equal(value.totalClaimable, 100, "owner participation not updated to 100");
 
     var fundingTotal = (await crowdfundingInstance.getTotal.call({from: owner}));
     assert.equal(fundingTotal, 100, "crowdfunding total not updated to 100");
@@ -235,10 +227,10 @@ contract('Crdfunding', (accounts) => {
 
     const crowdfundingInstance = await Crowdfunding.deployed();
     
-    await crowdfundingInstance.sendDonation("_noRank", false, {from: funder, value: 100000000});
+    await crowdfundingInstance.sendDonation(0, false, {from: funder, value: 100000000});
 
     var value = (await crowdfundingInstance.getMyParticipation.call({from: funder}));
-    assert.equal(value.total, 100000000, "funder participation not updated to 100");
+    assert.equal(value.totalClaimable, 100000000, "funder participation not updated to 100");
 
     var fundingTotal = (await crowdfundingInstance.getTotal.call({from: funder}));
     console.log("funnding total", fundingTotal);
@@ -249,9 +241,32 @@ contract('Crdfunding', (accounts) => {
 
   });
 
+  it('should refuse a donation from funder => funding ended', async() => {
+
+    const crowdfundingInstance = await Crowdfunding.deployed();
+
+    const secondsSinceEpochMinusHour = Math.round(Date.now() / 1000 - 3600)
+    await crowdfundingInstance.setEndDate(secondsSinceEpochMinusHour, {from: owner});
+    
+    
+
+    try {
+      await crowdfundingInstance.sendDonation(0, false, {from: funder, value: 100000000});
+      assert.fail("The transaction should have thrown an error");
+    }
+    catch (err) {
+      assert.include(err.message, "Funding ended", "The error message should contain 'Funding ended'");
+    }
+
+  });
+
   it('should refuse funding retrival => funding not ended and goal not achieved', async() => {
 
     const crowdfundingInstance = await Crowdfunding.deployed();
+
+    await crowdfundingInstance.setGoal(10000000000, {from : owner});
+    const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600)
+    await crowdfundingInstance.setEndDate(secondsSinceEpochPlusHour, {from: owner});
     
     try {
       await crowdfundingInstance.retrieveFunding.call({from : owner});
@@ -280,7 +295,13 @@ contract('Crdfunding', (accounts) => {
 
   it('should refuse funding retrival => goal not achieved', async() => {
 
-    const crowdfundingInstance = await Crowdfunding.deployed();
+    //const crowdfundingInstance = await Crowdfunding.deployed();
+
+    const crowdfundingInstance = await Crowdfunding.new(
+      accounts[1],
+      "NOOOO",
+      10,
+      1665570954);
 
     await crowdfundingInstance.setGoal(10000000000, {from : owner});
 
@@ -306,7 +327,7 @@ contract('Crdfunding', (accounts) => {
     const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600)
     await crowdfundingInstance.setEndDate(secondsSinceEpochPlusHour, {from: owner});
 
-    (await crowdfundingInstance.sendDonation("_noRank", false, {from: funder, value: web3.utils.toWei('10', 'ether')}));
+    (await crowdfundingInstance.sendDonation(0, false, {from: funder, value: web3.utils.toWei('10', 'ether')}));
 
     await crowdfundingInstance.setGoal(100, {from : owner});
 
@@ -341,7 +362,7 @@ contract('Crdfunding', (accounts) => {
     console.log("EXPECTED : ", expectedNewOwnerBalance);
     console.log("ACTUAL : ", ownerNewBalance);
 
-    console.log("DIFFERENCE OLD NEW: ", ownerNewBalance - ownerBalanceBeforeRetrieve);
+    console.log("DIFFERENCE NEW - OLD : ", ownerNewBalance - ownerBalanceBeforeRetrieve);
 
     console.log("GAS USED : ", totalFunded - (ownerNewBalance - ownerBalanceBeforeRetrieve));
 
@@ -351,16 +372,6 @@ contract('Crdfunding', (accounts) => {
     assert.equal(contractBalance, 0, "crowdfunding contract left balance should be 0");
     assert.ok(ownerBalanceBeforeRetrieve < ownerNewBalance, "Owner didn't retrieve the funding");
   });
-
-
-
-
-
-
-
-
-
-
 
 
   it('should refuse request refund goal not completed => funding not ended', async() => {

@@ -15,24 +15,29 @@ contract CrdFunding is Ownable {
         projectDescription = _description;
         goal = _sumGoal;
         endDate = _endDate;
+        Rank memory noRank = Rank("_noRank", "no advantages", 0, -1);
+        Ranks[rankIndex] = noRank;
+        NameAndIdRanks.push(NameAndIdRank("_noRank", rankIndex));
+        rankIndex = rankIndex + 1;
     }
 
     receive() external payable {
-        S_Donation memory newDonation = S_Donation(
-            msg.value,
-            "_rankName",
-            false
-        );
+        require(block.timestamp < endDate, "Funding ended");
+        S_Donation memory newDonation = S_Donation(msg.value, "_noRank", false);
         Total += msg.value;
         Donations[msg.sender].donations.push(newDonation);
-        Donations[msg.sender].total += msg.value;
+        Donations[msg.sender].totalClaimable += msg.value;
     }
+
+    uint256 rankIndex;
 
     uint256 private goal;
     event goalModified(uint256 _newGoal);
 
     uint256 private Total;
     event donationReceived(uint256 _donationAmount, uint256 _newTotal);
+
+    bool private retrieved;
 
     uint256 private endDate;
     event endDateModified(uint256 _newEndDate);
@@ -41,14 +46,20 @@ contract CrdFunding is Ownable {
     event projectDescriptionModified(string _newProjectDescription);
 
     struct Rank {
+        string name;
         string description;
         uint256 minimumInvestment;
-        bool active;
+        int256 usesLeft;
     }
 
-    mapping(string => Rank) private Ranks;
+    struct NameAndIdRank {
+        string rankName;
+        uint256 id;
+    }
 
-    string[] private ActiveRanks;
+    mapping(uint256 => Rank) private Ranks;
+
+    NameAndIdRank[] private NameAndIdRanks;
 
     struct S_Donation {
         uint256 amount;
@@ -58,7 +69,7 @@ contract CrdFunding is Ownable {
 
     struct MyDonations {
         S_Donation[] donations;
-        uint256 total;
+        uint256 totalClaimable;
     }
 
     mapping(address => MyDonations) public Donations;
@@ -69,80 +80,90 @@ contract CrdFunding is Ownable {
 
     function createRank(
         string memory _name,
-        bool _active,
         uint256 _minimumInvestment,
-        string memory _description
+        string memory _description,
+        int256 _usageNumber
     ) public onlyOwner {
         require(
             _minimumInvestment > 0,
             "Ranks should ask for non null participations"
         );
-        require(Ranks[_name].minimumInvestment == 0, "Rank already exists");
-        bool valid = !isStringInTable(_name, ActiveRanks);
-        require(valid, "This rank is already saved as active");
-        if (_active) {
-            ActiveRanks.push(_name);
-        }
-        Rank memory newRank = Rank(_description, _minimumInvestment, _active);
-        Ranks[_name] = newRank;
+        require(Ranks[rankIndex].minimumInvestment == 0, "Rank already exists");
+        require(
+            !areStringsEquals(_name, "_noRank"),
+            "not allowed to create '_noRank'"
+        );
+
+        NameAndIdRanks.push(NameAndIdRank(_name, rankIndex));
+
+        Rank memory newRank = Rank(
+            _name,
+            _description,
+            _minimumInvestment,
+            _usageNumber
+        );
+        Ranks[rankIndex] = newRank;
+        rankIndex = rankIndex + 1;
         emit RanksModification(_name, newRank, "ADD");
     }
 
     function editRank(
-        string memory _name,
+        uint256 _id,
         uint256 _minimumInvestment,
-        string memory _description
+        string memory _description,
+        int256 _uses
     ) public onlyOwner {
         require(
             _minimumInvestment > 0,
             "Ranks should ask for non null participations"
         );
-        require(Ranks[_name].minimumInvestment > 0, "Rank does not exist");
+        require(Ranks[_id].minimumInvestment > 0, "Rank does not exist");
+        require(_id != 0, "not allowed to edit '_noRank'");
 
         Rank memory editedRank = Rank(
+            Ranks[_id].name,
             _description,
             _minimumInvestment,
-            Ranks[_name].active
+            _uses
         );
-        Ranks[_name] = editedRank;
-        emit RanksModification(_name, editedRank, "EDIT");
+        Ranks[_id] = editedRank;
+        emit RanksModification(Ranks[_id].name, editedRank, "EDIT");
     }
 
-    function getAllActiveRanks() public view returns (string[] memory) {
+    function getAllActiveRanks() public view returns (NameAndIdRank[] memory) {
+        uint256 activeRankSNumber;
+        for (uint256 i; i < rankIndex; i++) {
+            if (Ranks[i].usesLeft != 0) {
+                activeRankSNumber++;
+            }
+        }
+        NameAndIdRank[] memory ActiveRanks = new NameAndIdRank[](
+            activeRankSNumber
+        );
+        uint256 index;
+        for (uint256 i; i < rankIndex; i++) {
+            if (Ranks[i].usesLeft != 0) {
+                ActiveRanks[index] = NameAndIdRanks[i];
+                index++;
+            }
+        }
         return ActiveRanks;
     }
 
-    function getRankInfo(string memory _name)
-        public
-        view
-        returns (Rank memory)
-    {
-        return Ranks[_name];
+    function getRankInfo(uint256 _id) public view returns (Rank memory) {
+        return Ranks[_id];
     }
 
-    function deactivateRank(string calldata _name) public onlyOwner {
-        require(isStringInTable(_name, ActiveRanks), "No such active ranks");
-        Ranks[_name].active = false;
-        int256 index = findStringIndex(_name, ActiveRanks);
-        assert(index >= 0);
-        ActiveRanks[uint256(index)] = ActiveRanks[ActiveRanks.length - 1];
-        ActiveRanks.pop();
-        emit RanksActivation(_name, "DEACTIVATE");
+    function deactivateRank(uint256 _id) public onlyOwner {
+        require(Ranks[_id].usesLeft != 0, "No such active ranks");
+        Ranks[_id].usesLeft = 0;
+        emit RanksActivation(Ranks[_id].name, "DEACTIVATE");
     }
 
-    function activateRank(string calldata _name) public onlyOwner {
-        require(
-            !isStringInTable(_name, ActiveRanks),
-            "This rank is already active"
-        );
-        ActiveRanks.push(_name);
-        Ranks[_name].active = true;
-        emit RanksActivation(_name, "ACTIVATE");
-    }
-
-    function setGoal(uint256 _newGoal) public onlyOwner {
-        goal = _newGoal;
-        emit goalModified(_newGoal);
+    function activateRank(uint256 _id) public onlyOwner {
+        require(Ranks[_id].usesLeft == 0, "This rank is already active");
+        Ranks[_id].usesLeft = -1;
+        emit RanksActivation(Ranks[_id].name, "ACTIVATE");
     }
 
     function getGoal() public view returns (uint256) {
@@ -161,11 +182,6 @@ contract CrdFunding is Ownable {
         return projectDescription;
     }
 
-    function setEndDate(uint256 _newEndDate) public onlyOwner {
-        endDate = _newEndDate;
-        emit endDateModified(_newEndDate);
-    }
-
     function getEndDate() public view returns (uint256) {
         return endDate;
     }
@@ -174,35 +190,37 @@ contract CrdFunding is Ownable {
         return Total;
     }
 
-    function sendDonation(string memory _rankName, bool _claimReward)
-        public
-        payable
-    {
-        require(
-            Ranks[_rankName].active || areStringsEquals(_rankName, "_noRank"),
-            "No rank active with this name"
-        );
+    function sendDonation(uint256 _id, bool _claimReward) public payable {
+        int256 usage = Ranks[_id].usesLeft;
+        require(usage != 0, "No available spots for this rank");
         require(block.timestamp < endDate, "Funding ended");
         require(
-            msg.value >= Ranks[_rankName].minimumInvestment,
+            msg.value >= Ranks[_id].minimumInvestment,
             "Not enough funding for that rank"
         );
+
+        if (usage > 0) {
+            Ranks[_id].usesLeft = usage - 1;
+        }
+
         S_Donation memory newDonation = S_Donation(
             msg.value,
-            _rankName,
+            Ranks[_id].name,
             _claimReward
         );
         Total += msg.value;
         Donations[msg.sender].donations.push(newDonation);
-        Donations[msg.sender].total += msg.value;
+        Donations[msg.sender].totalClaimable += msg.value;
     }
 
     event fundingRetrieved(uint256 _total);
 
     function retrieveFunding() public onlyOwner {
+        require(!retrieved, "Funds already retrieved");
         require(block.timestamp >= endDate, "Funding not ended");
         require(Total >= goal, "Goal not achieved");
-        payable(owner()).transfer(Total);
+        payable(owner()).transfer(address(this).balance);
+        retrieved = true;
         emit fundingRetrieved(Total);
     }
 
@@ -210,14 +228,27 @@ contract CrdFunding is Ownable {
         require(block.timestamp >= endDate, "Funding not ended");
         require(Total < goal, "Goal achieved");
         require(
-            Donations[msg.sender].total > 0,
-            "You didn't fund this project"
+            Donations[msg.sender].totalClaimable > 0,
+            "You don't have money to ckaim back"
         );
-        payable(msg.sender).transfer(Donations[msg.sender].total);
+        uint256 toSend = Donations[msg.sender].totalClaimable;
+        Donations[msg.sender].totalClaimable = 0;
+        payable(msg.sender).transfer(toSend);
     }
 
     function getMyParticipation() public view returns (MyDonations memory) {
         return Donations[msg.sender];
+    }
+
+    // for TESTING
+    function setGoal(uint256 _newGoal) public onlyOwner {
+        goal = _newGoal;
+        emit goalModified(_newGoal);
+    }
+
+    function setEndDate(uint256 _newEndDate) public onlyOwner {
+        endDate = _newEndDate;
+        emit endDateModified(_newEndDate);
     }
 
     // utils
