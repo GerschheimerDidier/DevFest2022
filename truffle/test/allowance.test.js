@@ -8,15 +8,12 @@ contract('Allowance', (accounts) => {
   let smAddress;
 
   before(async () => {
-    this.allowanceInstance = await Allowance.new({ from: accounts[4] });
+    this.allowanceInstance = await Allowance.new({ from: owner });
     smAddress = this.allowanceInstance.address;
   })
 
   describe("Add Allowance", () => {
     it('should add allowance to the wallet', async () => {
-      console.log('owner', await this.allowanceInstance.owner.call());
-      console.log('allowance', await this.allowanceInstance.allowance.call(0));
-
       await this.allowanceInstance.setAllowance(
         beneficiary,
         web3.utils.toWei('3', 'ether'),

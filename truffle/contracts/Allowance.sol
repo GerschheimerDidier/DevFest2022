@@ -13,8 +13,8 @@ contract Allowance {
         owner = msg.sender;
     }
 
-    modifier isAlreadyAllowed(address _who)  {
-        require(accountBeneficiary[_who] > 0, "This address is already on this wallet, please update it");
+    modifier isNotOnWallet(address _who)  {
+        require(accountBeneficiary[_who] == 0, "This address is already on this wallet, please update it");
         _;
     }
 
@@ -23,7 +23,7 @@ contract Allowance {
         _;
     }
 
-    function setAllowance(address _who, uint _amount) public isOwner isAlreadyAllowed(_who) {
+    function setAllowance(address _who, uint _amount) public isOwner isNotOnWallet(_who) {
         uint oldAmount = accountBeneficiary[_who];
         allowance.push(_who);
         accountBeneficiary[_who] = _amount;
