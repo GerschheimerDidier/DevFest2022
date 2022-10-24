@@ -3,7 +3,7 @@ pragma solidity ^0.8.10 < 0.9.0;
 
 contract Allowance {
     address[] public allowance;
-    address private owner;
+    address public owner;
 
     event AllowanceChanged(address indexed _forWho, address indexed _byWhom, uint _oldAmount, uint _newAmount);
 
@@ -13,7 +13,7 @@ contract Allowance {
         owner = msg.sender;
     }
 
-    modifier ownerOrAllowed(address _who)  {
+    modifier isAlreadyAllowed(address _who)  {
         require(accountBeneficiary[_who] > 0, "This address is already on this wallet, please update it");
         _;
     }
@@ -23,13 +23,16 @@ contract Allowance {
         _;
     }
 
-    function addAllowance(address _who, uint _amount) public isOwner {
+    function setAllowance(address _who, uint _amount) public isOwner isAlreadyAllowed(_who) {
+        uint oldAmount = accountBeneficiary[_who];
         allowance.push(_who);
         accountBeneficiary[_who] = _amount;
-        emit AllowanceChanged(_who, msg.sender, accountBeneficiary[_who], _amount);
+        emit AllowanceChanged(_who, msg.sender, oldAmount ,accountBeneficiary[_who]);
     }
 
     function updateAllowance(address _who, uint _newAmount) public isOwner {
+        uint oldAmount = accountBeneficiary[_who];
+
         // - If new amount is 0 so the beneficiary can be deleted
         if(_newAmount == 0) {
             delete accountBeneficiary[_who];
@@ -39,7 +42,7 @@ contract Allowance {
         else {
             accountBeneficiary[_who] = _newAmount;
         }
-        emit AllowanceChanged(_who, msg.sender, accountBeneficiary[_who], _newAmount);
+        emit AllowanceChanged(_who, msg.sender, oldAmount, accountBeneficiary[_who]);
     }
 
     // - Allow to find the index of allowed address

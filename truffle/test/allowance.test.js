@@ -1,13 +1,3 @@
-// it('should send money to shared wallet', async () => {
-//   await this.allowanceInstance.send({
-//     from: accounts[2],
-//     value: web3.utils.toWei('2', 'ether'),
-//   });
-//
-//   // const contractBalance = (await web3.eth.getBalance(this.allowanceInstance.address));
-//   // console.log(contractBalance);
-// });
-
 const Allowance = artifacts.require("Allowance");
 
 contract('Allowance', (accounts) => {
@@ -24,12 +14,15 @@ contract('Allowance', (accounts) => {
 
   describe("Add Allowance", () => {
     it('should add allowance to the wallet', async () => {
-      await this.allowanceInstance.addAllowance(
-        accounts[5],
+      console.log('owner', await this.allowanceInstance.owner.call());
+      console.log('allowance', await this.allowanceInstance.allowance.call(0));
+
+      await this.allowanceInstance.setAllowance(
+        beneficiary,
         web3.utils.toWei('3', 'ether'),
         { from: owner }
       )
-      const allowanceMapping = await this.allowanceInstance.accountBeneficiary(accounts[5]);
+      const allowanceMapping = await this.allowanceInstance.accountBeneficiary(beneficiary);
       assert.equal(web3.utils.fromWei(String(allowanceMapping), 'ether'), 3, "This allowance has not been noted");
     });
   })
@@ -38,11 +31,11 @@ contract('Allowance', (accounts) => {
   describe("Update Allowance", () => {
     it('should update allowance of beneficiary account', async () => {
       await this.allowanceInstance.updateAllowance(
-        accounts[5],
+        beneficiary,
         web3.utils.toWei('1', 'ether'),
         { from: owner }
       )
-      const allowanceMapping = await this.allowanceInstance.accountBeneficiary(accounts[5]);
+      const allowanceMapping = await this.allowanceInstance.accountBeneficiary(beneficiary);
       assert.equal(web3.utils.fromWei(String(allowanceMapping), 'ether'), 1, "This allowance has been updated and noted");
     });
   })
@@ -51,15 +44,14 @@ contract('Allowance', (accounts) => {
   describe("Remove Allowance", () => {
     it('should remove allowance of beneficiary account', async () => {
       await this.allowanceInstance.updateAllowance(
-        accounts[5],
+        beneficiary,
         web3.utils.toWei('0', 'ether'),
         { from: owner }
       )
-      const allowanceMapping = await this.allowanceInstance.accountBeneficiary(accounts[5]);
+      const allowanceMapping = await this.allowanceInstance.accountBeneficiary(beneficiary);
       assert.equal(web3.utils.fromWei(String(allowanceMapping), 'ether'), 0, "This allowance has been removed");
       const allowance = await this.allowanceInstance.allowance.call(0);
       assert.equal(allowance, 0x0, "This allowance has been removed");
     });
-
   })
 })
