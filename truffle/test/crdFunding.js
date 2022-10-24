@@ -11,6 +11,7 @@ contract('Crdfunding', (accounts) => {
 
   const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600);
   const secondsSinceEpochMinusHour = Math.round(Date.now() / 1000 - 3600);
+  const secondsSinceEpochPlus3Sec = Math.round(Date.now() / 1000 + 3600);
 
   const newCrowdfundingInstanceGoalReachedEndReached = async(value) => {
     const crowdfundingInstance = await Crowdfunding.new(
@@ -37,7 +38,7 @@ contract('Crdfunding', (accounts) => {
     const crowdfundingInstance = await Crowdfunding.new(
       accounts[1],
       "NOOOO",
-      10000000000,
+      web3.utils.toWei("3", "ether"),
       secondsSinceEpochMinusHour,
       {value: value});
       return crowdfundingInstance;
@@ -47,8 +48,18 @@ contract('Crdfunding', (accounts) => {
     const crowdfundingInstance = await Crowdfunding.new(
       accounts[1],
       "NOOOO",
-      10000000000,
+      web3.utils.toWei("3", "ether"),
       secondsSinceEpochPlusHour,
+      {value: value});
+      return crowdfundingInstance;
+  }
+
+  const newCrowdfundingInstanceGoalReachedEndin3Sec = async(value) => {
+    const crowdfundingInstance = await Crowdfunding.new(
+      accounts[1],
+      "NOOOO",
+      0,
+      secondsSinceEpochPlus3Sec,
       {value: value});
       return crowdfundingInstance;
   }
@@ -276,7 +287,7 @@ contract('Crdfunding', (accounts) => {
     assert.equal(value.totalClaimable, 100000000, "funder participation not updated to 100000000");
 
     var fundingTotal = (await crowdfundingInstance.getTotal.call({from: funder}));
-    console.log("funnding total", fundingTotal);
+
     assert.equal(fundingTotal, 100000000, "crowdfunding total not updated to 100000000");
 
     var contractBalance = (await web3.eth.getBalance(crowdfundingInstance.address));
@@ -350,38 +361,11 @@ contract('Crdfunding', (accounts) => {
 
     const ownerBalanceBeforeRetrieve = Number(await web3.eth.getBalance(owner));
 
-    const totalFunded = Number(await crowdfundingInstance.getTotal.call({from : owner}));
-
-    const estimatedGasCost = Number(await crowdfundingInstance.retrieveFunding.estimateGas({from : owner}));
-    const totalGain = totalFunded - estimatedGasCost;
-    const expectedNewOwnerBalance = ownerBalanceBeforeRetrieve + totalGain;
-
-
-
     (await crowdfundingInstance.retrieveFunding({from : owner}));
-
-    
 
     const ownerNewBalance = Number(await web3.eth.getBalance(owner));
 
-    const deployerBalance = Number(await web3.eth.getBalance(deployer));
-
-
-    console.log("DEPLOYER : ", deployerBalance);
-
-    console.log("ESTIMATED GAS COST : ", estimatedGasCost);
-    console.log("TOTAL FUNDED : ", totalFunded);
-    console.log("OLD OWNER BALANCE : ", ownerBalanceBeforeRetrieve);
-
-    console.log("EXPECTED : ", expectedNewOwnerBalance);
-    console.log("ACTUAL : ", ownerNewBalance);
-
-    console.log("DIFFERENCE NEW - OLD : ", ownerNewBalance - ownerBalanceBeforeRetrieve);
-
-    console.log("GAS USED : ", totalFunded - (ownerNewBalance - ownerBalanceBeforeRetrieve));
-
     const contractBalance = Number(await web3.eth.getBalance(crowdfundingInstance.address));
-    console.log("CONTRACT BALANCE : ", contractBalance);
 
     assert.equal(contractBalance, 0, "crowdfunding contract left balance should be 0");
     assert.ok(ownerBalanceBeforeRetrieve < ownerNewBalance, "Owner didn't retrieve the funding");
@@ -415,6 +399,31 @@ contract('Crdfunding', (accounts) => {
     }
 
   });
+
+  it('deployer should have its funds back', async() => {
+
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndReached(web3.utils.toWei("2", "ether"));
+
+    const deployerBalanceBeforeRetrieve = Number(await web3.eth.getBalance(deployer));
+
+
+    (await crowdfundingInstance.requestRefundGoalNotCompleted({from : deployer}));
+
+    
+
+    const deployerNewBalance = Number(await web3.eth.getBalance(deployer));
+
+
+    const contractBalance = Number(await web3.eth.getBalance(crowdfundingInstance.address));
+
+    var value = (await crowdfundingInstance.getMyParticipation.call({from: deployer}));
+
+    assert.equal(0, value.totalClaimable, "crowdfunding contract left balance should be 0");
+    assert.ok(deployerBalanceBeforeRetrieve < deployerNewBalance, "deployer didn't retrieve the funding");
+  });
+
+
+  
 
 
 

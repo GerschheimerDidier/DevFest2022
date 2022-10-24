@@ -26,8 +26,8 @@ contract CrdFunding is Ownable {
                 false
             );
             Total += msg.value;
-            Donations[msg.sender].donations.push(newDonation);
             Donations[msg.sender].totalClaimable += msg.value;
+            Donations[msg.sender].donations.push(newDonation);
         }
     }
 
@@ -35,8 +35,8 @@ contract CrdFunding is Ownable {
         require(block.timestamp < endDate, "Funding ended");
         S_Donation memory newDonation = S_Donation(msg.value, "_noRank", false);
         Total += msg.value;
-        Donations[msg.sender].donations.push(newDonation);
         Donations[msg.sender].totalClaimable += msg.value;
+        Donations[msg.sender].donations.push(newDonation);
     }
 
     uint256 rankIndex;
