@@ -10,7 +10,7 @@ contract CrdFunding is Ownable {
         string memory _description,
         uint256 _sumGoal,
         uint256 _endDate
-    ) {
+    ) payable {
         transferOwnership(_beneficiary);
         projectDescription = _description;
         goal = _sumGoal;
@@ -19,6 +19,16 @@ contract CrdFunding is Ownable {
         Ranks[rankIndex] = noRank;
         NameAndIdRanks.push(NameAndIdRank("_noRank", rankIndex));
         rankIndex = rankIndex + 1;
+        if (msg.value > 0) {
+            S_Donation memory newDonation = S_Donation(
+                msg.value,
+                "_noRank",
+                false
+            );
+            Total += msg.value;
+            Donations[msg.sender].donations.push(newDonation);
+            Donations[msg.sender].totalClaimable += msg.value;
+        }
     }
 
     receive() external payable {
@@ -229,7 +239,7 @@ contract CrdFunding is Ownable {
         require(Total < goal, "Goal achieved");
         require(
             Donations[msg.sender].totalClaimable > 0,
-            "You don't have money to ckaim back"
+            "You don't have money to claim back"
         );
         uint256 toSend = Donations[msg.sender].totalClaimable;
         Donations[msg.sender].totalClaimable = 0;
@@ -238,17 +248,6 @@ contract CrdFunding is Ownable {
 
     function getMyParticipation() public view returns (MyDonations memory) {
         return Donations[msg.sender];
-    }
-
-    // for TESTING
-    function setGoal(uint256 _newGoal) public onlyOwner {
-        goal = _newGoal;
-        emit goalModified(_newGoal);
-    }
-
-    function setEndDate(uint256 _newEndDate) public onlyOwner {
-        endDate = _newEndDate;
-        emit endDateModified(_newEndDate);
     }
 
     // utils

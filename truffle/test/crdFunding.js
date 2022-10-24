@@ -1,11 +1,57 @@
 const Crowdfunding = artifacts.require("Crdfunding");
 
 
+
+
 contract('Crdfunding', (accounts) => {
 
   const deployer = accounts[0]; // By default, account used is 0 so the contract has been deployed by 0 since we didnt specify a sender in deploy_crowdFunding.js
   const owner = accounts[1];    // Defined on deployment at .\..\migrations\2_deploy_crowdFunding.js
   const funder = accounts[3];
+
+  const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600);
+  const secondsSinceEpochMinusHour = Math.round(Date.now() / 1000 - 3600);
+
+  const newCrowdfundingInstanceGoalReachedEndReached = async(value) => {
+    const crowdfundingInstance = await Crowdfunding.new(
+      accounts[1],
+      "NOOOO",
+      0,
+      secondsSinceEpochMinusHour,
+      {value: value});
+      return crowdfundingInstance;
+  }
+
+  const newCrowdfundingInstanceGoalReachedEndNotReached = async(value) => {
+    
+    const crowdfundingInstance = await Crowdfunding.new(
+      accounts[1],
+      "NOOOO",
+      0,
+      secondsSinceEpochPlusHour,
+      {value: value});
+      return crowdfundingInstance;
+  }
+
+  const newCrowdfundingInstanceGoalNotReachedEndReached = async(value) => {
+    const crowdfundingInstance = await Crowdfunding.new(
+      accounts[1],
+      "NOOOO",
+      10000000000,
+      secondsSinceEpochMinusHour,
+      {value: value});
+      return crowdfundingInstance;
+  }
+
+  const newCrowdfundingInstanceGoalNotReachedEndNotReached = async(value) => {
+    const crowdfundingInstance = await Crowdfunding.new(
+      accounts[1],
+      "NOOOO",
+      10000000000,
+      secondsSinceEpochPlusHour,
+      {value: value});
+      return crowdfundingInstance;
+  }
 
   it('should read initial description', async() => {
     const crowdfundingInstance = await Crowdfunding.deployed();
@@ -205,11 +251,8 @@ contract('Crdfunding', (accounts) => {
 
   it('should send a donation from owner', async() => {
 
-    const crowdfundingInstance = await Crowdfunding.deployed();
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached(0);
 
-    const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600)
-    await crowdfundingInstance.setEndDate(secondsSinceEpochPlusHour, {from: owner});
-    
     await crowdfundingInstance.sendDonation(0, false, {from: owner, value: 100})
 
     var value = (await crowdfundingInstance.getMyParticipation.call({from: owner}));
@@ -225,30 +268,25 @@ contract('Crdfunding', (accounts) => {
 
   it('should send a donation from funder', async() => {
 
-    const crowdfundingInstance = await Crowdfunding.deployed();
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached(0);
     
     await crowdfundingInstance.sendDonation(0, false, {from: funder, value: 100000000});
 
     var value = (await crowdfundingInstance.getMyParticipation.call({from: funder}));
-    assert.equal(value.totalClaimable, 100000000, "funder participation not updated to 100");
+    assert.equal(value.totalClaimable, 100000000, "funder participation not updated to 100000000");
 
     var fundingTotal = (await crowdfundingInstance.getTotal.call({from: funder}));
     console.log("funnding total", fundingTotal);
-    assert.equal(fundingTotal, 100000100, "crowdfunding total not updated to 200");
+    assert.equal(fundingTotal, 100000000, "crowdfunding total not updated to 100000000");
 
     var contractBalance = (await web3.eth.getBalance(crowdfundingInstance.address));
-    assert.equal(contractBalance, 100000100, "crowdfunding contract balance not updated to 200");
+    assert.equal(contractBalance, 100000000, "crowdfunding contract balance not updated to 100000000");
 
   });
 
   it('should refuse a donation from funder => funding ended', async() => {
 
-    const crowdfundingInstance = await Crowdfunding.deployed();
-
-    const secondsSinceEpochMinusHour = Math.round(Date.now() / 1000 - 3600)
-    await crowdfundingInstance.setEndDate(secondsSinceEpochMinusHour, {from: owner});
-    
-    
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndReached(0);
 
     try {
       await crowdfundingInstance.sendDonation(0, false, {from: funder, value: 100000000});
@@ -262,11 +300,7 @@ contract('Crdfunding', (accounts) => {
 
   it('should refuse funding retrival => funding not ended and goal not achieved', async() => {
 
-    const crowdfundingInstance = await Crowdfunding.deployed();
-
-    await crowdfundingInstance.setGoal(10000000000, {from : owner});
-    const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600)
-    await crowdfundingInstance.setEndDate(secondsSinceEpochPlusHour, {from: owner});
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached(0);
     
     try {
       await crowdfundingInstance.retrieveFunding.call({from : owner});
@@ -280,8 +314,7 @@ contract('Crdfunding', (accounts) => {
 
   it('should refuse funding retrival => funding not ended', async() => {
 
-    const crowdfundingInstance = await Crowdfunding.deployed();
-    await crowdfundingInstance.setGoal(100, {from : owner});
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalReachedEndNotReached(0);
     
     try {
       await crowdfundingInstance.retrieveFunding.call({from : owner});
@@ -297,16 +330,7 @@ contract('Crdfunding', (accounts) => {
 
     //const crowdfundingInstance = await Crowdfunding.deployed();
 
-    const crowdfundingInstance = await Crowdfunding.new(
-      accounts[1],
-      "NOOOO",
-      10,
-      1665570954);
-
-    await crowdfundingInstance.setGoal(10000000000, {from : owner});
-
-    const secondsSinceEpochMinusHour = Math.round(Date.now() / 1000 - 3600)
-    await crowdfundingInstance.setEndDate(secondsSinceEpochMinusHour, {from: owner});
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndReached(0);
     
     try {
       await crowdfundingInstance.retrieveFunding.call({from : owner});
@@ -322,17 +346,7 @@ contract('Crdfunding', (accounts) => {
 
   it('should have owner retrieve crowdfunding funds', async() => {
 
-    const crowdfundingInstance = await Crowdfunding.deployed();
-
-    const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600)
-    await crowdfundingInstance.setEndDate(secondsSinceEpochPlusHour, {from: owner});
-
-    (await crowdfundingInstance.sendDonation(0, false, {from: funder, value: web3.utils.toWei('10', 'ether')}));
-
-    await crowdfundingInstance.setGoal(100, {from : owner});
-
-    const secondsSinceEpochMinusHour = Math.round(Date.now() / 1000 - 3600)
-    await crowdfundingInstance.setEndDate(secondsSinceEpochMinusHour, {from: owner});
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalReachedEndReached(web3.utils.toWei("3", "ether"));
 
     const ownerBalanceBeforeRetrieve = Number(await web3.eth.getBalance(owner));
 
@@ -376,12 +390,7 @@ contract('Crdfunding', (accounts) => {
 
   it('should refuse request refund goal not completed => funding not ended', async() => {
 
-    const crowdfundingInstance = await Crowdfunding.deployed();
-
-    await crowdfundingInstance.setGoal(10000000000, {from : owner});
-
-    const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600)
-    await crowdfundingInstance.setEndDate(secondsSinceEpochPlusHour, {from: owner});
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached();
     
     try {
       await crowdfundingInstance.requestRefundGoalNotCompleted.call({from : funder});
@@ -395,12 +404,7 @@ contract('Crdfunding', (accounts) => {
 
   it('should refuse request refund goal not completed => Goal achieved', async() => {
 
-    const crowdfundingInstance = await Crowdfunding.deployed();
-
-    await crowdfundingInstance.setGoal(100, {from : owner});
-
-    const secondsSinceEpochMinusHour = Math.round(Date.now() / 1000 - 3600)
-    await crowdfundingInstance.setEndDate(secondsSinceEpochMinusHour, {from: owner});
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalReachedEndReached();
     
     try {
       await crowdfundingInstance.requestRefundGoalNotCompleted.call({from : owner});
