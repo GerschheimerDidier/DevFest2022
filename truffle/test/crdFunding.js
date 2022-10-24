@@ -54,15 +54,6 @@ contract('Crdfunding', (accounts) => {
       return crowdfundingInstance;
   }
 
-  const newCrowdfundingInstanceGoalReachedEndin3Sec = async(value) => {
-    const crowdfundingInstance = await Crowdfunding.new(
-      accounts[1],
-      "NOOOO",
-      0,
-      secondsSinceEpochPlus3Sec,
-      {value: value});
-      return crowdfundingInstance;
-  }
 
   it('should read initial description', async() => {
     const crowdfundingInstance = await Crowdfunding.deployed();
