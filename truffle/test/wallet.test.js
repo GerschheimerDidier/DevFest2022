@@ -27,30 +27,68 @@ contract('Wallet', (accounts) => {
     it('should add allowance to the wallet', async () => {
       await this.walletInstance.defineAllowance(
         beneficiary,
-        web3.utils.toWei('3', 'ether'),
+        web3.utils.toWei('0.03', 'ether'),
         { from: owner }
       )
       const allowanceMapping = await this.walletInstance.accountBeneficiary(beneficiary);
-      assert.equal(web3.utils.fromWei(String(allowanceMapping), 'ether'), 3, "This allowance has not been noted");
+      assert.equal(web3.utils.fromWei(String(allowanceMapping), 'ether'), 0.03, "This allowance has not been noted");
+    });
+    it('should impossible to add allowance on the wallet with external user', async () => {
+      try {
+        await this.walletInstance.defineAllowance(
+          beneficiary,
+          web3.utils.toWei('0.03', 'ether'),
+          { from: externalUser }
+        )
+        assert.fail("This allowance cannot be possible and should have thrown an error");
+      }
+      catch (err) {
+        assert.include(err.message, "You are not the owner", "The error message should contain 'You are not the owner'");
+      }
     });
     it('should update allowance of beneficiary account', async () => {
       await this.walletInstance.defineAllowance(
         beneficiary,
-        web3.utils.toWei('1', 'ether'),
+        web3.utils.toWei('0.02', 'ether'),
         { from: owner }
       )
       const allowanceMapping = await this.walletInstance.accountBeneficiary(beneficiary);
-      assert.equal(web3.utils.fromWei(String(allowanceMapping), 'ether'), 1, "This allowance has been updated and noted");
+      assert.equal(web3.utils.fromWei(String(allowanceMapping), 'ether'), 0.02, "This allowance has been updated and noted");
     });
   })
 
   describe("Withdraw Allowance", () => {
+    it('should be impossible to withdraw more money to contain the allowance', async () => {
+      try {
+        await this.walletInstance.withdrawMoney(
+          web3.utils.toWei('0.03', 'ether'),
+          { from: beneficiary }
+        )
+        assert.fail("This withdraw cannot be possible and should have thrown an error");
+      }
+      catch (err) {
+        assert.include(err.message, "not enough funds has been allowed for your account", "The error message should contain 'not enough funds has been allowed for your account'");
+      }
+    });
+
+    it('should be impossible to withdraw more money to contain the smart contract', async () => {
+      try {
+        await this.walletInstance.withdrawMoney(
+          web3.utils.toWei('20', 'ether'),
+          { from: beneficiary }
+        )
+        assert.fail("This withdraw cannot be possible and should have thrown an error");
+      }
+      catch (err) {
+        assert.include(err.message, "not enough funds hab been added on smart contract", "The error message should contain 'revert not enough funds hab been added on smart contract'");
+      }
+    });
+
     it('should withdraw the money allowed to this account', async () => {
       await this.walletInstance.withdrawMoney(
-        web3.utils.toWei('0.04', 'ether'),
+        web3.utils.toWei('0.02', 'ether'),
         { from: beneficiary }
       )
     });
   })
-
 })
