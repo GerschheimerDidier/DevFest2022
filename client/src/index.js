@@ -1,35 +1,37 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
 import './index.css';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import App from "./App";
-import CrowdFunding from "./components/ContractsPage/CrowdFunding/CrowdFunding";
-import SharedWallet from "./components/ContractsPage/SharedWallet/SharedWallet";
-import NavBar from "./components/NavBar/NavBar";
+import CrowdFunding from "./pages/CrowdFunding/CrowdFunding";
+import SharedWallet from "./pages/SharedWallet/SharedWallet";
+import * as ReactDOM from "react-dom/client";
+import Home from "./components/Home/Home";
 
-const router = createBrowserRouter([
+export const router = createBrowserRouter([
     {
-        path: "/",
-        element: <App />,
+        path: '/',
+        element: <App/>,
+        children: [
+            {
+                index: true,
+                element: <Home/>
+            },
+            {
+                path: "sharedWallet",
+                element: <SharedWallet/>,
+            },
+            {
+                path: "crowdFunding",
+                element: <CrowdFunding/>
+            },
+        ]
     },
-    {
-        path: "/sharedWallet",
-        element: <SharedWallet />,
-    },
-
-    {
-        path: "/crowdFunding",
-        element: <CrowdFunding />
-    },
-
-    <NavBar/>
-
 ]);
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-      <RouterProvider router={router} />
-  </React.StrictMode>
+    <React.StrictMode>
+        <RouterProvider router={router}/>
+    </React.StrictMode>
 );

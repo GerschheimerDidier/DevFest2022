@@ -1,17 +1,18 @@
 import "./App.css";
 import NavBar from "./components/NavBar/NavBar";
-import Home from "./components/Home/Home";
+import {EthProvider} from "./contexts/EthContext";
+import Footer from "./components/Footer";
+import {Outlet} from "react-router-dom";
 
-function App() {
-
-  return (
-<div>
-  <NavBar/>
-  <Home/>
-</div>
-
-
-  );
+function App(props) {
+    console.log(props)
+    return (
+        <EthProvider>
+            <NavBar/>
+            <Outlet/>
+            <Footer/>
+        </EthProvider>
+    );
 }
 
 export default App;
