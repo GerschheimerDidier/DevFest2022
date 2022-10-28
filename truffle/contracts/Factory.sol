@@ -3,6 +3,11 @@ pragma solidity ^0.8.10 < 0.9.0;
 
 import "./Wallet.sol";
 
+interface ISubscription {
+    function addWalletToSubscription(address _who, uint8 _walletType) external;
+    function removeWalletFromSubscription(address _who, uint8 _walletType) external;
+}
+
 contract WalletFactory {
 
     enum EWalletType { SHARED_WALLET, CROWDFUNDING, COMMON_POT }
@@ -33,13 +38,22 @@ contract WalletFactory {
         
     }
 
-
-    function addContractToSubscription(address _who, EWalletType _type) external calledFromDeployedWallet() {
-
+    function addWalletToSubscription(address _who, uint8 _walletType) external calledFromDeployedWallet() {
+        Subscription storage sub = subscriptions[_who];
+        
+        if (_walletType == uint8(EWalletType.SHARED_WALLET)) sub.sharedWallets.push(msg.sender);
+        else if (_walletType == uint8(EWalletType.SHARED_WALLET)) sub.sharedWallets.push(msg.sender);
+        else if (_walletType == uint8(EWalletType.SHARED_WALLET)) sub.sharedWallets.push(msg.sender);
+        else revert("Unknown wallet type");
     }
 
-    function removeFromSubscription() external calledFromDeployedWallet() {
-
+    function removeWalletFromSubscription(address _who, uint8 _walletType) external calledFromDeployedWallet() {
+        Subscription storage sub = subscriptions[_who];
+        
+        if (_walletType == uint8(EWalletType.SHARED_WALLET)) sub.sharedWallets.push(msg.sender);
+        else if (_walletType == uint8(EWalletType.SHARED_WALLET)) sub.sharedWallets.push(msg.sender);
+        else if (_walletType == uint8(EWalletType.SHARED_WALLET)) sub.sharedWallets.push(msg.sender);
+        else revert("Unknown wallet type");
     }
 
     function getSubscription() external view returns(Subscription memory) {
@@ -59,5 +73,5 @@ contract WalletFactory {
         require(isDeployedWallet(msg.sender), "Can only be called by a deployed wallet");
         _;
     }
-    
+
 }
