@@ -200,22 +200,22 @@ contract CrdFunding is Ownable {
         return Total;
     }
 
-    function sendDonation(uint256 _id, bool _claimReward) public payable {
-        int256 usage = Ranks[_id].usesLeft;
+    function sendDonation(uint256 _rankId, bool _claimReward) public payable {
+        int256 usage = Ranks[_rankId].usesLeft;
         require(usage != 0, "No available spots for this rank");
         require(block.timestamp < endDate, "Funding ended");
         require(
-            msg.value >= Ranks[_id].minimumInvestment,
+            msg.value >= Ranks[_rankId].minimumInvestment,
             "Not enough funding for that rank"
         );
 
         if (usage > 0) {
-            Ranks[_id].usesLeft = usage - 1;
+            Ranks[_rankId].usesLeft = usage - 1;
         }
 
         S_Donation memory newDonation = S_Donation(
             msg.value,
-            Ranks[_id].name,
+            Ranks[_rankId].name,
             _claimReward
         );
         Total += msg.value;
