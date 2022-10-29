@@ -3,18 +3,11 @@ import "./navbar.css"
 import {useEth} from "../../contexts/EthContext";
 import {useEffect, useState} from "react";
 
-
 function NavBar() {
     const { account } = useEth();
 
-    // const [accounts, setAccount] = useState(null);
-    // useEffect(() => {
-    //     const { accounts } = useEth();
-    //     setAccount(accounts);
-    // }, []);
-
     return (
-        <div>
+        <div className={"navbar"}>
             <ul>
                 <li>
                     <Link to="/" text="home">Home</Link>
@@ -26,7 +19,9 @@ function NavBar() {
                     <Link to="/crowdFunding" text="crowd funding">Crowd funding</Link>
                 </li>
             </ul >
-            <p>Welcome { account }</p>
+            <div className={"my-account"}>
+                Welcome { account }
+            </div>
         </div>
 
     );

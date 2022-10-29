@@ -1,6 +1,7 @@
 import { useEth } from "../../contexts/EthContext";
 import web3 from "web3"
-import {useState} from "react";
+import { useState } from "react";
+import './SharedWallet.css';
 
 const SharedWallet = () => {
 
@@ -13,13 +14,11 @@ const SharedWallet = () => {
      */
     const { contract, account } = useEth();
 
-
-    async function getAllowanceWithAddr(){
-        const addr = "0x4fe493bE9D13C464329558487B951b1817ed9151";
+    async function getMyAllowance() {
         try {
             setAllowanceAddr(
                 web3.utils.fromWei(
-                    await contract.methods.accountBeneficiary(addr).call(),
+                    await contract.methods.accountBeneficiary(account[0]).call(),
                     'ether'
                 )
             );
@@ -72,10 +71,19 @@ const SharedWallet = () => {
     }
 
     return (
-        <div>
-            <h2 className={"text-3xl font-bold underline"}>Le Shared wallet</h2>
-            <p> Allowance price => { allowanceAddr } ETH</p>
-            <button onClick={ getAllowanceWithAddr }>getAllowanceWithAddr</button>
+        <div className={"shared-wallet"}>
+
+            <section className={"header-wallet"}>
+                <h2>Your Shared wallet</h2>
+            </section>
+
+            <section className={"section-your-allowance"}>
+                <h4>Your allowance</h4>
+                <p> { allowanceAddr } </p>
+                <p>ETH</p>
+                {/*TODO Retirer le bouton et le faire a la fin du chargement de la page avec la var account load*/}
+                <button onClick={ getMyAllowance }>getAllowanceWithAddr</button>
+            </section>
 
             <button onClick={ addAllowance } type={"button"}>Ajout Allowance</button>
             <button onClick={ sendMoney } type={"button"}>Send Money on contract</button>

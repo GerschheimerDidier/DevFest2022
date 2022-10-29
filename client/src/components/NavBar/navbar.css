@@ -1,23 +1,33 @@
 ul {
+    display: flex;
     list-style-type: none;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #333;
+    width: 60%;
 }
-
-li {
-    float: left;
-}
-
 li a {
     display: block;
     color: white;
     text-align: center;
-    padding: 14px 16px;
+    padding: 14px 20px;
     text-decoration: none;
 }
 
 li a:hover {
     background-color: #111;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    background-color: gray;
+    color: white;
+}
+
+.my-account {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

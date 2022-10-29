@@ -5,7 +5,7 @@ import App from "./App";
 import CrowdFunding from "./pages/CrowdFunding/CrowdFunding";
 import SharedWallet from "./pages/SharedWallet/SharedWallet";
 import * as ReactDOM from "react-dom/client";
-import Home from "./components/Home/Home";
+import Home from "./pages/Home/Home";
 
 export const router = createBrowserRouter([
     {
