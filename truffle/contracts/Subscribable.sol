@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.10 < 0.9.0;
 
-import "./Wallet.sol";
+import "./Factory.sol";
 
 contract Subscribable {
 
@@ -9,7 +9,20 @@ contract Subscribable {
     uint8 private walletType;
 
     constructor(address _factoryAddress, uint8 _walletType) {
+        factoryAddress = _factoryAddress;
+        walletType = _walletType;
+    }
 
+    // Subscribe user to this wallet
+    function subscribe(address _who) internal {
+        ISubscription sub = ISubscription(factoryAddress);
+        sub.addWalletToSubscription(_who, walletType);
+    }
+
+    // Unsubscribe user from this wallet
+    function unsubscribe(address _who) internal {
+        ISubscription sub = ISubscription(factoryAddress);
+        sub.removeWalletFromSubscription(_who);
     }
 
 }

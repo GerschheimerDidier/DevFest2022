@@ -8,7 +8,7 @@ interface ISubscription {
     function removeWalletFromSubscription(address _who) external;
 }
 
-contract WalletFactory {
+contract WalletFactory is ISubscription {
 
     enum EWalletType { SHARED_WALLET, CROWDFUNDING, COMMON_POT }
 
