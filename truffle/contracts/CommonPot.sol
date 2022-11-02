@@ -12,6 +12,7 @@ contract CommonPot is Allowance {
 
     address[] private contributors ;
     mapping(address => uint) private balances;
+    // The total balance of the contract. It sum up the individual balance of each participant
     uint private totalBalance = 0;
 
     event Deposit(address sender, uint amount);
