@@ -42,9 +42,9 @@ contract CommonPot is Allowance {
         totalBalance = 0;
     }
 
-    function payWithPot(address to, uint amount) payable public {
+    function payWithPot(address to, uint amount) payable public isOwner {
         require(totalBalance > amount, "Insufficient funds");
-        require(msg.sender == isOwner(), "Only owner can pay with the pot");
+        totalBalance -= amount;
         payable(to).transfer(amount);
     }
 
