@@ -3,6 +3,7 @@ pragma solidity 0.8.17;
 
 import "./Wallet.sol";
 import "./Crdfunding.sol";
+import "./CommonPot.sol";
 
 contract WalletFactory is ISubscription {
     enum EWalletType {
@@ -77,8 +78,27 @@ contract WalletFactory is ISubscription {
     }
 
     // Create a Common Pot on behalf of user
-    function createCommongPot() external {
-        // TODO
+    function createCommonPot(string memory _walletName) external {
+        Wallet wallet = new Wallet(
+            _walletName,
+            msg.sender,
+            address(this),
+            uint8(EWalletType.SHARED_WALLET)
+        );
+        address walletAddress = address(wallet);
+
+        deployedWallets.push(walletAddress);
+        emit WalletCreated(
+            msg.sender,
+            walletAddress,
+            EWalletType.SHARED_WALLET
+        );
+
+        createSubscription(
+            msg.sender,
+            walletAddress,
+            EWalletType.SHARED_WALLET
+        );
     }
 
     // Subscribe user to wallet

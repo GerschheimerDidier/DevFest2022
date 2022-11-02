@@ -1,29 +1,35 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity ^0.8.17;
 
 import "./Allowance.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+import "./Subscribable.sol";
 
-contract CommonPot is Allowance {
+contract CommonPot is Allowance, Subscribable {
+    constructor(
+        string memory _walletName,
+        address _owner,
+        address _factoryAddress,
+        uint8 _walletType
+    )
+        Allowance(_walletName, _owner)
+        Subscribable(_factoryAddress, _walletType)
+    {}
 
-    using SafeMath for uint;
-    using Strings for uint256;
-
-    address[] private contributors ;
-    mapping(address => uint) private balances;
+    address[] private contributors;
+    mapping(address => uint256) private balances;
     // The total balance of the contract. It sum up the individual balance of each participant
-    uint private totalBalance = 0;
+    uint256 private totalBalance = 0;
 
-    event Deposit(address sender, uint amount);
-    event Withdrawal(address receiver, string amount);
+    event Deposit(address sender, uint256 amount);
+    event Withdrawal(address receiver, uint256 amount);
 
     receive() external payable {
         require(msg.value > 0, "No money sent");
-        balances[msg.sender] = SafeMath.add(balances[msg.sender], msg.value);
-        totalBalance = SafeMath.add(totalBalance, msg.value);
+        balances[msg.sender] += msg.value;
+        totalBalance += msg.value;
         if (!contributorsPresent(msg.sender)) {
             contributors.push(msg.sender);
+            subscribe(msg.sender);
         }
         emit Deposit(msg.sender, msg.value);
     }
@@ -31,25 +37,23 @@ contract CommonPot is Allowance {
     function withdraw() public isOwner {
         //prevent someone who has no interest from emptying contract's balance
         require(balances[msg.sender] > 0, "Insufficient funds");
-        uint256 quotient;
-        uint256 remainder;
-        string memory result;
-        for (uint i = 0; i < contributors.length; i++) {
-            (quotient, remainder, result) = division(totalBalance, balances[contributors[i]], 10);
+        uint256 result;
+        for (uint256 i = 0; i < contributors.length; i++) {
+            result = totalBalance / balances[contributors[i]];
             emit Withdrawal(contributors[i], result);
             balances[contributors[i]] = 0;
         }
         totalBalance = 0;
     }
 
-    function payWithPot(address to, uint amount) payable public isOwner {
+    function payWithPot(address to, uint256 amount) public payable isOwner {
         require(totalBalance > amount, "Insufficient funds");
         totalBalance -= amount;
         payable(to).transfer(amount);
     }
 
     function contributorsPresent(address adr) private view returns (bool) {
-        for (uint i = 0; i < contributors.length; i++) {
+        for (uint256 i = 0; i < contributors.length; i++) {
             if (contributors[i] == adr) {
                 return true;
             }
@@ -57,28 +61,7 @@ contract CommonPot is Allowance {
         return false;
     }
 
-    function getCurrentGlobalBalance() public view returns (uint) {
+    function getCurrentGlobalBalance() public view returns (uint256) {
         return totalBalance;
-    }
-
-    function division(uint256 decimalPlaces, uint256 numerator, uint256 denominator) internal pure returns(uint256 quotient, uint256 remainder, string memory result) {
-        uint256 factor = 10**decimalPlaces;
-        quotient  = numerator / denominator;
-        bool rounding = 2 * ((numerator * factor) % denominator) >= denominator;
-        remainder = (numerator * factor / denominator) % factor;
-        if (rounding) {
-            remainder += 1;
-        }
-        result = string(abi.encodePacked(quotient.toString(), '.', numToFixedLengthStr(decimalPlaces, remainder)));
-    }
-
-    function numToFixedLengthStr(uint256 decimalPlaces, uint256 num) pure internal returns(string memory result) {
-        bytes memory byteString;
-        for (uint256 i = 0; i < decimalPlaces; i++) {
-            uint256 remainder = num % 10;
-            byteString = abi.encodePacked(remainder.toString(), byteString);
-            num = num/10;
-        }
-        result = string(byteString);
     }
 }
