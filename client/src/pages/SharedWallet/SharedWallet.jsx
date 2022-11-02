@@ -1,18 +1,20 @@
 import { useEth } from "../../contexts/EthContext";
 import web3 from "web3"
-import { useState } from "react";
+import React, { useState } from "react";
 import './SharedWallet.css';
+import FormAllowance from './FormAddAllowance';
 
 const SharedWallet = () => {
 
     //*********** USE STATE ***********//
     const [allowanceAddr, setAllowanceAddr] = useState(0);
+    const [addFormLog, setAddFormLog] = useState();
 
     /*
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
-    const { contract, account } = useEth();
+    const { contract, account, address } = useEth();
 
     async function getMyAllowance() {
         try {
@@ -31,8 +33,8 @@ const SharedWallet = () => {
     function addAllowance() {
         try {
             contract.methods.defineAllowance(
-                "0x4fe493bE9D13C464329558487B951b1817ed9151",
-                web3.utils.toWei('0.002', 'ether'),
+                "0xE1fc08B3a333dcAf366D5122B1af9a1b46d00eD3",
+                web3.utils.toWei('1', 'ether'),
             ).send({
                 from: account[0],
             });
@@ -58,11 +60,11 @@ const SharedWallet = () => {
 
     function sendMoney() {
         try {
-            contract.send(web3.utils.toWei('0.003', 'ether'))
-            //     {
-            //     from: account[0],
-            //     value: web3.utils.toWei('2', 'ether')
-            // });
+            contract.methods.sendMoneyOnWallet().send({
+                from: account[0],
+                // to: "0x4074CdC70951bEf1489c13A9Bca035C221cAdeE5",
+                value: web3.utils.toWei('2', 'ether'),
+            });
         }
         catch (err) {
             console.log(err)
@@ -85,11 +87,21 @@ const SharedWallet = () => {
                 <button onClick={ getMyAllowance }>getAllowanceWithAddr</button>
             </section>
 
-            <button onClick={ addAllowance } type={"button"}>Ajout Allowance</button>
+            <br/>
+            <br/>
+            <section className={"section-add-allowance"}>
+                {/*<FormAllowance addFormLog={setAddFormLog(addFormLog)}/>*/}
+
+                {/*<button onClick={ addAllowance() } type={"button"}>Add Allowance</button>*/}
+
+            </section>
+
+            <br/>
+            <br/>
+            <button onClick={ addAllowance }>addAllowance</button>
             <button onClick={ sendMoney } type={"button"}>Send Money on contract</button>
             <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button>
         </div>
-
 
 
     );

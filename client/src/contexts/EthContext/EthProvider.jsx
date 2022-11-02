@@ -7,6 +7,7 @@ function EthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [contract, setContract] = useState(null);
   const [account, setAccount] = useState(null);
+  const [address, setAddress] = useState(null);
 
   const init = useCallback(
     async artifact => {
@@ -19,7 +20,11 @@ function EthProvider({ children }) {
         let address, contract;
         try {
           address = artifact.networks[networkID].address;
+          setAddress(address);
           setContract(new web3.eth.Contract(abi, address));
+
+          console.log(web3.eth.getBalance(address))
+
         } catch (err) {
           console.error(err);
         }
@@ -61,6 +66,7 @@ function EthProvider({ children }) {
       dispatch,
       contract,
       account,
+      address,
     }}>
       {children}
     </EthContext.Provider>

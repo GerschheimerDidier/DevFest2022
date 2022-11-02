@@ -19,7 +19,8 @@ contract Wallet is Allowance {
         emit MoneyWithdrawn(msg.sender, _amount);
     }
 
-    receive () external payable {
+    function sendMoneyOnWallet() public payable {
+        payable(address(this)).transfer(msg.value);
         emit MoneyDeposited(msg.sender, msg.value);
     }
 }
