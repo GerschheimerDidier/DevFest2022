@@ -1,10 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.10 < 0.9.0;
+pragma solidity ^0.8.17;
 
-import "./Factory.sol";
+//import "./Factory.sol";
+
+interface ISubscription {
+    function addWalletToSubscription(address _who, uint8 _walletType) external;
+
+    function removeWalletFromSubscription(address _who) external;
+}
 
 contract Subscribable {
-
     address private factoryAddress;
     uint8 private walletType;
 
@@ -24,5 +29,4 @@ contract Subscribable {
         ISubscription sub = ISubscription(factoryAddress);
         sub.removeWalletFromSubscription(_who);
     }
-
 }

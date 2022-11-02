@@ -1,16 +1,19 @@
 //SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.17;
 //import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 import "./Ownable.sol";
+import "./Subscribable.sol";
 
-contract CrdFunding is Ownable {
+contract CrdFunding is Subscribable, Ownable {
     constructor(
         address _beneficiary,
         string memory _description,
         uint256 _sumGoal,
-        uint256 _endDate
-    ) payable {
+        uint256 _endDate,
+        address _factoryAddress,
+        uint8 _walletType
+    ) payable Subscribable(_factoryAddress, _walletType) {
         transferOwnership(_beneficiary);
         projectDescription = _description;
         goal = _sumGoal;
