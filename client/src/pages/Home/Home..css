@@ -1,0 +1,17 @@
+.home-container {
+    display: flex;
+    height: 90%;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-container button {
+    height: 70px;
+    width: 250px;
+    border: none;
+    cursor: pointer;
+    background: #458bff;
+    color: white;
+    font-size: 20px;
+    border-radius: 5px;
+}

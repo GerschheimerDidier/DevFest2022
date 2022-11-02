@@ -6,6 +6,8 @@ import "./Crdfunding.sol";
 import "./CommonPot.sol";
 
 contract WalletFactory is ISubscription {
+    constructor() {}
+
     enum EWalletType {
         SHARED_WALLET,
         CROWDFUNDING,
