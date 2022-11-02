@@ -19,7 +19,7 @@ contract('Crdfunding', (accounts) => {
       "NOOOO",
       0,
       secondsSinceEpochMinusHour,
-      accounts[0],
+      "0x0000000000000000000000000000000000000000",
       0,
       {value: value});
       return crowdfundingInstance;
@@ -32,7 +32,7 @@ contract('Crdfunding', (accounts) => {
       "NOOOO",
       0,
       secondsSinceEpochPlusHour,
-      accounts[0],
+      "0x0000000000000000000000000000000000000000",
       0,
       {value: value});
       return crowdfundingInstance;
@@ -44,7 +44,7 @@ contract('Crdfunding', (accounts) => {
       "NOOOO",
       web3.utils.toWei("3", "ether"),
       secondsSinceEpochMinusHour,
-      accounts[0],
+      "0x0000000000000000000000000000000000000000",
       0,
       {value: value});
       return crowdfundingInstance;
@@ -56,7 +56,7 @@ contract('Crdfunding', (accounts) => {
       "NOOOO",
       web3.utils.toWei("3", "ether"),
       secondsSinceEpochPlusHour,
-      accounts[0],
+      "0x0000000000000000000000000000000000000000",
       0,
       {value: value});
       return crowdfundingInstance;

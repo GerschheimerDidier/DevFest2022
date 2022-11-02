@@ -15,6 +15,10 @@ contract CrdFunding is Subscribable, Ownable {
         uint8 _walletType
     ) payable Subscribable(_factoryAddress, _walletType) {
         transferOwnership(_beneficiary);
+        if (_factoryAddress != address(0x0)) {
+            subscribe(_beneficiary);
+        }
+
         projectDescription = _description;
         goal = _sumGoal;
         endDate = _endDate;
@@ -211,6 +215,10 @@ contract CrdFunding is Subscribable, Ownable {
             msg.value >= Ranks[_rankId].minimumInvestment,
             "Not enough funding for that rank"
         );
+
+        if (getFactoryAddress() != address(0x0)) {
+            subscribe(msg.sender);
+        }
 
         if (usage > 0) {
             Ranks[_rankId].usesLeft = usage - 1;

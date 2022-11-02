@@ -7,6 +7,6 @@ module.exports = function (deployer, network, accounts) {
   "NOOOO",
   10,
   1665570954,
-  accounts[0],
-  0);
+  "0x0000000000000000000000000000000000000000",
+  2);
 };

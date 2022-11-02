@@ -29,4 +29,8 @@ contract Subscribable {
         ISubscription sub = ISubscription(factoryAddress);
         sub.removeWalletFromSubscription(_who);
     }
+
+    function getFactoryAddress() public view returns (address) {
+        return factoryAddress;
+    }
 }
