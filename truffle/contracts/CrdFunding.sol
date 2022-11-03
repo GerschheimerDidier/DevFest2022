@@ -13,11 +13,14 @@ contract CrdFunding is Subscribable, Ownable {
         uint256 _endDate,
         address _factoryAddress,
         uint8 _walletType
-    ) payable Subscribable(_factoryAddress, _walletType) {
+    )
+        /*payable*/
+        Subscribable(_factoryAddress, _walletType)
+    {
         transferOwnership(_beneficiary);
-        if (_factoryAddress != address(0x0)) {
-            subscribe(_beneficiary);
-        }
+        // if (_factoryAddress != address(0x0)) {
+        //     subscribe(_beneficiary);
+        // }
 
         projectDescription = _description;
         goal = _sumGoal;
@@ -26,16 +29,16 @@ contract CrdFunding is Subscribable, Ownable {
         Ranks[rankIndex] = noRank;
         NameAndIdRanks.push(NameAndIdRank("_noRank", rankIndex));
         rankIndex = rankIndex + 1;
-        if (msg.value > 0) {
-            S_Donation memory newDonation = S_Donation(
-                msg.value,
-                "_noRank",
-                false
-            );
-            Total += msg.value;
-            Donations[msg.sender].totalClaimable += msg.value;
-            Donations[msg.sender].donations.push(newDonation);
-        }
+        // if (msg.value > 0) {
+        //     S_Donation memory newDonation = S_Donation(
+        //         msg.value,
+        //         "_noRank",
+        //         false
+        //     );
+        //     Total += msg.value;
+        //     Donations[msg.sender].totalClaimable += msg.value;
+        //     Donations[msg.sender].donations.push(newDonation);
+        // }
     }
 
     receive() external payable {

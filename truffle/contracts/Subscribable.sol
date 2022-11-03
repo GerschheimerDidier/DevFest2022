@@ -33,4 +33,8 @@ contract Subscribable {
     function getFactoryAddress() public view returns (address) {
         return factoryAddress;
     }
+
+    function getWalletType() public view returns (uint8) {
+        return walletType;
+    }
 }

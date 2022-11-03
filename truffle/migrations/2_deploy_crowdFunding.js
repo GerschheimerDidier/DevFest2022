@@ -8,5 +8,5 @@ module.exports = function (deployer, network, accounts) {
   10,
   1665570954,
   "0x0000000000000000000000000000000000000000",
-  2);
+  1);
 };

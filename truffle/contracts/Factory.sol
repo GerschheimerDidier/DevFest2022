@@ -2,7 +2,7 @@
 pragma solidity 0.8.17;
 
 import "./Wallet.sol";
-import "./Crdfunding.sol";
+import "./CrdFunding.sol";
 import "./CommonPot.sol";
 
 contract WalletFactory is ISubscription {
@@ -61,9 +61,10 @@ contract WalletFactory is ISubscription {
     function createCrowdfunding(
         string memory _description,
         uint256 _sumGoal,
-        uint256 _endDate
+        uint256 _endDate /*payable*/
     ) external {
         CrdFunding crdfunding = new CrdFunding(
+            /*{value: msg.value}*/
             msg.sender,
             _description,
             _sumGoal,
@@ -85,22 +86,14 @@ contract WalletFactory is ISubscription {
             _walletName,
             msg.sender,
             address(this),
-            uint8(EWalletType.SHARED_WALLET)
+            uint8(EWalletType.COMMON_POT)
         );
         address walletAddress = address(wallet);
 
         deployedWallets.push(walletAddress);
-        emit WalletCreated(
-            msg.sender,
-            walletAddress,
-            EWalletType.SHARED_WALLET
-        );
+        emit WalletCreated(msg.sender, walletAddress, EWalletType.COMMON_POT);
 
-        createSubscription(
-            msg.sender,
-            walletAddress,
-            EWalletType.SHARED_WALLET
-        );
+        createSubscription(msg.sender, walletAddress, EWalletType.COMMON_POT);
     }
 
     // Subscribe user to wallet
