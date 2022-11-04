@@ -265,10 +265,9 @@ contract CrdFunding is Subscribable, Ownable {
     }
 
     function giveUpBenefitsAndParticipation() external {
-        MyDonations memory myDonations = Donations[msg.sender];
-        uint256 nbOfDonations = myDonations.donations.length;
+        uint256 nbOfDonations = Donations[msg.sender].donations.length;
         for (uint256 i = 0; i < nbOfDonations; i++) {
-            myDonations.donations[i].claimReward = false;
+            Donations[msg.sender].donations[i].claimReward = false;
         }
         if (getFactoryAddress() != address(0x0)) {
             unsubscribe(msg.sender);

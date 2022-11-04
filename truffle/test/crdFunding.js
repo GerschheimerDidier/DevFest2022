@@ -438,13 +438,11 @@ contract('Crdfunding', (accounts) => {
 
 
 
-    (await crowdfundingInstance.sendDonation(0, true, {from: funder, value: 100000000}))
-    (await crowdfundingInstance.giveUpBenefitsAndParticipation({from : funder}))
+    (await crowdfundingInstance.sendDonation(0, true, {from: funder, value: 100000000}));
+    (await crowdfundingInstance.giveUpBenefitsAndParticipation({from : funder}));
     var value = (await crowdfundingInstance.getMyParticipation.call({from: funder}));
 
-    console.log("SUBS : ", value);
-
-    assert.ok(!value.donations[0].claimReward, "crowdfunding contract left balance should be 0");
+    assert.ok(!value.donations[0].claimReward, "rank benefits shoud be unclaimed");
     
   });
 
