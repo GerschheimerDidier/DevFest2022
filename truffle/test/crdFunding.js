@@ -11,21 +11,31 @@ contract('Crdfunding', (accounts) => {
 
   const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600);
   const secondsSinceEpochMinusHour = Math.round(Date.now() / 1000 - 3600);
-  const secondsSinceEpochPlus3Sec = Math.round(Date.now() / 1000 + 3600);
+  const secondsSinceEpochPlus5Sec = Math.round(Date.now() / 1000 + 5);
 
-  const newCrowdfundingInstanceGoalReachedEndReached = async(value) => {
+  const newCrowdfundingInstanceGoalReachedEndReached = async() => {
     const crowdfundingInstance = await Crowdfunding.new(
       accounts[1],
       "NOOOO",
       0,
       secondsSinceEpochMinusHour,
       "0x0000000000000000000000000000000000000000",
-      0,
-      {value: value});
+      0);
       return crowdfundingInstance;
   }
 
-  const newCrowdfundingInstanceGoalReachedEndNotReached = async(value) => {
+  const newCrowdfundingInstanceGoalReachedEndSoon = async() => {
+    const crowdfundingInstance = await Crowdfunding.new(
+      accounts[1],
+      "NOOOO",
+      0,
+      secondsSinceEpochPlus5Sec,
+      "0x0000000000000000000000000000000000000000",
+      0);
+      return crowdfundingInstance;
+  }
+
+  const newCrowdfundingInstanceGoalReachedEndNotReached = async() => {
     
     const crowdfundingInstance = await Crowdfunding.new(
       accounts[1],
@@ -33,32 +43,29 @@ contract('Crdfunding', (accounts) => {
       0,
       secondsSinceEpochPlusHour,
       "0x0000000000000000000000000000000000000000",
-      0,
-      {value: value});
+      0);
       return crowdfundingInstance;
   }
 
-  const newCrowdfundingInstanceGoalNotReachedEndReached = async(value) => {
+  const newCrowdfundingInstanceGoalNotReachedEndReached = async() => {
     const crowdfundingInstance = await Crowdfunding.new(
       accounts[1],
       "NOOOO",
       web3.utils.toWei("3", "ether"),
       secondsSinceEpochMinusHour,
       "0x0000000000000000000000000000000000000000",
-      0,
-      {value: value});
+      0);
       return crowdfundingInstance;
   }
 
-  const newCrowdfundingInstanceGoalNotReachedEndNotReached = async(value) => {
+  const newCrowdfundingInstanceGoalNotReachedEndNotReached = async() => {
     const crowdfundingInstance = await Crowdfunding.new(
       accounts[1],
       "NOOOO",
       web3.utils.toWei("3", "ether"),
       secondsSinceEpochPlusHour,
       "0x0000000000000000000000000000000000000000",
-      0,
-      {value: value});
+      0);
       return crowdfundingInstance;
   }
 
@@ -261,7 +268,7 @@ contract('Crdfunding', (accounts) => {
 
   it('should send a donation from owner', async() => {
 
-    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached(0);
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached();
 
     await crowdfundingInstance.sendDonation(0, false, {from: owner, value: 100})
 
@@ -278,7 +285,7 @@ contract('Crdfunding', (accounts) => {
 
   it('should send a donation from funder', async() => {
 
-    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached(0);
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached();
     
     await crowdfundingInstance.sendDonation(0, false, {from: funder, value: 100000000});
 
@@ -296,7 +303,7 @@ contract('Crdfunding', (accounts) => {
 
   it('should refuse a donation from funder => funding ended', async() => {
 
-    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndReached(0);
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndReached();
 
     try {
       await crowdfundingInstance.sendDonation(0, false, {from: funder, value: 100000000});
@@ -310,7 +317,7 @@ contract('Crdfunding', (accounts) => {
 
   it('should refuse funding retrival => funding not ended and goal not achieved', async() => {
 
-    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached(0);
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached();
     
     try {
       await crowdfundingInstance.retrieveFunding.call({from : owner});
@@ -324,7 +331,7 @@ contract('Crdfunding', (accounts) => {
 
   it('should refuse funding retrival => funding not ended', async() => {
 
-    const crowdfundingInstance = await newCrowdfundingInstanceGoalReachedEndNotReached(0);
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalReachedEndNotReached();
     
     try {
       await crowdfundingInstance.retrieveFunding.call({from : owner});
@@ -340,7 +347,7 @@ contract('Crdfunding', (accounts) => {
 
     //const crowdfundingInstance = await Crowdfunding.deployed();
 
-    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndReached(0);
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndReached();
     
     try {
       await crowdfundingInstance.retrieveFunding.call({from : owner});
@@ -356,7 +363,11 @@ contract('Crdfunding', (accounts) => {
 
   it('should have owner retrieve crowdfunding funds', async() => {
 
-    const crowdfundingInstance = await newCrowdfundingInstanceGoalReachedEndReached(web3.utils.toWei("3", "ether"));
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalReachedEndSoon();
+
+    (await crowdfundingInstance.sendDonation(0, true, {from: owner, value: web3.utils.toWei("3", "ether")}));
+
+    await new Promise(r => setTimeout(r, 6000));    //sleep to reach endDate
 
     const ownerBalanceBeforeRetrieve = Number(await web3.eth.getBalance(owner));
 
@@ -401,15 +412,17 @@ contract('Crdfunding', (accounts) => {
 
   it('deployer should have its funds back', async() => {
 
-    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndReached(web3.utils.toWei("2", "ether"));
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalReachedEndSoon();
+    (await crowdfundingInstance.sendDonation(0, true, {from: deployer, value: web3.utils.toWei("2", "ether")}))
+
+    await new Promise(r => setTimeout(r, 6000));    //sleep to reach endDate
 
     const deployerBalanceBeforeRetrieve = Number(await web3.eth.getBalance(deployer));
 
 
     (await crowdfundingInstance.requestRefundGoalNotCompleted({from : deployer}));
 
-    
-
+  
     const deployerNewBalance = Number(await web3.eth.getBalance(deployer));
 
 
@@ -419,6 +432,24 @@ contract('Crdfunding', (accounts) => {
 
     assert.equal(0, value.totalClaimable, "crowdfunding contract left balance should be 0");
     assert.ok(deployerBalanceBeforeRetrieve < deployerNewBalance, "deployer didn't retrieve the funding");
+  });
+
+
+
+  it('funder should give up on benefits', async() => {
+
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached();
+
+
+
+    (await crowdfundingInstance.sendDonation(0, true, {from: funder, value: 100000000}))
+    (await crowdfundingInstance.giveUpBenefitsAndParticipation({from : funder}))
+    var value = (await crowdfundingInstance.getMyParticipation.call({from: funder}));
+
+    console.log("SUBS : ", value);
+
+    assert.ok(!value.donations[0].claimReward, "crowdfunding contract left balance should be 0");
+    
   });
 
 

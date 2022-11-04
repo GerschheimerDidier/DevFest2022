@@ -47,6 +47,10 @@ contract CrdFunding is Subscribable, Ownable {
         Total += msg.value;
         Donations[msg.sender].totalClaimable += msg.value;
         Donations[msg.sender].donations.push(newDonation);
+
+        if (getFactoryAddress() != address(0x0)) {
+            subscribe(msg.sender);
+        }
     }
 
     uint256 rankIndex;
@@ -97,6 +101,8 @@ contract CrdFunding is Subscribable, Ownable {
     event RanksModification(string _name, Rank _rank, string _action);
 
     event RanksActivation(string _name, string _action);
+
+    event GiveUpParticipation(address _who);
 
     function createRank(
         string memory _name,
@@ -262,6 +268,18 @@ contract CrdFunding is Subscribable, Ownable {
 
     function getMyParticipation() public view returns (MyDonations memory) {
         return Donations[msg.sender];
+    }
+
+    function giveUpBenefitsAndParticipation() external {
+        MyDonations memory myDonations = Donations[msg.sender];
+        uint256 nbOfDonations = myDonations.donations.length;
+        for (uint256 i = 0; i < nbOfDonations; i++) {
+            myDonations.donations[i].claimReward = false;
+        }
+        if (getFactoryAddress() != address(0x0)) {
+            unsubscribe(msg.sender);
+        }
+        emit GiveUpParticipation(msg.sender);
     }
 
     // utils

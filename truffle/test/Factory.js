@@ -9,6 +9,8 @@ contract('Factory', (accounts) => {
 
     const owner2 = accounts[9];
 
+    let callingDeployedContract = "0x0000000000000000000000000000000000000000";
+
     const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600);
 
     before(async () => {
@@ -59,6 +61,7 @@ contract('Factory', (accounts) => {
         await this.factoryInstance.createCommonPot("_nameCCMNPOT", {from : owner2/*, value : 0*/});
         let subscriptions = await this.factoryInstance.getSubscriptions.call({from : owner2})
 
+        callingDeployedContract = subscriptions[0].walletAddress;
 
         assert.strictEqual(1, subscriptions.length, "owner2 should have 1 subscription");
 
@@ -91,16 +94,29 @@ contract('Factory', (accounts) => {
         
     });
 
-    it("should remove owner2's subscription", async() => {
-
-        let subscriptions = await this.factoryInstance.getSubscriptions.call({from : owner2});
-        await this.factoryInstance.removeWalletFromSubscription(owner2, {from: subscriptions[0].walletAddress});
-        await this.factoryInstance.getSubscriptions.call({from : owner2});
-
-        assert.strictEqual(0, subscriptions.length, "owner2 should have 0 subscription");
+    // it("should remove owner's subscription to crowd funding", async() => {
 
         
-    });
+        
+    //     await this.factoryInstance.removeWalletFromSubscription(owner2, {from: callingDeployedContract});
+    //     let subscriptions = await this.factoryInstance.getSubscriptions.call({from : owner2});
+    //     console.log("SUB : ", subscriptions);
+
+    //     assert.strictEqual(0, subscriptions.length, "owner2 should have 0 subscription");
+
+    // });
+
+    // it("should add subscription to common pot waller for owner2", async() => {
+
+    //     await this.factoryInstance.addWalletToSubscription(owner2, 2, {from: callingDeployedContract});
+    //     let subscriptions = await this.factoryInstance.getSubscriptions.call({from : owner2});
+    //     console.log("SUB : ", subscriptions);
+
+    //     assert.strictEqual(1, subscriptions.length, "owner2 should have 1 subscription");
+
+    //     assert.strictEqual(2, Number(subscriptions[0].walletType), "wallet type should be 2 => common pot");
+
+    // });
 
 
 });
