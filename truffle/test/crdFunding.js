@@ -11,25 +11,26 @@ contract('Crdfunding', (accounts) => {
 
   const secondsSinceEpochPlusHour = Math.round(Date.now() / 1000 + 3600);
   const secondsSinceEpochMinusHour = Math.round(Date.now() / 1000 - 3600);
-  const secondsSinceEpochPlus5Sec = Math.round(Date.now() / 1000 + 5);
+  
 
-  const newCrowdfundingInstanceGoalReachedEndReached = async() => {
+  const newCrowdfundingInstanceGoalReachedEndReached = async(v) => {
     const crowdfundingInstance = await Crowdfunding.new(
       accounts[1],
       "NOOOO",
       0,
       secondsSinceEpochMinusHour,
       "0x0000000000000000000000000000000000000000",
-      0);
+      0,
+      {value : v});
       return crowdfundingInstance;
   }
 
-  const newCrowdfundingInstanceGoalReachedEndSoon = async() => {
+  const newCrowdfundingInstanceGoalReachedEndSoon = async(end) => {
     const crowdfundingInstance = await Crowdfunding.new(
       accounts[1],
       "NOOOO",
       0,
-      secondsSinceEpochPlus5Sec,
+      end,
       "0x0000000000000000000000000000000000000000",
       0);
       return crowdfundingInstance;
@@ -47,14 +48,15 @@ contract('Crdfunding', (accounts) => {
       return crowdfundingInstance;
   }
 
-  const newCrowdfundingInstanceGoalNotReachedEndReached = async() => {
+  const newCrowdfundingInstanceGoalNotReachedEndReached = async(v) => {
     const crowdfundingInstance = await Crowdfunding.new(
       accounts[1],
       "NOOOO",
       web3.utils.toWei("3", "ether"),
       secondsSinceEpochMinusHour,
       "0x0000000000000000000000000000000000000000",
-      0);
+      0,
+      {value : v});
       return crowdfundingInstance;
   }
 
@@ -363,11 +365,7 @@ contract('Crdfunding', (accounts) => {
 
   it('should have owner retrieve crowdfunding funds', async() => {
 
-    const crowdfundingInstance = await newCrowdfundingInstanceGoalReachedEndSoon();
-
-    (await crowdfundingInstance.sendDonation(0, true, {from: owner, value: web3.utils.toWei("3", "ether")}));
-
-    await new Promise(r => setTimeout(r, 6000));    //sleep to reach endDate
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalReachedEndReached(web3.utils.toWei("3", "ether"));
 
     const ownerBalanceBeforeRetrieve = Number(await web3.eth.getBalance(owner));
 
@@ -412,10 +410,8 @@ contract('Crdfunding', (accounts) => {
 
   it('deployer should have its funds back', async() => {
 
-    const crowdfundingInstance = await newCrowdfundingInstanceGoalReachedEndSoon();
-    (await crowdfundingInstance.sendDonation(0, true, {from: deployer, value: web3.utils.toWei("2", "ether")}))
-
-    await new Promise(r => setTimeout(r, 6000));    //sleep to reach endDate
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndReached(web3.utils.toWei("2", "ether"));
+    
 
     const deployerBalanceBeforeRetrieve = Number(await web3.eth.getBalance(deployer));
 
@@ -438,7 +434,7 @@ contract('Crdfunding', (accounts) => {
 
   it('funder should give up on benefits', async() => {
 
-    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached();
+    const crowdfundingInstance = await newCrowdfundingInstanceGoalNotReachedEndNotReached(web3.utils.toWei("2", "ether"));
 
 
 

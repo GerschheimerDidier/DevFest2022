@@ -61,10 +61,9 @@ contract WalletFactory is ISubscription {
     function createCrowdfunding(
         string memory _description,
         uint256 _sumGoal,
-        uint256 _endDate /*payable*/
-    ) external {
-        CrdFunding crdfunding = new CrdFunding(
-            /*{value: msg.value}*/
+        uint256 _endDate
+    ) external payable {
+        CrdFunding crdfunding = new CrdFunding{value: msg.value}(
             msg.sender,
             _description,
             _sumGoal,
@@ -81,14 +80,13 @@ contract WalletFactory is ISubscription {
     }
 
     // Create a Common Pot on behalf of user
-    function createCommonPot(string memory _walletName) external {
-        Wallet wallet = new Wallet(
-            _walletName,
+    function createCommonPot() external {
+        CommonPot commonPot = new CommonPot(
             msg.sender,
             address(this),
             uint8(EWalletType.COMMON_POT)
         );
-        address walletAddress = address(wallet);
+        address walletAddress = address(commonPot);
 
         deployedWallets.push(walletAddress);
         emit WalletCreated(msg.sender, walletAddress, EWalletType.COMMON_POT);
