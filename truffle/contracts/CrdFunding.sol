@@ -98,6 +98,8 @@ contract CrdFunding is Subscribable, Ownable {
 
     event GiveUpParticipation(address _who);
 
+    event Refund(address _who, uint256 _value);
+
     function createRank(
         string memory _name,
         uint256 _minimumInvestment,
@@ -245,6 +247,9 @@ contract CrdFunding is Subscribable, Ownable {
         require(Total >= goal, "Goal not achieved");
         payable(owner()).transfer(address(this).balance);
         retrieved = true;
+        if (getFactoryAddress() != address(0x0)) {
+            unsubscribe(msg.sender);
+        }
         emit fundingRetrieved(Total);
     }
 
@@ -258,6 +263,10 @@ contract CrdFunding is Subscribable, Ownable {
         uint256 toSend = Donations[msg.sender].totalClaimable;
         Donations[msg.sender].totalClaimable = 0;
         payable(msg.sender).transfer(toSend);
+        if (getFactoryAddress() != address(0x0)) {
+            unsubscribe(msg.sender);
+        }
+        emit Refund(msg.sender, toSend);
     }
 
     function getMyParticipation() public view returns (MyDonations memory) {
