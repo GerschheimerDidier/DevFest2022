@@ -1,4 +1,7 @@
 
+import { useEth } from "../../contexts/EthContext";
+import { useState } from "react";
+
 function CrowdFunding() {
     //*********** USE STATE ***********//
     const [crdfundingAddr, setCrdfundingAddr] = useState(0);
@@ -60,7 +63,7 @@ function CrowdFunding() {
             console.log(err)
         }
     }
-    async function getRankInfo() {
+    async function getRankInfo(id) {
         try {
             setCrdfundingAddr(
                     await contract.methods.getRankInfo(id)
@@ -106,7 +109,7 @@ function CrowdFunding() {
     return (
         <div className={"shared-wallet"}>
 
-            <section className={"header-wallet"}>
+            {/* <section className={"header-wallet"}>
                 <h2>Your Shared wallet</h2>
             </section>
 
@@ -114,13 +117,12 @@ function CrowdFunding() {
                 <h4>Your allowance</h4>
                 <p> { crdfundingAddr } </p>
                 <p>ETH</p>
-                {/*TODO Retirer le bouton et le faire a la fin du chargement de la page avec la var account load*/}
                 <button onClick={ getMyAllowance }>getAllowanceWithAddr</button>
             </section>
 
             <button onClick={ addAllowance } type={"button"}>Ajout Allowance</button>
             <button onClick={ sendMoney } type={"button"}>Send Money on contract</button>
-            <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button>
+            <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button> */}
         </div>
 
 
