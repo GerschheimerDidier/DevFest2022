@@ -37,7 +37,7 @@ class WalletTile extends React.Component {
         }
 
         return (
-            <button class="btn-subscription" >
+            <button className="btn-subscription" >
                 <span>{typeName}</span><br />
                 <span>{this.state.wallet.address}</span>
             </button >
