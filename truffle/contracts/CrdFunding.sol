@@ -13,14 +13,8 @@ contract CrdFunding is Subscribable, Ownable {
         uint256 _endDate,
         address _factoryAddress,
         uint8 _walletType
-    )
-        /*payable*/
-        Subscribable(_factoryAddress, _walletType)
-    {
+    ) payable Subscribable(_factoryAddress, _walletType) {
         transferOwnership(_beneficiary);
-        // if (_factoryAddress != address(0x0)) {
-        //     subscribe(_beneficiary);
-        // }
 
         projectDescription = _description;
         goal = _sumGoal;
@@ -29,16 +23,16 @@ contract CrdFunding is Subscribable, Ownable {
         Ranks[rankIndex] = noRank;
         NameAndIdRanks.push(NameAndIdRank("_noRank", rankIndex));
         rankIndex = rankIndex + 1;
-        // if (msg.value > 0) {
-        //     S_Donation memory newDonation = S_Donation(
-        //         msg.value,
-        //         "_noRank",
-        //         false
-        //     );
-        //     Total += msg.value;
-        //     Donations[msg.sender].totalClaimable += msg.value;
-        //     Donations[msg.sender].donations.push(newDonation);
-        // }
+        if (msg.value > 0) {
+            S_Donation memory newDonation = S_Donation(
+                msg.value,
+                "_noRank",
+                false
+            );
+            Total += msg.value;
+            Donations[msg.sender].totalClaimable += msg.value;
+            Donations[msg.sender].donations.push(newDonation);
+        }
     }
 
     receive() external payable {
@@ -47,6 +41,10 @@ contract CrdFunding is Subscribable, Ownable {
         Total += msg.value;
         Donations[msg.sender].totalClaimable += msg.value;
         Donations[msg.sender].donations.push(newDonation);
+
+        if (getFactoryAddress() != address(0x0)) {
+            subscribe(msg.sender);
+        }
     }
 
     uint256 rankIndex;
@@ -97,6 +95,10 @@ contract CrdFunding is Subscribable, Ownable {
     event RanksModification(string _name, Rank _rank, string _action);
 
     event RanksActivation(string _name, string _action);
+
+    event GiveUpParticipation(address _who);
+
+    event Refund(address _who, uint256 _value);
 
     function createRank(
         string memory _name,
@@ -245,6 +247,9 @@ contract CrdFunding is Subscribable, Ownable {
         require(Total >= goal, "Goal not achieved");
         payable(owner()).transfer(address(this).balance);
         retrieved = true;
+        if (getFactoryAddress() != address(0x0)) {
+            unsubscribe(msg.sender);
+        }
         emit fundingRetrieved(Total);
     }
 
@@ -258,10 +263,25 @@ contract CrdFunding is Subscribable, Ownable {
         uint256 toSend = Donations[msg.sender].totalClaimable;
         Donations[msg.sender].totalClaimable = 0;
         payable(msg.sender).transfer(toSend);
+        if (getFactoryAddress() != address(0x0)) {
+            unsubscribe(msg.sender);
+        }
+        emit Refund(msg.sender, toSend);
     }
 
     function getMyParticipation() public view returns (MyDonations memory) {
         return Donations[msg.sender];
+    }
+
+    function giveUpBenefitsAndParticipation() external {
+        uint256 nbOfDonations = Donations[msg.sender].donations.length;
+        for (uint256 i = 0; i < nbOfDonations; i++) {
+            Donations[msg.sender].donations[i].claimReward = false;
+        }
+        if (getFactoryAddress() != address(0x0)) {
+            unsubscribe(msg.sender);
+        }
+        emit GiveUpParticipation(msg.sender);
     }
 
     // utils
