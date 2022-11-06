@@ -31,16 +31,16 @@ class WalletTile extends React.Component {
             case 0:
                 typeName = "Common Pot"
                 break;
-        
+
             default:
                 break;
         }
 
         return (
-            <button>
-                <span>{typeName}</span><br/>
+            <button class="btn-subscription" >
+                <span>{typeName}</span><br />
                 <span>{this.state.wallet.address}</span>
-            </button>
+            </button >
         );
     }
 }

@@ -8,10 +8,13 @@ class Dashboard extends React.Component {
 
         // Initial State
         this.state = {
+            factoryAddress: 0xf15f81fea185d70a7a5e54ca64892eddfbe9079dc53d08085cb2727b572c2ac2,
             hasBeenClicked: false,
             wallets: []
         }
+    }
 
+    componentDidMount() {
         // Fetch subscribed wallets from factory
         this.retrieveWallets();
     }
@@ -49,12 +52,14 @@ class Dashboard extends React.Component {
                     this.state.wallets.length > 0 &&
 
                     <div>
-                        <h2>My Wallets</h2>
+                        <br />
+                        <h2>My Wallets ({this.state.wallets.length})</h2>
                         <div>
                             {
                                 // For each wallet
-                                this.state.wallets.map((wallet, index) => {
-                                    <WalletTile wallet={wallet}/>
+                                // this.state.wallets.map((wallet, index) => {
+                                this.state.wallets.map(wallet => {
+                                    return (< WalletTile wallet={wallet} />)
                                 })
                             }
                         </div>
