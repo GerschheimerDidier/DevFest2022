@@ -16,7 +16,7 @@ function CrowdFunding() {
             );
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
 
@@ -27,7 +27,7 @@ function CrowdFunding() {
             );
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
     async function getDescription() {
@@ -37,7 +37,7 @@ function CrowdFunding() {
             );
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
     async function getEndDate() {
@@ -47,7 +47,7 @@ function CrowdFunding() {
             );
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
     async function getMyParticipation() {
@@ -57,7 +57,7 @@ function CrowdFunding() {
             );
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
     async function getRankInfo() {
@@ -67,7 +67,7 @@ function CrowdFunding() {
             );
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
     async function getTotal() {
@@ -77,7 +77,7 @@ function CrowdFunding() {
             );
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
     async function getOwner() {
@@ -87,7 +87,7 @@ function CrowdFunding() {
             );
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
     async function isOwner() {
@@ -97,17 +97,141 @@ function CrowdFunding() {
             );
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
+        }
+    }
+
+    async function getContractBalance() {
+        try {
+            await web3.eth.getBalance(contract.address);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function createRank(_name, minInvestement, _description, usageNumber) {
+        try {
+            setCrdfundingAddr(
+                    await contract.methods.createRank(_name, minInvestement, _description, usageNumber)
+            );
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function editRank(_id, _minimumInvestment, _description, _uses) {
+        try {
+            setCrdfundingAddr(
+                    await contract.methods.editRank(
+                        _id,
+                        _minimumInvestment,
+                        _description,
+                        _uses
+                    )
+            );
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function deactivateRank(_id) {
+        try {
+            setCrdfundingAddr(
+                    await contract.methods.deactivateRank(
+                        _id
+                    )
+            );
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function activateRank(_id) {
+        try {
+            setCrdfundingAddr(
+                    await contract.methods.activateRank(
+                        _id
+                    )
+            );
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function setDescription(_description) {
+        try {
+            setCrdfundingAddr(
+                    await contract.methods.setDescription(
+                        _description
+                    )
+            );
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function sendDonation( _rankId, _claimReward, _amount) {
+        try {
+            setCrdfundingAddr(
+                    await contract.methods.sendDonation(
+                        _rankId, _claimReward, { value : _amount}
+                    )
+            );
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function retrieveFunding() {
+        try {
+            setCrdfundingAddr(
+                    await contract.methods.retrieveFunding()
+            );
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function requestRefundGoalNotCompleted() {
+        try {
+            setCrdfundingAddr(
+                    await contract.methods.requestRefundGoalNotCompleted()
+            );
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function giveUpBenefitsAndParticipation() {
+        try {
+            setCrdfundingAddr(
+                    await contract.methods.giveUpBenefitsAndParticipation()
+            );
+        }
+        catch (err) {
+            console.log(err);
         }
     }
 
 
 
     return (
+        
         <div className={"shared-wallet"}>
 
             <section className={"header-wallet"}>
-                <h2>Your Shared wallet</h2>
+                <h2>Crowdfunding </h2>
+
+                <p> { getDescription() } </p>
             </section>
 
             <section className={"section-your-allowance"}>
@@ -122,7 +246,7 @@ function CrowdFunding() {
             <button onClick={ sendMoney } type={"button"}>Send Money on contract</button>
             <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button>
         </div>
-
+    
 
 
     );

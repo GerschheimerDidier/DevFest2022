@@ -3,7 +3,7 @@ import Web3 from "web3";
 import EthContext from "./EthContext";
 import { reducer, actions, initialState } from "./state";
 
-function EthProvider({ children }) {
+function EthProvider({ children }, contractAddress, contractArtifact) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [contract, setContract] = useState(null);
   const [account, setAccount] = useState(null);
