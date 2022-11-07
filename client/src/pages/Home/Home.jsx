@@ -3,11 +3,11 @@ import Dashboard from '../../components/Dashboard';
 
 const Home = () => {
 
-    const factoryAddress = 0xb47E5DF39A05f9885c3F5CD295448e66612c1a35;    
+    const factoryAddress = 0x36b03F26aDB736e9829F6D9133FEbF6C49279A92;
 
     return (
         <div className={"home-container"}>
-            <button>Create a Wallet</button>
+            {/* <button>Create a Wallet</button> */}
             <Dashboard/>
         </div>
 

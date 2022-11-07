@@ -25,10 +25,10 @@ class WalletTile extends React.Component {
             case 0:
                 typeName = "Shared Wallet"
                 break;
-            case 0:
+            case 1:
                 typeName = "Crowdfunding"
                 break;
-            case 0:
+            case 2:
                 typeName = "Common Pot"
                 break;
 

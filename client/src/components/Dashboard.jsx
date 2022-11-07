@@ -1,27 +1,46 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import WalletTile from "./WalletTile";
 import Web3 from "web3";
 
-class Dashboard extends React.Component {
+const Dashboard = () => {
 
-    constructor(props) {
-        super(props);
+    // State
+    const factoryAddress = 0x36b03F26aDB736e9829F6D9133FEbF6C49279A92;
+    const [subscriptions, onReceiveSubscriptions] = useState([]);
 
-        // Initial State
-        this.state = {
-            factoryAddress: 0xf15f81fea185d70a7a5e54ca64892eddfbe9079dc53d08085cb2727b572c2ac2,
-            hasBeenClicked: false,
-            wallets: []
+
+    useEffect(() => {
+        // Fetch subscribed wallets from factory
+        retrieveWallets();
+    }, [])
+
+    async function createWallet() {
+        const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+        const account = await web3.eth.requestAccounts();
+        const networkID = await web3.eth.net.getId();
+
+        const artifact = require("../contracts/WalletFactory.json");
+        const { abi } = artifact;
+        let address, contract;
+        try {
+            address = artifact.networks[networkID].address;
+            const factory = new web3.eth.Contract(abi, address);
+
+            console.log('Creating wallet...');
+            const result = await factory.methods.createSharedWallet('Test').send({ from: account[0], gas: 30000 });
+
+            console.log('wallet created');
+            console.log(result);
+            // onReceiveSubscriptions(result);
+
+
+        } catch (err) {
+            console.error(err);
         }
     }
 
-    componentDidMount() {
-        // Fetch subscribed wallets from factory
-        this.retrieveWallets();
-    }
-
     // Retrieve subscribed wallets from factory
-    async retrieveWallets() {
+    async function  retrieveWallets() {
 
         const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
         const account = await web3.eth.requestAccounts();
@@ -35,7 +54,11 @@ class Dashboard extends React.Component {
             const factory = new web3.eth.Contract(abi, address);
 
             console.log('Retreiving subscriptions...');
-            factory.methods.getSubscriptions.call(this.onReceiveWallets);
+            const result = await factory.methods.getSubscriptions().call();
+
+            console.log(result);
+            onReceiveSubscriptions(result);
+
 
         } catch (err) {
             console.error(err);
@@ -52,37 +75,36 @@ class Dashboard extends React.Component {
     }
 
     // Called when we receive subscriptions from contract
-    onReceiveWallets(error, result) {
+    function onReceiveWallets(error, result) {
         console.log('Subscription retrieved');
         console.log(error);
         console.log(result);
 
-        this.setState({ wallets: result });
+        this.setState({ wallets: error });
     }
 
-    render() {
-        return (
-            <div>
-                {
-                    // Ensure user has wallets to display
-                    this.state.wallets.length > 0 &&
+    return (
+        <div>
+            <button onClick={createWallet}>Create a Wallet</button>
+            {
+                // Ensure user has wallets to display
+                subscriptions.length > 0 &&
 
+                <div>
+                    <br />
+                    <h2>My Wallets ({subscriptions.length})</h2>
                     <div>
-                        <br />
-                        <h2>My Wallets ({this.state.wallets.length})</h2>
-                        <div>
-                            {
-                                // For each wallet
-                                this.state.wallets.map(wallet => {
-                                    return (< WalletTile wallet={wallet} />)
-                                })
-                            }
-                        </div>
+                        {
+                            // For each wallet
+                            this.state.wallets.map(wallet => {
+                                return (< WalletTile wallet={wallet} />)
+                            })
+                        }
                     </div>
-                }
-            </div>
-        );
-    }
+                </div>
+            }
+        </div>
+    );
 }
 
 export default Dashboard;
