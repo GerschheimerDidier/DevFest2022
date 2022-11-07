@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import WalletTile from "./WalletTile";
 import Web3 from "web3";
-import artifact from "../contracts/WalletFactory.json";
+import SharedWalletCreationForm from "./CreationForms/SharedWalletCreationForm";
+import CrowdfundingCreationForm from "./CreationForms/CrowdfundingCreationForm";
 
 const Dashboard = () => {
 
     // State
-    const factoryAddress = 0xa6F768a34Db1164540645113b443B227E5561570;
     const [subscriptions, onReceiveSubscriptions] = useState([]);
 
     useEffect(() => {
@@ -96,6 +96,10 @@ const Dashboard = () => {
         <div>
             <button onClick={createWallet}>Create a Wallet</button>
             <button onClick={createCrowdfunding}>Create a Crowdfunding</button>
+
+            <SharedWalletCreationForm />
+            <CrowdfundingCreationForm />
+            
 
             {
                 // Ensure user has wallets to display
