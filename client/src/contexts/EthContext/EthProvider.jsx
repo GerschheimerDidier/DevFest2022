@@ -1,13 +1,17 @@
 import React, {useReducer, useCallback, useEffect, useState} from "react";
 import Web3 from "web3";
 import EthContext from "./EthContext";
+import {useLocation, useNavigate} from "react-router-dom";
 import { reducer, actions, initialState } from "./state";
+import artifact from "../../contracts/Wallet.json";
 
 function EthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [contract, setContract] = useState(null);
   const [account, setAccount] = useState(null);
   const [address, setAddress] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const init = useCallback(
     async artifact => {
@@ -33,16 +37,43 @@ function EthProvider({ children }) {
 
   useEffect(() => {
     const tryInit = async () => {
-      try {
-        const artifact = require("../../contracts/Wallet.json");
-        init(artifact);
-      } catch (err) {
-        console.error(err);
+      if (location.pathname.includes("sharedWallet")) {
+        try {
+          const artifact = require("../../contracts/Wallet.json");
+          init(artifact);
+        } catch (err) {
+          console.error(err);
+        }
       }
+      else if (location.pathname.includes("crowdFunding")) {
+        try {
+          const artifact = require("../../contracts/CrdFunding.json");
+          init(artifact);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      else if (location.pathname.includes("commonPot")) {
+        try {
+          const artifact = require("../../contracts/CommonPot.json");
+          init(artifact);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      else {
+        try {
+          const artifact = require("../../contracts/WalletFactory.json");
+          init(artifact);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
     };
 
     tryInit();
-  }, [init]);
+  }, [init, navigate]);
 
   useEffect(() => {
     const events = ["chainChanged", "accountsChanged"];
@@ -55,6 +86,7 @@ function EthProvider({ children }) {
       events.forEach(e => window.ethereum.removeListener(e, handleChange));
     };
   }, [init, state.artifact]);
+
 
   return (
     <EthContext.Provider value={{
