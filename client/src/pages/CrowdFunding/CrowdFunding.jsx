@@ -106,7 +106,7 @@ function CrowdFunding() {
     return (
         <div className={"shared-wallet"}>
 
-            <section className={"header-wallet"}>
+            {/*<section className={"header-wallet"}>
                 <h2>Your Shared wallet</h2>
             </section>
 
@@ -120,7 +120,7 @@ function CrowdFunding() {
 
             <button onClick={ addAllowance } type={"button"}>Ajout Allowance</button>
             <button onClick={ sendMoney } type={"button"}>Send Money on contract</button>
-            <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button>
+            <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button>*/}
         </div>
 
 
