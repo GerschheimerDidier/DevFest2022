@@ -2,6 +2,7 @@
 pragma solidity ^0.8.10 < 0.9.0;
 
 contract Allowance {
+    string public walletName;
     address[] public allowance;
     address private owner;
 
@@ -9,8 +10,9 @@ contract Allowance {
 
     mapping(address => uint) public accountBeneficiary;
 
-    constructor() {
-        owner = msg.sender;
+    constructor(string memory _walletName, address _owner) {
+        walletName = _walletName;
+        owner = _owner;
     }
 
     modifier isOwner {

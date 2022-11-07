@@ -1,0 +1,33 @@
+ul {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 60%;
+}
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #111;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    background-color: gray;
+    color: white;
+}
+
+.my-account {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

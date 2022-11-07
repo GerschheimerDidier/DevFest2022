@@ -7,7 +7,7 @@ contract('Allowance', (accounts) => {
   const externalUser = accounts[6];
 
   before(async () => {
-    this.allowanceInstance = await Allowance.new({ from: owner });
+    this.allowanceInstance = await Allowance.new("_name", owner, { from: owner });
   })
 
   describe("Add Allowance", () => {

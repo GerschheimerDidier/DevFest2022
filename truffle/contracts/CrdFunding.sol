@@ -1,17 +1,21 @@
 //SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.17;
 //import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 import "./Ownable.sol";
+import "./Subscribable.sol";
 
-contract CrdFunding is Ownable {
+contract CrdFunding is Subscribable, Ownable {
     constructor(
         address _beneficiary,
         string memory _description,
         uint256 _sumGoal,
-        uint256 _endDate
-    ) payable {
+        uint256 _endDate,
+        address _factoryAddress,
+        uint8 _walletType
+    ) payable Subscribable(_factoryAddress, _walletType) {
         transferOwnership(_beneficiary);
+
         projectDescription = _description;
         goal = _sumGoal;
         endDate = _endDate;
@@ -37,6 +41,10 @@ contract CrdFunding is Ownable {
         Total += msg.value;
         Donations[msg.sender].totalClaimable += msg.value;
         Donations[msg.sender].donations.push(newDonation);
+
+        if (getFactoryAddress() != address(0x0)) {
+            subscribe(msg.sender);
+        }
     }
 
     uint256 rankIndex;
@@ -87,6 +95,10 @@ contract CrdFunding is Ownable {
     event RanksModification(string _name, Rank _rank, string _action);
 
     event RanksActivation(string _name, string _action);
+
+    event GiveUpParticipation(address _who);
+
+    event Refund(address _who, uint256 _value);
 
     function createRank(
         string memory _name,
@@ -209,6 +221,10 @@ contract CrdFunding is Ownable {
             "Not enough funding for that rank"
         );
 
+        if (getFactoryAddress() != address(0x0)) {
+            subscribe(msg.sender);
+        }
+
         if (usage > 0) {
             Ranks[_rankId].usesLeft = usage - 1;
         }
@@ -231,6 +247,9 @@ contract CrdFunding is Ownable {
         require(Total >= goal, "Goal not achieved");
         payable(owner()).transfer(address(this).balance);
         retrieved = true;
+        if (getFactoryAddress() != address(0x0)) {
+            unsubscribe(msg.sender);
+        }
         emit fundingRetrieved(Total);
     }
 
@@ -244,10 +263,25 @@ contract CrdFunding is Ownable {
         uint256 toSend = Donations[msg.sender].totalClaimable;
         Donations[msg.sender].totalClaimable = 0;
         payable(msg.sender).transfer(toSend);
+        if (getFactoryAddress() != address(0x0)) {
+            unsubscribe(msg.sender);
+        }
+        emit Refund(msg.sender, toSend);
     }
 
     function getMyParticipation() public view returns (MyDonations memory) {
         return Donations[msg.sender];
+    }
+
+    function giveUpBenefitsAndParticipation() external {
+        uint256 nbOfDonations = Donations[msg.sender].donations.length;
+        for (uint256 i = 0; i < nbOfDonations; i++) {
+            Donations[msg.sender].donations[i].claimReward = false;
+        }
+        if (getFactoryAddress() != address(0x0)) {
+            unsubscribe(msg.sender);
+        }
+        emit GiveUpParticipation(msg.sender);
     }
 
     // utils
