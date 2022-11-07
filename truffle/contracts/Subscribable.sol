@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.17;
 
-//import "./Factory.sol";
-
 interface ISubscription {
     function addWalletToSubscription(address _who, uint8 _walletType) external;
 
