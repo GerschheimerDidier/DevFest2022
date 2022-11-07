@@ -20,11 +20,7 @@ function EthProvider({ children }) {
         let address, contract;
         try {
           address = artifact.networks[networkID].address;
-          setAddress(address);
-          setContract(new web3.eth.Contract(abi, address));
-
-          console.log(web3.eth.getBalance(address))
-
+          setContract(new web3.eth.Contract(abi, address));  // set here address of contract deployed from factory
         } catch (err) {
           console.error(err);
         }
