@@ -1,48 +1,34 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 
-class WalletTile extends React.Component {
+const WalletTile = ({ walletInfo }) => {
 
-    constructor({ wallet }) {
-        super();
+    const [walletType, setWalletType] = useState(-1);
 
-        console.log(wallet);
-
-        this.state = {
-            wallet: wallet,
-        };
-    }
-
-    // Handles click on a wallet tile
-    handleClick = (address, type) => {
-        // Update your state
-    }
-
-    render() {
-
+    useEffect(() => {
         // Get wallet type
-        let typeName = "Unknown";
-        switch (this.state.wallet.type) {
+        switch (Number(walletInfo[1])) {
             case 0:
-                typeName = "Shared Wallet"
+                setWalletType("Shared Wallet")
                 break;
             case 1:
-                typeName = "Crowdfunding"
+                setWalletType("Crowdfunding")
                 break;
             case 2:
-                typeName = "Common Pot"
+                setWalletType( "Common Pot")
                 break;
-
             default:
+                setWalletType( "Unknown")
                 break;
         }
+    })
 
-        return (
-            <button className="btn-subscription" >
-                <span>{typeName}</span><br />
-                <span>{this.state.wallet.address}</span>
-            </button >
-        );
-    }
+    return (
+
+        <button className="btn-subscription">
+            <span>Wallet @ {walletInfo[0]}</span><br/>
+            <span>Type of contracts : {walletType}</span> <br/>
+            <span>Date : {walletInfo[2]}</span>
+        </button>
+    )
 }
-
 export default WalletTile;

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import WalletTile from "./WalletTile";
 import Web3 from "web3";
+import artifact from "../contracts/WalletFactory.json";
 
 const Dashboard = () => {
 
     // State
     const factoryAddress = 0xa6F768a34Db1164540645113b443B227E5561570;
     const [subscriptions, onReceiveSubscriptions] = useState([]);
-
 
     useEffect(() => {
         // Fetch subscribed wallets from factory
@@ -32,9 +32,28 @@ const Dashboard = () => {
 
             console.log('wallet created');
             console.log(result);
-            // onReceiveSubscriptions(result);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function createCrowdfunding() {
+        const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+        const account = await web3.eth.requestAccounts();
+        const networkID = await web3.eth.net.getId();
 
 
+        const artifact = require("../contracts/WalletFactory.json");
+        const { abi } = artifact;
+        let address;
+        try {
+            address = artifact.networks[networkID].address;
+            const factory = new web3.eth.Contract(abi, address);
+
+            console.log('Creating crowdfunding...');
+            const result = await factory.methods.createCrowdfunding('Test',10,0).send({ from: account[0] });
+
+            console.log('crowdfunding created');
         } catch (err) {
             console.error(err);
         }
@@ -55,43 +74,32 @@ const Dashboard = () => {
             const factory = new web3.eth.Contract(abi, address);
 
             console.log('Retrieving subscriptions...');
-            const result = await factory.methods.getSubscriptions().call();
-            console.log('arr', result);
+            const result = await factory.methods.getSubscriptions().call({from : account[0]});
             onReceiveSubscriptions(result);
+            console.log(subscriptions)
 
         } catch (err) {
             console.error(err);
         }
-
-        // // Mock
-        // setTimeout(() => {
-        //     this.onReceiveWallets([
-        //         { address: "0x00", type: 0 },
-        //         { address: "0x01", type: 2 },
-        //         { address: "0x02", type: 1 },
-        //     ]);
-        // }, 2500);
     }
 
-    // Called when we receive subscriptions from contract
-    function onReceiveWallets(error, result) {
-        console.log('Subscription retrieved');
-        console.log(error);
-        console.log(result);
-
-        this.setState({ wallets: error });
-    }
+    // // Called when we receive subscriptions from contract
+    // function onReceiveWallets(error, result) {
+    //     console.log('Subscription retrieved');
+    //     console.log(error);
+    //     console.log(result);
+    //
+    //     this.setState({ wallets: error });
+    // }
 
     return (
         <div>
             <button onClick={createWallet}>Create a Wallet</button>
-            <button onClick={retrieveWallets}>Get infos Wallets</button>
-
-            <p> Les subs : { subscriptions } </p>
+            <button onClick={createCrowdfunding}>Create a Crowdfunding</button>
 
             {
                 // Ensure user has wallets to display
-                subscriptions.length < 0 &&
+                subscriptions.length > 0 &&
 
                 <div>
                     <br />
@@ -99,9 +107,9 @@ const Dashboard = () => {
                     <div>
                         {
                             // For each wallet
-                            subscriptions.map(wallet => {
-                                return (< WalletTile wallet={wallet} />)
-                            })
+                            subscriptions.map((wallet) => (
+                                <WalletTile walletInfo={wallet} />
+                            ))
                         }
                     </div>
                 </div>

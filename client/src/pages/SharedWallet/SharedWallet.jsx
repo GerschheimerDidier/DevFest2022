@@ -2,7 +2,6 @@ import { useEth } from "../../contexts/EthContext";
 import web3 from "web3"
 import React, { useState } from "react";
 import './SharedWallet.css';
-import FormAllowance from './FormAddAllowance';
 
 const SharedWallet = () => {
 
