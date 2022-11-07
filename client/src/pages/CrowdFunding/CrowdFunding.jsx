@@ -228,7 +228,7 @@ function CrowdFunding() {
         
         <div className={"shared-wallet"}>
 
-            <section className={"header-wallet"}>
+            {/*<section className={"header-wallet"}>
                 <h2>Crowdfunding </h2>
 
                 <p> { getDescription() } </p>
@@ -238,13 +238,12 @@ function CrowdFunding() {
                 <h4>Your allowance</h4>
                 <p> { crdfundingAddr } </p>
                 <p>ETH</p>
-                {/*TODO Retirer le bouton et le faire a la fin du chargement de la page avec la var account load*/}
                 <button onClick={ getMyAllowance }>getAllowanceWithAddr</button>
             </section>
 
             <button onClick={ addAllowance } type={"button"}>Ajout Allowance</button>
             <button onClick={ sendMoney } type={"button"}>Send Money on contract</button>
-            <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button>
+            <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button>*/}
         </div>
     
 
