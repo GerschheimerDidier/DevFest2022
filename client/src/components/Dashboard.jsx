@@ -5,7 +5,7 @@ import Web3 from "web3";
 const Dashboard = () => {
 
     // State
-    const factoryAddress = 0x36b03F26aDB736e9829F6D9133FEbF6C49279A92;
+    const factoryAddress = 0xa6F768a34Db1164540645113b443B227E5561570;
     const [subscriptions, onReceiveSubscriptions] = useState([]);
 
 
@@ -19,15 +19,16 @@ const Dashboard = () => {
         const account = await web3.eth.requestAccounts();
         const networkID = await web3.eth.net.getId();
 
+
         const artifact = require("../contracts/WalletFactory.json");
         const { abi } = artifact;
-        let address, contract;
+        let address;
         try {
             address = artifact.networks[networkID].address;
             const factory = new web3.eth.Contract(abi, address);
 
             console.log('Creating wallet...');
-            const result = await factory.methods.createSharedWallet('Test').send({ from: account[0], gas: 30000 });
+            const result = await factory.methods.createSharedWallet('Test').send({ from: account[0] });
 
             console.log('wallet created');
             console.log(result);
@@ -40,7 +41,7 @@ const Dashboard = () => {
     }
 
     // Retrieve subscribed wallets from factory
-    async function  retrieveWallets() {
+    async function retrieveWallets() {
 
         const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
         const account = await web3.eth.requestAccounts();
@@ -53,12 +54,10 @@ const Dashboard = () => {
             address = artifact.networks[networkID].address;
             const factory = new web3.eth.Contract(abi, address);
 
-            console.log('Retreiving subscriptions...');
+            console.log('Retrieving subscriptions...');
             const result = await factory.methods.getSubscriptions().call();
-
-            console.log(result);
+            console.log('arr', result);
             onReceiveSubscriptions(result);
-
 
         } catch (err) {
             console.error(err);
@@ -86,9 +85,13 @@ const Dashboard = () => {
     return (
         <div>
             <button onClick={createWallet}>Create a Wallet</button>
+            <button onClick={retrieveWallets}>Get infos Wallets</button>
+
+            <p> Les subs : { subscriptions } </p>
+
             {
                 // Ensure user has wallets to display
-                subscriptions.length > 0 &&
+                subscriptions.length < 0 &&
 
                 <div>
                     <br />
@@ -96,7 +99,7 @@ const Dashboard = () => {
                     <div>
                         {
                             // For each wallet
-                            this.state.wallets.map(wallet => {
+                            subscriptions.map(wallet => {
                                 return (< WalletTile wallet={wallet} />)
                             })
                         }
