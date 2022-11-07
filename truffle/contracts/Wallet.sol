@@ -7,7 +7,6 @@ contract Wallet is Allowance {
     event MoneyWithdrawn(address indexed _beneficiary, uint _amount);
     event MoneyDeposited(address indexed _from, uint _amount);
 
-    // TODO Faire que la personne ne peut que withdraw pour elle
     function withdrawMoney(uint _amount) public hasFundOnWallet(msg.sender)  {
         require(address(this).balance >= _amount, "not enough funds hab been added on smart contract");
         require(accountBeneficiary[msg.sender] >= _amount, "not enough funds has been allowed for your account");
@@ -23,4 +22,13 @@ contract Wallet is Allowance {
         payable(address(this)).transfer(msg.value);
         emit MoneyDeposited(msg.sender, msg.value);
     }
+
+    receive () external payable {
+        emit MoneyDeposited(msg.sender, msg.value);
+    }
+
+    fallback() external payable {
+        emit MoneyDeposited(msg.sender, msg.value);
+    }
+
 }

@@ -60,10 +60,13 @@ const SharedWallet = () => {
 
     function sendMoney() {
         try {
+
+            // contract.send(web3.utils.toWei('2', 'ether'), { from: account[0]} )
+
             contract.methods.sendMoneyOnWallet().send({
                 from: account[0],
-                // to: "0x4074CdC70951bEf1489c13A9Bca035C221cAdeE5",
                 value: web3.utils.toWei('2', 'ether'),
+                // gas: 300000
             });
         }
         catch (err) {
