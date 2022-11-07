@@ -114,7 +114,6 @@ function CrowdFunding() {
                 <h4>Your allowance</h4>
                 <p> { crdfundingAddr } </p>
                 <p>ETH</p>
-                {/*TODO Retirer le bouton et le faire a la fin du chargement de la page avec la var account load*/}
                 <button onClick={ getMyAllowance }>getAllowanceWithAddr</button>
             </section>
 
