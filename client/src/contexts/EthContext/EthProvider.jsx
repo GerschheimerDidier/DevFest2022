@@ -7,6 +7,7 @@ function EthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [contract, setContract] = useState(null);
   const [account, setAccount] = useState(null);
+  const [address, setAddress] = useState(null);
 
   const init = useCallback(
     async artifact => {
@@ -61,6 +62,7 @@ function EthProvider({ children }) {
       dispatch,
       contract,
       account,
+      address,
     }}>
       {children}
     </EthContext.Provider>

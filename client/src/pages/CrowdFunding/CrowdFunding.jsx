@@ -1,3 +1,5 @@
+import {useState} from "react";
+import {useEth} from "../../contexts/EthContext";
 
 function CrowdFunding() {
     //*********** USE STATE ***********//
@@ -63,7 +65,7 @@ function CrowdFunding() {
     async function getRankInfo() {
         try {
             setCrdfundingAddr(
-                    await contract.methods.getRankInfo(id)
+                    await contract.methods.getRankInfo()
             );
         }
         catch (err) {
