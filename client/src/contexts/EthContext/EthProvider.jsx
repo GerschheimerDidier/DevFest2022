@@ -3,7 +3,6 @@ import Web3 from "web3";
 import EthContext from "./EthContext";
 import {useLocation, useNavigate} from "react-router-dom";
 import { reducer, actions, initialState } from "./state";
-import artifact from "../../contracts/Wallet.json";
 
 function EthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -21,18 +20,20 @@ function EthProvider({ children }) {
         setAccount(account);
         const networkID = await web3.eth.net.getId();
         const { abi } = artifact;
-        let address, contract;
+        let address
         try {
-          address = artifact.networks[networkID].address;
-          setContract(new web3.eth.Contract(abi, address));  // set here address of contract deployed from factory
+          address = await artifact.networks[networkID].address;
+          // TODO faire qu'il utilise la factory déja push même si je crois que c'est déja en auto
+          setContract(await new web3.eth.Contract(abi, address));  // set here address of contract deployed from factory
         } catch (err) {
           console.error(err);
         }
         dispatch({
           type: actions.init,
-          data: { artifact, web3, account, networkID, contract }
+          data: { artifact, web3, account, networkID, address }
         });
       }
+      console.log("LOAD ETH Provider")
     }, []);
 
   useEffect(() => {
@@ -69,12 +70,11 @@ function EthProvider({ children }) {
           console.error(err);
         }
       }
-
     };
-
     tryInit();
   }, [init, navigate]);
 
+  // ***** Event with MetMask => Account changed + chain changed
   useEffect(() => {
     const events = ["chainChanged", "accountsChanged"];
     const handleChange = () => {

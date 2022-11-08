@@ -1,59 +1,43 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import WalletTile from "./WalletTile";
-import Web3 from "web3";
-import artifact from "../contracts/WalletFactory.json";
+import {useEth} from "../contexts/EthContext";
 
 const Dashboard = () => {
 
     // State
-    const factoryAddress = 0xa6F768a34Db1164540645113b443B227E5561570;
+    // const factoryAddress = 0xa6F768a34Db1164540645113b443B227E5561570;
     const [subscriptions, onReceiveSubscriptions] = useState([]);
+
+    /*
+    * desc => contract is instance of contract. He contains method, abi, ...
+    * desc => account is addr of wallet connected with application
+     */
+    const { contract, account, address } = useEth();
 
     useEffect(() => {
         // Fetch subscribed wallets from factory
         retrieveWallets();
-    }, [])
+    }, [useEth()])
 
     async function createWallet() {
-        const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-        const account = await web3.eth.requestAccounts();
-        const networkID = await web3.eth.net.getId();
-
-
-        const artifact = require("../contracts/WalletFactory.json");
-        const { abi } = artifact;
-        let address;
         try {
-            address = artifact.networks[networkID].address;
-            const factory = new web3.eth.Contract(abi, address);
-
             console.log('Creating wallet...');
-            const result = await factory.methods.createSharedWallet('Test').send({ from: account[0] });
-
+            const result = await contract.methods.createSharedWallet('Test').send({ from: account[0] });
+            onReceiveSubscriptions(result);
             console.log('wallet created');
-            console.log(result);
+
         } catch (err) {
             console.error(err);
         }
     }
 
     async function createCrowdfunding() {
-        const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-        const account = await web3.eth.requestAccounts();
-        const networkID = await web3.eth.net.getId();
-
-
-        const artifact = require("../contracts/WalletFactory.json");
-        const { abi } = artifact;
-        let address;
         try {
-            address = artifact.networks[networkID].address;
-            const factory = new web3.eth.Contract(abi, address);
-
             console.log('Creating crowdfunding...');
-            const result = await factory.methods.createCrowdfunding('Test',10,0).send({ from: account[0] });
-
+            const result = await contract.methods.createCrowdfunding('Test',10,0).send({ from: account[0] });
+            onReceiveSubscriptions(result);
             console.log('crowdfunding created');
+
         } catch (err) {
             console.error(err);
         }
@@ -61,44 +45,22 @@ const Dashboard = () => {
 
     // Retrieve subscribed wallets from factory
     async function retrieveWallets() {
-
-        const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-        const account = await web3.eth.requestAccounts();
-        const networkID = await web3.eth.net.getId();
-
-        const artifact = require("../contracts/WalletFactory.json");
-        const { abi } = artifact;
-        let address, contract;
         try {
-            address = artifact.networks[networkID].address;
-            const factory = new web3.eth.Contract(abi, address);
-
             console.log('Retrieving subscriptions...');
-            const result = await factory.methods.getSubscriptions().call({from : account[0]});
+            const result = await contract.methods.getSubscriptions().call({from : account[0]});
             onReceiveSubscriptions(result);
-            console.log(subscriptions)
 
         } catch (err) {
             console.error(err);
         }
     }
 
-    // // Called when we receive subscriptions from contract
-    // function onReceiveWallets(error, result) {
-    //     console.log('Subscription retrieved');
-    //     console.log(error);
-    //     console.log(result);
-    //
-    //     this.setState({ wallets: error });
-    // }
-
     return (
         <div>
             <button onClick={createWallet}>Create a Wallet</button>
             <button onClick={createCrowdfunding}>Create a Crowdfunding</button>
 
-            {
-                // Ensure user has wallets to display
+            {   // Ensure user has wallets to display
                 subscriptions.length > 0 &&
 
                 <div>
