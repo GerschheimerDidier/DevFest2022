@@ -108,7 +108,7 @@ function CommonPot() {
                                InputProps={{
                                    startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
                                    style: {
-                                       marginLeft: 20
+                                       marginLeft: 20,
                                    }
                                }}
                                type="number"
@@ -119,7 +119,8 @@ function CommonPot() {
                                InputProps={{
                                    startAdornment: <InputAdornment position="start">Address</InputAdornment>,
                                    style: {
-                                       marginLeft: 20
+                                       marginLeft: 20,
+                                       width: 350
                                    }
                                }}
                                onChange={e => setAddressPayment(e.target.value)}
