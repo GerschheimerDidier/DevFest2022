@@ -2,6 +2,8 @@ import { useEth } from "../../contexts/EthContext";
 import "./CommonPot.css"
 import {useState} from "react";
 import web3 from "web3";
+import Button from '@mui/material/Button';
+import {InputAdornment, TextField} from "@mui/material";
 
 function CommonPot() {
 
@@ -11,7 +13,7 @@ function CommonPot() {
      */
     const { contract, account } = useEth();
 
-    const [balance, setBalance] = useState(0);
+    const [balance, setBalance] = useState(-1);
     const [deposit, setDeposit] = useState(0);
     const [payment, setPayment] = useState(0);
     const [addressPayment, setAddressPayment] = useState("");
@@ -57,7 +59,8 @@ function CommonPot() {
     async function getContractBalance() {
         try
         {
-            setBalance(await contract.methods.getCurrentGlobalBalance().call())
+            console.log(contract)
+            setBalance(await contract.methods.getCurrentGlobalBalance().call({from: "0xDC0d4Db1dFBF26Bf333e803DED24040B5d643821"}));
         }
         catch (err)
         {
@@ -69,47 +72,66 @@ function CommonPot() {
         <div className={"common-pot"}>
 
             <h2>Your common pot : "common pot addr"</h2>
-            <div>
-                <button onClick={getContractBalance}>Refresh account balance: </button>
-                <label>{balance} ETH</label>
-            </div>
-            <div>
+            <article>
+                <Button variant="contained" onClick={getContractBalance}>Refresh account balance: </Button>
+                <TextField id="outlined-basicTextField " value={balance} variant="standard"
+                           InputProps={{
+                               startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
+                               style: {
+                                   marginLeft: 20
+                               }
+                           }}
+                />
+            </article>
+            <article>
                 <form onSubmit={handleDepositSubmit}>
-                    <input type="submit" value="Deposit fund on the pot:" />
+                    <Button variant="contained" type="submit" value="">Deposit fund on the pot:</Button>
 
-                    <label>
-                        <input  type="number"
-                                value={deposit}
-                                onChange={e => setDeposit(e.target.value)} />
-                    </label>
-                    <label>ETH</label>
+                    <TextField id="outlined-basicTextField " value={deposit} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
+                                   style: {
+                                       marginLeft: 20
+                                   }
+                               }}
+                               type="number"
+                               onChange={e => setDeposit(e.target.value)}
+                    />
                 </form>
-            </div>
+            </article>
 
-            <div>
+            <article>
                 <form onSubmit={handlePayingSubmit}>
-                    <input type="submit" value="Pay an address with the pot:" />
+                    <Button variant="contained" type="submit" value="Pay an address with the pot:">Pay an address with the pot:</Button>
 
-                    <label>
-                        <input  type="number"
-                                value={payment}
-                                onChange={e => setPayment(e.target.value)} />
-                    </label>
-                    <label>ETH</label>
-                    <label>
-                        <input  type="text"
-                                value={addressPayment}
-                                onChange={e => setAddressPayment(e.target.value)} />
-                        the address to pay to.
-                    </label>
+                    <TextField id="outlined-basicTextField " value={payment} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
+                                   style: {
+                                       marginLeft: 20
+                                   }
+                               }}
+                               type="number"
+                               onChange={e => setPayment(e.target.value)}
+                    />
+
+                    <TextField id="outlined-basicTextField " value={addressPayment} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">Address</InputAdornment>,
+                                   style: {
+                                       marginLeft: 20
+                                   }
+                               }}
+                               onChange={e => setAddressPayment(e.target.value)}
+                    />
                 </form>
-            </div>
+            </article>
 
-            <div>
+            <article>
                 <form onSubmit={handleWithdraw}>
-                    <input type="submit" value="Withdraw fund on the pot:" />
+                    <Button variant="contained" value="Withdraw fund on the pot:">Withdraw fund on the pot:</Button>
                 </form>
-            </div>
+            </article>
 
 
 
