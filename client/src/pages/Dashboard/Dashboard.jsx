@@ -1,6 +1,9 @@
-import React, {useState, useEffect, useCallback} from "react";
-import WalletTile from "./WalletTile";
-import {useEth} from "../contexts/EthContext";
+import React, {useState, useEffect } from "react";
+import { useEth } from "../../contexts/EthContext";
+import SharedWalletCreationForm from "../../components/CreationForms/SharedWalletCreationForm";
+import CrowdfundingCreationForm from "../../components/CreationForms/CrowdfundingCreationForm";
+import WalletTile from "../../components/WalletTile";
+
 
 const Dashboard = () => {
 
@@ -60,7 +63,12 @@ const Dashboard = () => {
             <button onClick={createWallet}>Create a Wallet</button>
             <button onClick={createCrowdfunding}>Create a Crowdfunding</button>
 
-            {   // Ensure user has wallets to display
+
+            <SharedWalletCreationForm />
+            <CrowdfundingCreationForm />
+
+            {
+                // Ensure user has wallets to display
                 subscriptions.length > 0 &&
 
                 <div>

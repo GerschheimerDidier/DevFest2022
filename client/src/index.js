@@ -5,7 +5,8 @@ import App from "./App";
 import CrowdFunding from "./pages/CrowdFunding/CrowdFunding";
 import SharedWallet from "./pages/SharedWallet/SharedWallet";
 import * as ReactDOM from "react-dom/client";
-import Home from "./pages/Home/Home";
+import CommonPot from "./pages/CommonPot/CommonPot";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 export const router = createBrowserRouter([
     {
@@ -14,7 +15,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <Home/>
+                element: <Dashboard/>
             },
             {
                 path: "sharedWallet",
@@ -24,6 +25,10 @@ export const router = createBrowserRouter([
                 path: "crowdFunding",
                 element: <CrowdFunding/>
             },
+            {
+                path: "commonPot",
+                element: <CommonPot/>
+            }
         ]
     },
 ]);

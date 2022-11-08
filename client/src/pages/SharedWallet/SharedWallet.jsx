@@ -35,7 +35,6 @@ const SharedWallet = () => {
 
     function addAllowance() {
         try {
-            console.log(contract)
             contract.methods.defineAllowance(
                 "0x4fe493bE9D13C464329558487B951b1817ed9151",
                 web3.utils.toWei('1', 'ether'),
@@ -86,8 +85,6 @@ const SharedWallet = () => {
                 <h4>Your allowance</h4>
                 <p> { allowanceAddr } </p>
                 <p>ETH</p>
-                {/*TODO Retirer le bouton et le faire a la fin du chargement de la page avec la var account load*/}
-                <button onClick={ getMyAllowance }>getAllowanceWithAddr</button>
             </section>
 
             <br/>
@@ -105,8 +102,6 @@ const SharedWallet = () => {
             <button onClick={ sendMoney } type={"button"}>Send Money on contract</button>
             <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button>
         </div>
-
-
     );
 }
 
