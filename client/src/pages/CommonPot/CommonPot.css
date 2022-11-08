@@ -1,0 +1,25 @@
+.common-pot {
+    height: 89%;
+    margin: 20px 20vw 0px;
+}
+
+.common-pot .header-wallet {
+    display: flex;
+    justify-content: center;
+
+}
+.common-pot .header-wallet h2 {
+    font-size: 25px;
+}
+
+Button {
+    margin: 1rem;
+}
+
+input {
+    margin: 1rem;
+}
+
+article, span {
+    margin: 2rem;
+}
