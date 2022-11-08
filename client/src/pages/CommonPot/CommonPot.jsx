@@ -1,6 +1,7 @@
 import { useEth } from "../../contexts/EthContext";
 import "./CommonPot.css"
 import {useState} from "react";
+import web3 from "web3";
 
 function CommonPot() {
 
@@ -18,17 +19,39 @@ function CommonPot() {
 
     const handleDepositSubmit = (evt) => {
         evt.preventDefault();
-        alert(`Submitting deposit ${deposit}`)
+        try
+        {
+            contract.methods.addMoneyToContract().send({from: account[0], value: web3.utils.toWei(deposit, 'ether')});
+        }
+        catch (err)
+        {
+            console.log(err)
+        }
     }
 
     const handlePayingSubmit = (evt) => {
         evt.preventDefault();
-        alert(`Submitting payment ${payment} to ${addressPayment}`)
+        try
+        {
+            contract.methods.payWithPot(addressPayment, payment);
+
+        }
+        catch (err)
+        {
+            console.log(err)
+        }
     }
 
     const handleWithdraw = (evt) => {
         evt.preventDefault();
-        alert(`Submitting withdraw`)
+        try
+        {
+            contract.methods.withdraw().call();
+        }
+        catch (err)
+        {
+            console.log(err)
+        }
     }
 
     async function getContractBalance() {
