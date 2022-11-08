@@ -1,6 +1,6 @@
 import { useEth } from "../../contexts/EthContext";
 import web3 from "web3"
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import './SharedWallet.css';
 
 const SharedWallet = () => {
@@ -14,6 +14,10 @@ const SharedWallet = () => {
     * desc => account is addr of wallet connected with application
      */
     const { contract, account, address } = useEth();
+
+    useEffect(() => {
+        getMyAllowance()
+    }, [useEth()])
 
     async function getMyAllowance() {
         try {
@@ -32,7 +36,7 @@ const SharedWallet = () => {
     function addAllowance() {
         try {
             contract.methods.defineAllowance(
-                "0xE1fc08B3a333dcAf366D5122B1af9a1b46d00eD3",
+                "0x4fe493bE9D13C464329558487B951b1817ed9151",
                 web3.utils.toWei('1', 'ether'),
             ).send({
                 from: account[0],
@@ -59,13 +63,9 @@ const SharedWallet = () => {
 
     function sendMoney() {
         try {
-
-            // contract.send(web3.utils.toWei('2', 'ether'), { from: account[0]} )
-
             contract.methods.sendMoneyOnWallet().send({
                 from: account[0],
                 value: web3.utils.toWei('2', 'ether'),
-                // gas: 300000
             });
         }
         catch (err) {
@@ -85,8 +85,6 @@ const SharedWallet = () => {
                 <h4>Your allowance</h4>
                 <p> { allowanceAddr } </p>
                 <p>ETH</p>
-                {/*TODO Retirer le bouton et le faire a la fin du chargement de la page avec la var account load*/}
-                <button onClick={ getMyAllowance }>getAllowanceWithAddr</button>
             </section>
 
             <br/>
@@ -104,8 +102,6 @@ const SharedWallet = () => {
             <button onClick={ sendMoney } type={"button"}>Send Money on contract</button>
             <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button>
         </div>
-
-
     );
 }
 
