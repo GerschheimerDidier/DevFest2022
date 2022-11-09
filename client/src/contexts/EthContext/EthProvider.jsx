@@ -3,7 +3,7 @@ import Web3 from "web3";
 import EthContext from "./EthContext";
 import { reducer, actions, initialState } from "./state";
 
-function EthProvider({ children }, contractAddress, contractArtifact) {
+function EthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [contract, setContract] = useState(null);
   const [account, setAccount] = useState(null);
@@ -33,7 +33,7 @@ function EthProvider({ children }, contractAddress, contractArtifact) {
   useEffect(() => {
     const tryInit = async () => {
       try {
-        const artifact = require("../../contracts/Wallet.json");
+        const artifact = require("../../contracts/CrdFunding.json");
         init(artifact);
       } catch (err) {
         console.error(err);
