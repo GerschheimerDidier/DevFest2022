@@ -9,13 +9,14 @@ function EthProvider({ children }) {
   const [contract, setContract] = useState(null);
   const [account, setAccount] = useState(null);
   const [address, setAddress] = useState(null);
+  const [web3, setWeb3] = useState(new Web3(Web3.givenProvider || "ws://localhost:8545"));
   const navigate = useNavigate();
   const location = useLocation();
 
   const init = useCallback(
     async artifact => {
       if (artifact) {
-        const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+        setWeb3(new Web3(Web3.givenProvider || "ws://localhost:8545"));
         const account = await web3.eth.requestAccounts();
         setAccount(account);
         const networkID = await web3.eth.net.getId();
@@ -90,6 +91,7 @@ function EthProvider({ children }) {
 
   return (
     <EthContext.Provider value={{
+      web3,
       state,
       dispatch,
       contract,
