@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import "./Allowance.sol";
 import "./Subscribable.sol";
 
-contract Wallet is Allowance, Subscribable {
+contract Wallet is Allowance {
     event MoneyWithdrawn(address indexed _beneficiary, uint256 _amount);
     event MoneyDeposited(address indexed _from, uint256 _amount);
 
@@ -13,12 +13,9 @@ contract Wallet is Allowance, Subscribable {
         address _owner,
         address _factoryAddress,
         uint8 _walletType
-    )
-        Allowance(_walletName, _owner)
-        Subscribable(_factoryAddress, _walletType)
-    {}
+    ) Allowance(_walletName, _owner, _factoryAddress, _walletType) {}
 
-    // TODO Faire que la personne ne peut que withdraw pour elle
+
     function withdrawMoney(uint256 _amount) public hasFundOnWallet(msg.sender) {
         require(
             address(this).balance >= _amount,
@@ -30,13 +27,24 @@ contract Wallet is Allowance, Subscribable {
         );
         uint256 newAmount = accountBeneficiary[msg.sender] - _amount;
 
+
         updateMyAllowanceWithdrawn(newAmount);
 
         payable(msg.sender).transfer(_amount);
         emit MoneyWithdrawn(msg.sender, _amount);
     }
 
-    receive() external payable {
+    function sendMoneyOnWallet() public payable {
+        payable(address(this)).transfer(msg.value);
         emit MoneyDeposited(msg.sender, msg.value);
     }
+
+    receive () external payable {
+        emit MoneyDeposited(msg.sender, msg.value);
+    }
+
+    fallback() external payable {
+        emit MoneyDeposited(msg.sender, msg.value);
+    }
+
 }
