@@ -18,6 +18,7 @@ function CommonPot() {
     const [payment, setPayment] = useState(0);
     const [addressPayment, setAddressPayment] = useState("");
 
+    console.log("Contract : ", contract)
 
     const handleDepositSubmit = (evt) => {
         evt.preventDefault();
@@ -71,7 +72,7 @@ function CommonPot() {
     return (
         <div className={"common-pot"}>
 
-            <h2>Your common pot : "common pot addr"</h2>
+            <h2>Your common pot : "common pot addr", </h2>
             <article>
                 <Button variant="contained" onClick={getContractBalance}>Refresh account balance: </Button>
                 <TextField id="outlined-basicTextField " value={balance} variant="standard"

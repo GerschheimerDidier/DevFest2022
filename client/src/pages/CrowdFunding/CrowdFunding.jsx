@@ -1,12 +1,13 @@
 import { useEth } from "../../contexts/EthContext";
 import web3 from "web3"
 import { useState } from "react";
-import '../SharedWallet/SharedWallet.css';
+import './CrowdFunding.css';
+
 
 
 function CrowdFunding() {
     //*********** USE STATE ***********//
-    const [crdfundingAddr, setCrdfundingAddr] = useState(0);
+
 
     /*
     * desc => contract is instance of contract. He contains method, abi, ...
@@ -14,10 +15,12 @@ function CrowdFunding() {
      */
     const { contract, account } = useEth();
 
+    const [crdfundingAddr, setCrdfundingAddr] = useState(0);
 
-    const addresse = contract;
 
-    console.log(addresse)
+    const [description, refreshDescription] = useState(getDescription);
+
+    console.log(contract)
 
     async function getGoal() {
         try {
@@ -42,9 +45,9 @@ function CrowdFunding() {
     }
     async function getDescription() {
         try {
-            setCrdfundingAddr(
-                    await contract.methods.getDescription()
-            );
+                let value = await contract.methods.getDescription();
+                console.log("Value : ", value) 
+                return value;
         }
         catch (err) {
             console.log(err);
@@ -188,7 +191,7 @@ function CrowdFunding() {
 
     async function sendDonation() {
         try {
-            await contract.methods.sendDonation(0, true, { value : sendAmount});
+            await contract.methods.sendDonation(0, true, { value : 0});
         }
         catch (err) {
             console.log(err);
@@ -228,45 +231,23 @@ function CrowdFunding() {
         }
     }
 
-    const [sendAmount, setSendAmount] = useState(0);
-
-    function handleChange(event) {
-        setSendAmount(event.target.value);
-    }
 
     return (
         
         <div className={"shared-wallet"}>
-{/*
+
 
             <section className={"header-wallet"}>
-                <h2>Crowdfunding </h2>
+                <h2>Your CrowdFunding :</h2>
                 <p>  </p>
-                <p> Contract address : {contract.options.address.toString} </p>
+                <h4> Contract address : addressss </h4>
+                <h4>Description : </h4>
+                <p>  {description} </p>
             </section>
 
-
-            <section className={"section-your-allowance"}>
-                <h4>Your participation</h4>
-                <p> { crdfundingAddr.toString } </p>
-                <p></p>
-                <button onClick={ getMyParticipation }>get my participation</button>
-            </section>
-
-            <label htmlFor="name">Amount (wei):
-                <input type="number" id="amount" name="amount" value={sendAmount} onChange={handleChange}></input>
-            </label>
-
-            
-            
-            <button onClick={ sendDonation } type={"button"}>send</button>
-
-            
-
-
-            <button onClick={ addAllowance } type={"button"}>Ajout Allowance</button>
-            <button onClick={ sendMoney } type={"button"}>Send Money on contract</button>
-            <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button>*/}
+            <section className="section-your-allowance">
+                <h4>Balance : </h4>
+            </section>    
         </div>
     
 

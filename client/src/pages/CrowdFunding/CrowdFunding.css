@@ -1,0 +1,31 @@
+.crowdfunding {
+    height: 89%;
+    margin: 20px 20vw 0px;
+}
+
+.crowdfunding .header-wallet {
+    display: flex;
+    justify-content: center;
+
+}
+.crowdfunding .header-wallet h2 {
+    font-size: 25px;
+}
+
+Button {
+    margin: 1rem;
+}
+
+input {
+    margin: 1rem;
+}
+
+article, span {
+    margin: 2rem;
+}
+
+.section-your-allowance {
+    border: 1px solid black;
+    width: 100%;
+    margin: 30px 0;
+}

@@ -33,7 +33,7 @@ function EthProvider({ children }) {
   useEffect(() => {
     const tryInit = async () => {
       try {
-        const artifact = require("../../contracts/CrdFunding.json");
+        const artifact = require("../../contracts/CrowdFunding.json");
         init(artifact);
       } catch (err) {
         console.error(err);
