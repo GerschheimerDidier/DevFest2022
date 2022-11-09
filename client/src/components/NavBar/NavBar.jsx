@@ -1,7 +1,6 @@
 import {Link} from "react-router-dom";
 import "./navbar.css"
 import {useEth} from "../../contexts/EthContext";
-import {useEffect, useState} from "react";
 
 function NavBar() {
     const { account } = useEth();
@@ -17,6 +16,9 @@ function NavBar() {
                 </li>
                 <li>
                     <Link to="/crowdFunding" text="crowd funding">Crowd funding</Link>
+                </li>
+                <li>
+                    <Link to="/commonPot" text="common pot">Common pot</Link>
                 </li>
             </ul >
             <div className={"my-account"}>

@@ -73,7 +73,7 @@ function CrowdFunding() {
     async function getRankInfo(id) {
         try {
             setCrdfundingAddr(
-                    await contract.methods.getRankInfo(id)
+                    await contract.methods.getRankInfo()
             );
         }
         catch (err) {
