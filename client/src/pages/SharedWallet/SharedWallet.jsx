@@ -1,21 +1,27 @@
 import { useEth } from "../../contexts/EthContext";
-import web3 from "web3"
-import React, {useEffect, useState} from "react";
+import Web3 from "web3"
+import React, { useEffect, useState} from "react";
 import './SharedWallet.css';
+import { useLocation } from "react-router-dom";
 
 const SharedWallet = () => {
 
     //*********** USE STATE ***********//
     const [allowanceAddr, setAllowanceAddr] = useState(0);
-    const [addFormLog, setAddFormLog] = useState();
+    const [contract , setContract] = useState(null);
+    const location = useLocation();
 
     /*
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
-    const { contract, account, address } = useEth();
+    const { account, state } = useEth();
+    const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
 
     useEffect(() => {
+        const artifact = require("../../contracts/Wallet.json");
+        setContract(new web3.eth.Contract(artifact.abi, location.state.address));  // set here address of contract deployed from factory
+
         getMyAllowance()
     }, [useEth()])
 
@@ -78,7 +84,7 @@ const SharedWallet = () => {
         <div className={"shared-wallet"}>
 
             <section className={"header-wallet"}>
-                <h2>Your Shared wallet</h2>
+                <h2>Vous êtes sur le shared wallet</h2>
             </section>
 
             <section className={"section-your-allowance"}>
@@ -90,10 +96,6 @@ const SharedWallet = () => {
             <br/>
             <br/>
             <section className={"section-add-allowance"}>
-                {/*<FormAllowance addFormLog={setAddFormLog(addFormLog)}/>*/}
-
-                {/*<button onClick={ addAllowance() } type={"button"}>Add Allowance</button>*/}
-
             </section>
 
             <br/>
