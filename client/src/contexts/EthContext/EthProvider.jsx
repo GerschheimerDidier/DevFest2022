@@ -24,7 +24,6 @@ function EthProvider({ children }) {
         let address
         try {
           address = await artifact.networks[networkID].address;
-          // TODO faire qu'il utilise la factory déja push même si je crois que c'est déja en auto
           setContract(await new web3.eth.Contract(abi, address));  // set here address of contract deployed from factory
         } catch (err) {
           console.error(err);
@@ -96,7 +95,6 @@ function EthProvider({ children }) {
       dispatch,
       contract,
       account,
-      address,
     }}>
       {children}
     </EthContext.Provider>
