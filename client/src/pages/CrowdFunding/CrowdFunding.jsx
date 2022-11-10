@@ -2,7 +2,6 @@ import { useEth } from "../../contexts/EthContext";
 import web3 from "web3";
 import { useState, useEffect } from "react";
 import './CrowdFunding.css';
-import Button from '@mui/material/Button';
 import {InputAdornment, TextField} from "@mui/material";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
@@ -12,22 +11,17 @@ import { useLocation } from "react-router-dom";
 
 function CrowdFunding() {
     //*********** USE STATE ***********//
-    const [contract , setContract] = useState(null);
-
+    // const [contract , setContract] = useState(null);
 
     /*
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
-    const { web3, account } = useEth();
+    const { account, contract, state } = useEth();
 
     const location = useLocation();
 
-    const instance = require("../../contracts/CrdFunding.json");
-
-    //console.log("LOCATION ADD : ", location.state.address);
-
-    
+    // const instance = require("../../contracts/CrdFunding.json");
 
     const [crdfundingAddr, setCrdfundingAddr] = useState(0);
 
@@ -57,7 +51,7 @@ function CrowdFunding() {
     useEffect(() => {
         refreshAddress(location.pathname.split("/").pop());
         console.log("ADDRESS 00 : ", address);
-        setContract(new web3.eth.Contract(instance.abi, address));  // set here address of contract deployed from factory
+        // setContract(new web3.eth.Contract(instance.abi, address));  // set here address of contract deployed from factory
         _getDescription();
         
         _getTotal();
