@@ -18,15 +18,15 @@ export const router = createBrowserRouter([
                 element: <Dashboard/>
             },
             {
-                path: "sharedWallet",
+                path: "sharedWallet/:address",
                 element: <SharedWallet/>,
             },
             {
-                path: "crowdFunding",
+                path: "crowdFunding/:address",
                 element: <CrowdFunding/>
             },
             {
-                path: "commonPot",
+                path: "commonPot/:address",
                 element: <CommonPot/>
             }
         ]

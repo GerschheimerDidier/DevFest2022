@@ -12,6 +12,7 @@ import { useLocation } from "react-router-dom";
 
 function CrowdFunding() {
     //*********** USE STATE ***********//
+    const [contract , setContract] = useState(null);
 
 
     /*
@@ -26,7 +27,7 @@ function CrowdFunding() {
 
     //console.log("LOCATION ADD : ", location.state.address);
 
-    const contract = new web3.eth.Contract(instance.abi, "0xd3763DDB6E7f46c93E3c17755fCa98762ED73b8E");
+    
 
     const [crdfundingAddr, setCrdfundingAddr] = useState(0);
 
@@ -49,19 +50,22 @@ function CrowdFunding() {
 
     const [deposit, setDeposit] = useState(0);
 
-    const [claimReward, setClaimReward] = useState(0);
+    const [claimReward, setClaimReward] = useState(false);
 
     const [rankId, setRankId] = useState(0);
 
     useEffect(() => {
+        refreshAddress(location.pathname.split("/").pop());
+        console.log("ADDRESS 00 : ", address);
+        setContract(new web3.eth.Contract(instance.abi, address));  // set here address of contract deployed from factory
         _getDescription();
-        refreshAddress(contract._address);
+        
         _getTotal();
         _getContractBalance();
         _getGoal();
         _getEndDate();
         _getAllActiveRanks();
-    })
+    }, [useEth()])
 
     console.log("CONTRACT : ", contract)
     console.log("BALANCE 1 : ", crowdFundingBalance);
@@ -116,6 +120,7 @@ function CrowdFunding() {
     }
     async function _getMyParticipation() {
         try {
+            console.log("MY PARTICIPATION --");
             refreshMyParticipation(await contract.getMyParticipation().call({from : account[0]}));
             console.log("MY PARTICIPATION : ", myParticipation);
         }
@@ -244,8 +249,11 @@ function CrowdFunding() {
 
     async function _sendDonation() {
         try {
-            console.log("SEND DONATION : ")
-            await contract.methods.sendDonation(rankId, claimReward, { from : account[0], value : deposit});
+            console.log("SEND DONATION : ", rankId, claimReward, account[0], deposit)
+            await contract.methods.sendDonation(rankId, claimReward).send({ from : account[0], value : deposit});
+            _getContractBalance();
+            _getTotal();
+            _getMyParticipation();
         }
         catch (err) {
             console.log(err);
@@ -287,8 +295,12 @@ function CrowdFunding() {
 
 
     function handleChangeClaimReward(e){
-        if (e != claimReward){
-            setClaimReward(e);
+        console.log("EE : ", e)
+        if (e==="on" && !claimReward){
+            setClaimReward(true);
+        }
+        else if (e==="off" && claimReward){
+            setClaimReward(false);
         }
     }
 
@@ -299,7 +311,7 @@ function CrowdFunding() {
     }
 
     function handleChangeDeposit(e){
-        if(e != rankId){
+        if(e != deposit){
             setDeposit(e);
         }
     }
@@ -343,11 +355,12 @@ function CrowdFunding() {
             <section className="section-your-allowance">
                 <article>
                     <form onSubmit={_sendDonation}>
-                        <Button variant="contained" type="submit" value="">Send money</Button>
+                        
+                        <button onClick={ _sendDonation } type={"button"}>Send Money on contract</button>
 
                         <TextField id="outlined-basicTextField " value={deposit} variant="standard"
                                 InputProps={{
-                                    startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
+                                    startAdornment: <InputAdornment position="start">Wei</InputAdornment>,
                                     style: {
                                         marginLeft: 20
                                     }
@@ -363,7 +376,7 @@ function CrowdFunding() {
                             label="label"
                         />
 
-                        <TextField id="outlined-basicTextField " value={claimReward} variant="standard"
+                        <TextField id="outlined-basicTextField " value={rankId} variant="standard"
                                InputProps={{
                                    startAdornment: <InputAdornment position="start">Rank Id</InputAdornment>,
                                    style: {
@@ -376,6 +389,8 @@ function CrowdFunding() {
                     </form>
                 </article>    
             </section> 
+
+
         </div>
     
 

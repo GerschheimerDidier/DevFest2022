@@ -26,7 +26,21 @@ const WalletTile = ({ walletInfo }) => {
 
 
     function RoutingWallet() {
-        navigate("/sharedWallet", { state: { address: walletInfo[0], type: walletInfo[1] } })
+        switch (Number(walletInfo[1])) {
+            case 0:
+                navigate(`/sharedWallet/` + walletInfo[0], { state: { address: walletInfo[0], type: walletInfo[1] } })
+                break;
+            case 1:
+                navigate(`/crowdFunding/` + walletInfo[0], { state: { address: walletInfo[0], type: walletInfo[1] } })
+                break;
+            case 2:
+                navigate(`/commonPot/` + walletInfo[0], { state: { address: walletInfo[0], type: walletInfo[1] } })
+                break;
+            default:
+                setWalletType( "Unknown")
+                break;
+        }
+        
     }
 
     return (

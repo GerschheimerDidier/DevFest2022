@@ -11,7 +11,7 @@ const Dashboard = () => {
     const location = useLocation();
 
     // State
-    const factoryAddress = "0xa6F768a34Db1164540645113b443B227E5561570";
+    const factoryAddress = "0x40211644FaEe0f9c3eFdd4efB562E7De80DE0589";
     const [subscriptions, onReceiveSubscriptions] = useState([]);
     const [contract , setContract] = useState(null);
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
