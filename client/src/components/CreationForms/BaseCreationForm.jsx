@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import SharedWalletCreationForm from "../../components/CreationForms/SharedWalletCreationForm";
 import CrowdfundingCreationForm from "../../components/CreationForms/CrowdfundingCreationForm";
 import CommonPotCreationForm from "../../components/CreationForms/CommonPotCreationForm";
-import Web3 from "web3";
-import Select from 'react-select'
 
 const BaseCreationForm = ({notifyWalletCreated}) => {
 

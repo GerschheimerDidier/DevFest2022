@@ -1,0 +1,36 @@
+.walletTile {
+    width: 250px;
+    height: 80px;
+    border-radius: 10px;
+    background-color: #333333;
+    margin: 5px;
+    display: flex;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.walletTile:hover {
+    scale: 1.05;
+    background-color: #b43434;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, .2);
+}
+
+.walletTileImage {
+    margin: auto;
+}
+
+.walletData {
+    padding-left: 5px;
+    margin: auto;
+    color: white;
+}
+
+.walletType {
+    font-size: 24px;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+.walletAddress {
+    font-size: 20px;
+}

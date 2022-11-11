@@ -1,3 +1,4 @@
+import "./Dashboard.css"
 import React, {useState, useEffect } from "react";
 import { useEth } from "../../contexts/EthContext";
 import BaseCreationForm from "../../components/CreationForms/BaseCreationForm";
@@ -22,31 +23,6 @@ const Dashboard = () => {
         retrieveWallets();
     }, [contract, account])
 
-    async function createWallet() {
-        try {
-            console.log('Creating wallet...');
-            const result = await contract.methods.createSharedWallet('Test').send({ from: account[0] });
-            onReceiveSubscriptions(result);
-            console.log('wallet created');
-
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    async function createCrowdfunding() {
-        try {
-            console.log('Creating crowdfunding...');
-            const result = await contract.methods.createCrowdfunding('Test',10,0).send({ from: account[0] });
-            onReceiveSubscriptions(result);
-            console.log('crowdfunding created');
-
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-
     // Retrieve subscribed wallets from factory
     async function retrieveWallets() {
         try {
@@ -66,9 +42,6 @@ const Dashboard = () => {
 
     return (
         <div>
-            <button onClick={createWallet}>Create a Wallet</button>
-            <button onClick={createCrowdfunding}>Create a Crowdfunding</button>
-
             <BaseCreationForm notifyWalletCreated={onNotified} />
 
             {
@@ -78,7 +51,7 @@ const Dashboard = () => {
                 <div>
                     <br />
                     <h2>My Wallets ({subscriptions.length})</h2>
-                    <div>
+                    <div className="subscriptions-container">
                         {
                             // For each wallet
                             subscriptions.map((wallet, index) => (
