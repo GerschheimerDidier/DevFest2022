@@ -3,7 +3,6 @@ import Web3 from "web3";
 import EthContext from "./EthContext";
 import {useLocation, useNavigate} from "react-router-dom";
 import {reducer, actions, initialState} from "./state";
-import artifact from "../../contracts/Wallet.json";
 
 function EthProvider({children}) {
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -25,7 +24,6 @@ function EthProvider({children}) {
                 try {
                     address = await artifact.networks[networkID].address;
                     setContract(await new web3.eth.Contract(abi, addressWallet));  // set here address of contract deployed from factory
-
                 } catch (err) {
                     console.error(err);
                 }
@@ -81,6 +79,7 @@ function EthProvider({children}) {
         };
 
         events.forEach(e => window.ethereum.on(e, handleChange));
+
         return () => {
             events.forEach(e => window.ethereum.removeListener(e, handleChange));
         };

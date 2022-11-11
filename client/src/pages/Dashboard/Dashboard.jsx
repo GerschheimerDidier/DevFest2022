@@ -19,10 +19,9 @@ const Dashboard = () => {
 
     useEffect(() => {
         // Fetch subscribed wallets from factory
-        if (!contract) return;
-        console.log(contract);
+        if (!contract || !account) return;
         retrieveWallets();
-    }, [contract])
+    }, [contract, account])
 
     async function createWallet() {
         try {
