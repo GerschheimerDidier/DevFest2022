@@ -3,7 +3,6 @@ import { useEth } from "../../contexts/EthContext";
 import SharedWalletCreationForm from "../../components/CreationForms/SharedWalletCreationForm";
 import CrowdfundingCreationForm from "../../components/CreationForms/CrowdfundingCreationForm";
 import WalletTile from "../../components/WalletTile";
-import Web3 from "web3";
 import { useLocation } from "react-router-dom";
 
 const Dashboard = () => {
@@ -11,23 +10,19 @@ const Dashboard = () => {
     const location = useLocation();
 
     // State
-    const factoryAddress = "0xa6F768a34Db1164540645113b443B227E5561570";
     const [subscriptions, onReceiveSubscriptions] = useState([]);
-    const [contract , setContract] = useState(null);
-    const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
     /*
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
-    const { account, address } = useEth();
+    const { account, contract, address } = useEth();
 
     useEffect(() => {
-        const artifact = require("../../contracts/WalletFactory.json");
-        setContract(new web3.eth.Contract(artifact.abi, factoryAddress));  // set here address of contract deployed from factory
-
         // Fetch subscribed wallets from factory
+        if (!contract) return;
+        console.log(contract);
         retrieveWallets();
-    }, [useEth()])
+    }, [contract])
 
     async function createWallet() {
         try {
@@ -52,6 +47,7 @@ const Dashboard = () => {
             console.error(err);
         }
     }
+
 
     // Retrieve subscribed wallets from factory
     async function retrieveWallets() {
@@ -84,8 +80,8 @@ const Dashboard = () => {
                     <div>
                         {
                             // For each wallet
-                            subscriptions.map((wallet) => (
-                                <WalletTile walletInfo={wallet} />
+                            subscriptions.map((wallet, index) => (
+                                <WalletTile walletInfo={wallet} key={index}/>
                             ))
                         }
                     </div>

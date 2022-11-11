@@ -1,29 +1,24 @@
 import { useEth } from "../../contexts/EthContext";
-import Web3 from "web3"
 import React, { useEffect, useState} from "react";
 import './SharedWallet.css';
-import { useLocation } from "react-router-dom";
+import web3 from "web3";
 
 const SharedWallet = () => {
 
     //*********** USE STATE ***********//
     const [allowanceAddr, setAllowanceAddr] = useState(0);
-    const [contract , setContract] = useState(null);
-    const location = useLocation();
+    // const location = useLocation();
 
     /*
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
-    const { account, state } = useEth();
-    const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+    const { account, contract, state } = useEth();
 
     useEffect(() => {
-        const artifact = require("../../contracts/Wallet.json");
-        setContract(new web3.eth.Contract(artifact.abi, location.state.address));  // set here address of contract deployed from factory
-
+        if (!contract || !account) return;
         getMyAllowance()
-    }, [useEth()])
+    }, [contract, account])
 
     async function getMyAllowance() {
         try {
@@ -56,7 +51,7 @@ const SharedWallet = () => {
 
     function giveMyMoney() {
         try {
-            contract.methods.withdrawMoney(web3.utils.toWei('0.002', 'ether'))
+            contract.methods.withdrawMoney(web3.utils.toWei('0.2', 'ether'))
                 .send({
                     from: account[0],
                 });

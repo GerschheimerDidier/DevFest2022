@@ -21,7 +21,7 @@ const CrowdfundingCreationForm = () => {
             const factory = new web3.eth.Contract(abi, address);
 
             console.log('Creating wallet...');
-            const result = await factory.methods.createSharedWallet(description, goal, endDate).send({ from: account[0] });
+            const result = await factory.methods.createCrowdfunding(description, goal, endDate).send({ from: account[0] });
 
             console.log('wallet created');
             console.log(result);
