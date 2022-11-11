@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 
-const CrowdfundingCreationForm = () => {
+const CrowdfundingCreationForm = ({notifyWalletCreated}) => {
 
     // State
     const [description, setDescription] = useState("");
@@ -25,6 +25,8 @@ const CrowdfundingCreationForm = () => {
 
             console.log('wallet created');
             console.log(result);
+
+            notifyWalletCreated();
         } catch (err) {
             console.error(err);
         }
@@ -39,7 +41,7 @@ const CrowdfundingCreationForm = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 />
-            </label>
+            </label><br />
 
             <label>
                 Goal:
@@ -48,7 +50,8 @@ const CrowdfundingCreationForm = () => {
                     value={goal}
                     onChange={(e) => setGoal(e.target.value)}
                 />
-            </label>
+                ETH
+            </label><br />
 
             <label>
                 End date:
@@ -57,9 +60,9 @@ const CrowdfundingCreationForm = () => {
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                 />
-            </label>
+            </label><br />
 
-            <button type="button" onClick={createCrowdfunding}>Create wallet</button>
+            <button type="button" onClick={createCrowdfunding}>Create CrowdFunding Wallet</button>
         </form>
     );
 }

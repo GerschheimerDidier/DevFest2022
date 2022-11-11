@@ -1,7 +1,6 @@
 import React, {useState, useEffect } from "react";
 import { useEth } from "../../contexts/EthContext";
-import SharedWalletCreationForm from "../../components/CreationForms/SharedWalletCreationForm";
-import CrowdfundingCreationForm from "../../components/CreationForms/CrowdfundingCreationForm";
+import BaseCreationForm from "../../components/CreationForms/BaseCreationForm";
 import WalletTile from "../../components/WalletTile";
 import { useLocation } from "react-router-dom";
 
@@ -60,14 +59,17 @@ const Dashboard = () => {
         }
     }
 
+    async function onNotified() {
+        console.log("notified wallet created");
+        await retrieveWallets();
+    }
+
     return (
         <div>
             <button onClick={createWallet}>Create a Wallet</button>
             <button onClick={createCrowdfunding}>Create a Crowdfunding</button>
 
-
-            <SharedWalletCreationForm />
-            <CrowdfundingCreationForm />
+            <BaseCreationForm notifyWalletCreated={onNotified} />
 
             {
                 // Ensure user has wallets to display

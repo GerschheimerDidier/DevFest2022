@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Web3 from "web3";
 
-const SharedWalletCreationForm = ({notifyWalletCreated}) => {
+const CommonPotCreationForm = ({notifyWalletCreated}) => {
 
     // State
     const [walletName, setWalletName] = useState("");
@@ -19,7 +19,7 @@ const SharedWalletCreationForm = ({notifyWalletCreated}) => {
             const factory = new web3.eth.Contract(abi, address);
 
             console.log('Creating wallet...');
-            const result = await factory.methods.createSharedWallet(walletName).send({ from: account[0] });
+            const result = await factory.methods.createCommonPot().send({ from: account[0] });
 
             console.log('wallet created');
             console.log(result);
@@ -32,17 +32,9 @@ const SharedWalletCreationForm = ({notifyWalletCreated}) => {
 
     return (
         <form>
-            <label>
-                Wallet name:
-                <input
-                    type="text"
-                    value={walletName}
-                    onChange={(e) => setWalletName(e.target.value)}
-                />
-            </label><br />
-            <button type="button" onClick={createSharedWallet}>Create Shared Wallet</button>
+            <button type="button" onClick={createSharedWallet}>Create Common Pot Wallet</button>
         </form>
     );
 }
 
-export default SharedWalletCreationForm;
+export default CommonPotCreationForm;
