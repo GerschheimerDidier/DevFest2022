@@ -12,7 +12,7 @@ const WalletTile = ({ walletInfo }) => {
 
     useEffect(() => {
         // Get wallet type
-        switch (Number(walletInfo[1])) {
+        switch (Number(walletInfo.type)) {
             case 0:
                 setWalletType("Shared Wallet")
                 break;
@@ -30,15 +30,15 @@ const WalletTile = ({ walletInfo }) => {
 
 
     function RoutingWallet() {
-        switch (Number(walletInfo[1])) {
+        switch (Number(walletInfo.type)) {
             case 0:
-                navigate(`/sharedWallet/` + walletInfo[0], { state: { address: walletInfo[0], type: walletInfo[1] } })
+                navigate(`/sharedWallet/` + walletInfo.addr, { state: { address: walletInfo.addr, type: walletInfo.type } })
                 break;
             case 1:
-                navigate(`/crowdFunding/` + walletInfo[0], { state: { address: walletInfo[0], type: walletInfo[1] } })
+                navigate(`/crowdFunding/` + walletInfo.addr, { state: { address: walletInfo.addr, type: walletInfo.type } })
                 break;
             case 2:
-                navigate(`/commonPot/` + walletInfo[0], { state: { address: walletInfo[0], type: walletInfo[1] } })
+                navigate(`/commonPot/` + walletInfo.addr, { state: { address: walletInfo.addr, type: walletInfo.type } })
                 break;
             default:
                 setWalletType( "Unknown")
@@ -54,7 +54,7 @@ const WalletTile = ({ walletInfo }) => {
             </div>
             <div className="walletData">
                 <p className="walletType">{walletType}</p>
-                <p className="walletAddress">{walletInfo[0].substring(0, 10)}</p>
+                <p className="walletAddress">{walletInfo.addr.substring(0, 10)}</p>
             </div>
         </div>
     )

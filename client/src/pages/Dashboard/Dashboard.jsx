@@ -28,7 +28,13 @@ const Dashboard = () => {
         try {
             console.log('Retrieving subscriptions...');
             const result = await contract.methods.getSubscriptions().call({from : account[0]});
-            onReceiveSubscriptions(result);
+            const subscriptions = result.map((s) => {
+                return { addr: s[0], type: s[1], date: s[2] }
+            }).sort((a, b) => {
+                return a.date - b.date;
+            });
+            console.log(subscriptions);
+            onReceiveSubscriptions(subscriptions);
 
         } catch (err) {
             console.error(err);
