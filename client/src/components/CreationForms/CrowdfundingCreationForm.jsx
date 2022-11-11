@@ -20,8 +20,12 @@ const CrowdfundingCreationForm = ({notifyWalletCreated}) => {
             address = artifact.networks[networkID].address;
             const factory = new web3.eth.Contract(abi, address);
 
-            console.log('Creating wallet...');
-            const result = await factory.methods.createCrowdfunding(description, goal, endDate).send({ from: account[0] });
+            console.log('Creating crowdfunding wallet...');
+            const result = await factory.methods.createCrowdfunding(
+                description,
+                web3.utils.toWei(goal, 'ether'),
+                new Date(endDate).getTime()
+            ).send({ from: account[0] });
 
             console.log('wallet created');
             console.log(result);
@@ -46,7 +50,7 @@ const CrowdfundingCreationForm = ({notifyWalletCreated}) => {
             <label>
                 Goal:
                 <input
-                    type="text"
+                    type="number"
                     value={goal}
                     onChange={(e) => setGoal(e.target.value)}
                 />
