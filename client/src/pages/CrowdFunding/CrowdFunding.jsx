@@ -246,11 +246,12 @@ function CrowdFunding() {
         }
     }
 
-    async function _setDescription(_description) {
+    async function _setDescription() {
         try {
+            console.log("SEND 1")
             setCrdfundingAddr(
                     await contract.methods.setDescription(
-                        _description
+                        newDescription
                     ).send({from : account[0]})
             );
             _getDescription();
@@ -262,6 +263,7 @@ function CrowdFunding() {
 
     async function _sendDonation() {
         try {
+            console.log("SEND 2")
             console.log("SEND DONATION : ", rankId, claimReward, account[0], deposit)
             await contract.methods.sendDonation(rankId, claimReward).send({ from : account[0], value : deposit});
             _getContractBalance();
@@ -275,7 +277,7 @@ function CrowdFunding() {
 
     async function _retrieveFunding() {
         try {
-
+            console.log("SEND 3")
                 const result = await contract.methods.retrieveFunding().send({from : account[0]})
                 console.log("RETRIEVE : ", result);
                 setRetrievingResult(result);
@@ -288,6 +290,7 @@ function CrowdFunding() {
 
     async function _requestRefundGoalNotCompleted() {
         try {
+            console.log("SEND 4")
             setCrdfundingAddr(
                     await contract.methods.requestRefundGoalNotCompleted().send({from : account[0]})
             );
@@ -299,6 +302,7 @@ function CrowdFunding() {
 
     async function _giveUpBenefitsAndParticipation() {
         try {
+            console.log("SEND 5")
             setCrdfundingAddr(
                     await contract.methods.giveUpBenefitsAndParticipation().send({from : account[0]})
             );
@@ -331,10 +335,10 @@ function CrowdFunding() {
         }
     }
 
-    function handleChangeNewDescription(){
+    function handleChangeNewDescription(e){
         
         console.log("NEW DESCC : ", e)
-        // setNewDescription(e);
+        setNewDescription(e);
 
     }
 
@@ -390,9 +394,11 @@ function CrowdFunding() {
 
             <section className="section-your-allowance">
                 <article>
-                    <form>
+                    <form onSubmit={_sendDonation}>
                         
-                        <button onClick={ _sendDonation } type={"button"}>Send Money on contract</button>
+                    
+
+                        <Button variant="contained" type="submit" value="">Send Money on contract</Button>
 
                         <TextField id="outlined-basicTextField " value={deposit} variant="standard"
                                 InputProps={{
@@ -443,9 +449,8 @@ function CrowdFunding() {
             </section> 
 
             <section className="section-your-allowance">
-                <button onClick={ _setDescription(newDescription) } type={"button"}>Set new description</button>
-                <form>
-
+                <form onSubmit={_setDescription(newDescription)}>
+                    <Button variant="contained" type="submit" value="">Set new description</Button>
                     <TextareaAutosize
                         aria-label="New Description"
                         minRows={3}
