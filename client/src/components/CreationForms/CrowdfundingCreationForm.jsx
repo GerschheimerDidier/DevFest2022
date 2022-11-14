@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import {Button} from "@mui/material";
+import {useEth} from "../../contexts/EthContext";
+import web3 from "web3";
 
 const CrowdfundingCreationForm = ({notifyWalletCreated}) => {
+
+    /*
+    * desc => contract is instance of contract. He contains method, abi, ...
+    * desc => account is addr of wallet connected with application
+     */
+    const { account, contract } = useEth();
 
     // State
     const [description, setDescription] = useState("");
@@ -11,19 +19,9 @@ const CrowdfundingCreationForm = ({notifyWalletCreated}) => {
     const [endDateEpoch, setEndDateEpoch] = useState((Date.now).valueOf()/1000);
 
     async function createCrowdfunding() {
-        const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-        const account = await web3.eth.requestAccounts();
-        const networkID = await web3.eth.net.getId();
-
-        const artifact = require("../../contracts/WalletFactory.json");
-        const { abi } = artifact;
-        let address;
         try {
-            address = artifact.networks[networkID].address;
-            const factory = new web3.eth.Contract(abi, address);
-
             console.log('Creating crowdfunding wallet...');
-            const result = await factory.methods.createCrowdfunding(
+            const result = await contract.methods.createCrowdfunding(
                 description,
                 web3.utils.toWei(goal, 'ether'),
                 new Date(endDate).getTime()

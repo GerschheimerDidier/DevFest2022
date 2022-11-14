@@ -1,0 +1,19 @@
+.about {
+    margin: 40px 80px;
+    text-align: center;
+}
+
+.about h1 {
+    font-size: 40px;
+    margin: 30px 0;
+    border-bottom: 2px solid black;
+}
+
+.about h3 {
+    font-size: 22px;
+    margin: 15px 0;
+}
+
+.about p {
+    font-size: 15px;
+}
