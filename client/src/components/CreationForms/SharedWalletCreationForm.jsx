@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Web3 from "web3";
 
-const SharedWalletCreationForm = () => {
+const SharedWalletCreationForm = ({notifyWalletCreated}) => {
 
     // State
     const [walletName, setWalletName] = useState("");
@@ -23,6 +23,8 @@ const SharedWalletCreationForm = () => {
 
             console.log('wallet created');
             console.log(result);
+
+            notifyWalletCreated();
         } catch (err) {
             console.error(err);
         }
@@ -37,8 +39,8 @@ const SharedWalletCreationForm = () => {
                     value={walletName}
                     onChange={(e) => setWalletName(e.target.value)}
                 />
-            </label>
-            <button type="button" onClick={createSharedWallet}>Create wallet</button>
+            </label><br />
+            <button type="button" onClick={createSharedWallet}>Create Shared Wallet</button>
         </form>
     );
 }

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import Web3 from "web3";
-import commonPot from "../../pages/CommonPot/CommonPot";
 
-const CommonPotCreationForm = () => {
+const CommonPotCreationForm = ({notifyWalletCreated}) => {
 
     // State
-    const [potName, setPotName] = useState("");
+    const [walletName, setWalletName] = useState("");
 
-    async function createCommonPot() {
+    async function createSharedWallet() {
+
         const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
         const account = await web3.eth.requestAccounts();
         const networkID = await web3.eth.net.getId();
@@ -17,15 +17,17 @@ const CommonPotCreationForm = () => {
         let address;
         try {
             address = artifact.networks[networkID].address;
-            console.log(address)
+
             const factory = new web3.eth.Contract(abi, address);
 
-            console.log('Creating common pot...');
-            console.log(factory)
+            console.log('Creating wallet...');
             const result = await factory.methods.createCommonPot().send({ from: account[0] });
 
-            console.log('common pot created');
+            console.log('wallet created');
             console.log(result);
+
+            notifyWalletCreated();
+
         } catch (err) {
             console.error(err);
         }
@@ -33,15 +35,7 @@ const CommonPotCreationForm = () => {
 
     return (
         <form>
-            <label>
-                Common pot name:
-                <input
-                    type="text"
-                    value={potName}
-                    onChange={(e) => setPotName(e.target.value)}
-                />
-            </label>
-            <button type="button" onClick={createCommonPot}>Create common pot</button>
+            <button type="button" onClick={createSharedWallet}>Create Common Pot Wallet</button>
         </form>
     );
 }
