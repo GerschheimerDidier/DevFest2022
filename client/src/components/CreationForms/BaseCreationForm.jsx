@@ -1,8 +1,9 @@
 import "./CreationForm.css";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import SharedWalletCreationForm from "../../components/CreationForms/SharedWalletCreationForm";
 import CrowdfundingCreationForm from "../../components/CreationForms/CrowdfundingCreationForm";
 import CommonPotCreationForm from "../../components/CreationForms/CommonPotCreationForm";
+import {NativeSelect} from "@mui/material";
 
 const BaseCreationForm = ({notifyWalletCreated}) => {
 
@@ -17,13 +18,14 @@ const BaseCreationForm = ({notifyWalletCreated}) => {
 
     return (
         <div className="form-creation-container">
-            <select
+            <NativeSelect
                 value={selectedOption}
+                label={"Type de contrat"}
                 onChange={e => setSelectedOption(e.target.value)}>
                 {options.map(o => (
                     <option key={o.value} value={o.value}>{o.label}</option>
                 ))}
-            </select>
+            </NativeSelect>
 
             {
                 // Selected type is Shared Wallet

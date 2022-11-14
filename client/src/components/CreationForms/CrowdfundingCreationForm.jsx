@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
+import {Button} from "@mui/material";
 
 const CrowdfundingCreationForm = ({notifyWalletCreated}) => {
 
@@ -70,7 +71,7 @@ const CrowdfundingCreationForm = ({notifyWalletCreated}) => {
                 />
             </label><br />
 
-            <button type="button" onClick={createCrowdfunding}>Create CrowdFunding Wallet</button>
+            <Button variant={"contained"} type="button" onClick={createCrowdfunding}>Create CrowdFunding Wallet</Button>
         </form>
     );
 }

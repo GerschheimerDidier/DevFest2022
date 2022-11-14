@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Web3 from "web3";
+import {Button} from "@mui/material";
 
 const SharedWalletCreationForm = ({notifyWalletCreated}) => {
 
@@ -40,7 +41,7 @@ const SharedWalletCreationForm = ({notifyWalletCreated}) => {
                     onChange={(e) => setWalletName(e.target.value)}
                 />
             </label><br />
-            <button type="button" onClick={createSharedWallet}>Create Shared Wallet</button>
+            <Button variant={"contained"} type="button" onClick={createSharedWallet}>Create Shared Wallet</Button>
         </form>
     );
 }

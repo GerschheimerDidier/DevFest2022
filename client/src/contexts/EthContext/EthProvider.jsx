@@ -3,15 +3,15 @@ import Web3 from "web3";
 import EthContext from "./EthContext";
 import {useLocation, useNavigate} from "react-router-dom";
 import {reducer, actions, initialState} from "./state";
+import FACTORY_ADDRESS from "../../setup-factory";
 
 function EthProvider({children}) {
     const [state, dispatch] = useReducer(reducer, initialState);
     const [contract, setContract] = useState(null);
     const [account, setAccount] = useState(null);
+
     const navigate = useNavigate();
     const location = useLocation();
-
-    const addressFactory = "0x8b76F0C29A381fa8E3bEE727D966156d23bFdbEB";
 
     const init = useCallback(
         async (artifact, addressWallet) => {
@@ -42,28 +42,28 @@ function EthProvider({children}) {
             if (location.pathname.includes("sharedWallet")) {
                 try {
                     const artifact = require("../../contracts/Wallet.json");
-                    init(artifact, location.state.address);
+                    init(artifact, location.pathname.split("/").pop())
                 } catch (err) {
                     console.error(err);
                 }
             } else if (location.pathname.includes("crowdFunding")) {
                 try {
                     const artifact = require("../../contracts/CrdFunding.json");
-                    init(artifact, location.state.address);
+                    init(artifact, location.pathname.split("/").pop())
                 } catch (err) {
                     console.error(err);
                 }
             } else if (location.pathname.includes("commonPot")) {
                 try {
                     const artifact = require("../../contracts/CommonPot.json");
-                    init(artifact, location.state.address);
+                    init(artifact, location.pathname.split("/").pop())
                 } catch (err) {
                     console.error(err);
                 }
             } else {
                 try {
                     const artifact = require("../../contracts/WalletFactory.json");
-                    init(artifact, addressFactory);
+                    init(artifact, FACTORY_ADDRESS);
                 } catch (err) {
                     console.error(err);
                 }

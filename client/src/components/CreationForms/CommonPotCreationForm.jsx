@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Web3 from "web3";
+import {Button} from "@mui/material";
 
 const CommonPotCreationForm = ({notifyWalletCreated}) => {
 
@@ -35,7 +36,7 @@ const CommonPotCreationForm = ({notifyWalletCreated}) => {
 
     return (
         <form>
-            <button type="button" onClick={createSharedWallet}>Create Common Pot Wallet</button>
+            <Button variant={"contained"}  type="button" onClick={createSharedWallet} style={{"marginTop": "20px"}}>Create Common Pot Wallet</Button>
         </form>
     );
 }

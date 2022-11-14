@@ -4,7 +4,7 @@ import './SharedWallet.css';
 import web3 from "web3";
 import Button from "@mui/material/Button";
 import {InputAdornment, TextField} from "@mui/material";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SharedWallet = () => {
     const navigate = useNavigate();
@@ -15,18 +15,21 @@ const SharedWallet = () => {
     const [addrAllowance, setAddrAllowance] = useState("");
     const [amountSendContract, setAmountSendContract] = useState(0);
     const [amountGetMoney, setAmountGetMoney] = useState(0);
+    const [owner, setOwner] = useState(0);
+    const [accountConnected, setAccountConnected] = useState(0);
 
     /*
     ***************     USE ETHEREUM PROVIDER   ***************
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
-    const { account, contract, state } = useEth();
+    const { account, contract } = useEth();
 
     useEffect(() => {
         if (!contract || !account) return;
-        getMyAllowance()
-    }, [contract, account])
+        getOwner();
+        getMyAllowance();
+    }, [contract, account, useEth])
 
     async function getMyAllowance() {
         try {
@@ -35,6 +38,17 @@ const SharedWallet = () => {
                     await contract.methods.accountBeneficiary(account[0]).call(),
                     'ether'
                 )
+            );
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    async function getOwner() {
+        try {
+            setOwner(
+                await contract.methods.owner().call(),
             );
         }
         catch (err) {
@@ -52,7 +66,6 @@ const SharedWallet = () => {
             ).send({
                 from: account[0],
             });
-
         }
         catch (err)
         {
@@ -98,51 +111,52 @@ const SharedWallet = () => {
 
     return (
         <div className={"shared-wallet"}>
-            <button onClick={back}>Retour</button>
+            <Button variant={"outlined"} onClick={back}>Retour</Button>
 
             <section className={"header-wallet"}>
                 <h2>Vous êtes sur un portefeuille partagé</h2>
             </section>
 
-            <section className={"section-your-allowance"}>
+            <section className={"section-allowance"}>
                 <h4>Votre solde disponible : { allowanceAddr } ETH</h4>
             </section>
 
-            <br/>
-            <br/>
-            <section className={"section-add-allowance"}>
-                <form onSubmit={handleAddAllowance}  style={{border: "solid black 1px"}}>
-                    <TextField id="outlined-basicTextField " value={amountAllowance} variant="standard"
-                               InputProps={{
-                                   startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
-                                   style: {
-                                       margin: 20,
-                                       width: 150,
-                                   }
-                               }}
-                               type="number"
-                               onChange={e => setAmountAllowance(e.target.value)}
-                    />
-                    <TextField id="outlined-basicTextField " value={addrAllowance} variant="standard"
-                               InputProps={{
-                                   startAdornment: <InputAdornment position="start">Address</InputAdornment>,
-                                   style: {
-                                       margin: 20,
-                                       width: 300,
-                                   }
-                               }}
-                               type="string"
-                               onChange={e => setAddrAllowance(e.target.value)}
-                    />
-                    <br/>
-                    <Button variant="contained" type="submit" >Ajout d'un bénéficiaire avec son montant disponible sur le portefeuille</Button>
+            {
+                owner == account &&
 
-                </form>
-            </section>
-            <br/>
-            <br/>
+                <section className={"section-add-allowance"}>
+                    <form onSubmit={handleAddAllowance}>
+                        <TextField id="outlined-basicTextField " value={amountAllowance} variant="standard"
+                                   InputProps={{
+                                       startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
+                                       style: {
+                                           margin: 20,
+                                           width: 150,
+                                       }
+                                   }}
+                                   type="number"
+                                   onChange={e => setAmountAllowance(e.target.value)}
+                        />
+                        <TextField id="outlined-basicTextField " value={addrAllowance} variant="standard"
+                                   InputProps={{
+                                       startAdornment: <InputAdornment position="start">Address</InputAdornment>,
+                                       style: {
+                                           margin: 20,
+                                           width: 300,
+                                       }
+                                   }}
+                                   type="string"
+                                   onChange={e => setAddrAllowance(e.target.value)}
+                        />
+                        <br/>
+                        <Button variant="contained" type="submit" >Ajout d'un bénéficiaire avec son montant disponible sur le portefeuille</Button>
+
+                    </form>
+                </section>
+            }
+
             <section className={"section-send-money-contract"}>
-                <form onSubmit={handleAddMoneyToContract}  style={{border: "solid black 1px"}}>
+                <form onSubmit={handleAddMoneyToContract}>
                     <TextField id="outlined-basicTextField " value={amountSendContract} variant="standard"
                                InputProps={{
                                    startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
@@ -159,10 +173,10 @@ const SharedWallet = () => {
 
                 </form>
             </section>
-            <br/>
-            <br/>
+
+
             <section className={"section-get-money"}>
-                <form onSubmit={handleGetMyMoney}  style={{border: "solid black 1px"}}>
+                <form onSubmit={handleGetMyMoney}>
                     <TextField id="outlined-basicTextField " value={amountGetMoney} variant="standard"
                                InputProps={{
                                    startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
