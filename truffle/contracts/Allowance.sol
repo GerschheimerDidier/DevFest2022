@@ -44,6 +44,9 @@ abstract contract Allowance is Subscribable {
     function defineAllowance(address _who, uint256 _newAmount) public isOwner {
         if (accountBeneficiary[_who] == 0) {
             allowance.push(_who);
+            if (getFactoryAddress() != address(0x0)) {
+                subscribe(_who);
+            }
         }
         uint256 oldAmount = accountBeneficiary[_who];
 
@@ -52,6 +55,9 @@ abstract contract Allowance is Subscribable {
             delete accountBeneficiary[_who];
             uint256 index = findIndexAllowance(_who);
             delete allowance[index];
+            if (getFactoryAddress() != address(0x0)) {
+                unsubscribe(_who);
+            }
         } else {
             accountBeneficiary[_who] = _newAmount;
         }
