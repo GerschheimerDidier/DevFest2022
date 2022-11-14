@@ -6,7 +6,7 @@ import "./Subscribable.sol";
 abstract contract Allowance is Subscribable {
     string public walletName;
     address[] public allowance;
-    address private owner;
+    address public owner;
 
     event AllowanceChanged(
         address indexed _forWho,

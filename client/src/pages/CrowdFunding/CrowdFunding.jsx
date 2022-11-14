@@ -1,33 +1,25 @@
 import { useEth } from "../../contexts/EthContext";
 import web3 from "web3";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import './CrowdFunding.css';
-import Button from '@mui/material/Button';
-import {InputAdornment, TextField, TextareaAutosize, Select, MenuItem} from "@mui/material";
-import InputLabel from '@mui/material/InputLabel';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import { useLocation } from "react-router-dom";
+import { InputAdornment, TextField, TextareaAutosize } from "@mui/material";
+import {useLocation, useNavigate} from "react-router-dom";
 import RankTile from "../../components/RankTile";
-
-
+import Button from "@mui/material/Button";
 
 function CrowdFunding() {
-    //*********** USE STATE ***********//
-    // const [contract , setContract] = useState(null);
+
+    const navigate = useNavigate();
 
     /*
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
-    const { account, contract, state } = useEth();
+    const { account, contract } = useEth();
 
     const location = useLocation();
 
-    // const instance = require("../../contracts/CrdFunding.json");
-
     const [crdfundingAddr, setCrdfundingAddr] = useState(0);
-
 
     const [description, refreshDescription] = useState(null);
 
@@ -87,7 +79,6 @@ function CrowdFunding() {
         if (!contract || !account){return}
         refreshAddress(location.pathname.split("/").pop());
         console.log("ADDRESS 00 : ", address);
-        //setContract(new web3.eth.Contract(instance.abi, address));  // set here address of contract deployed from factory
         _getDescription();
         _getOwner();
         _getTotal();
@@ -366,10 +357,15 @@ function CrowdFunding() {
 
     }
 
+    function back() {
+        navigate(`/`);
+    }
+
     return (
         
         <div className={"crowdfunding"}>
 
+            <Button variant={"outlined"} onClick={back}>Retour</Button>
 
             <section className={"header-wallet"}>
                 <h2>Your CrowdFunding :</h2>

@@ -12,14 +12,14 @@ contract('Wallet', (accounts) => {
 
   describe("Receive method", () => {
     it('should add money to the smart contract', async () => {
-      await this.walletInstance.sendTransaction({
+      await this.walletInstance.sendMoneyOnWallet({
         from: owner,
-        value: 50000000000000000, // 0.05 ETHER
+        value: 500000000000000000, // 0.5 ETHER
       })
     });
     it('should verify if 0.05 ether has been on contract', async () => {
       const balanceContract = await web3.eth.getBalance(this.walletInstance.address);
-      assert.equal(web3.utils.fromWei(String(balanceContract), 'ether'), 0.05, "All money has been receive by contract");
+      assert.equal(web3.utils.fromWei(String(balanceContract), 'ether'), 0.5, "All money has been receive by contract");
     });
   })
 
@@ -86,7 +86,7 @@ contract('Wallet', (accounts) => {
 
     it('should withdraw the money allowed to this account', async () => {
       await this.walletInstance.withdrawMoney(
-        web3.utils.toWei('0.02', 'ether'),
+        web3.utils.toWei('0.01', 'ether'),
         { from: beneficiary }
       )
     });

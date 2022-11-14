@@ -11,7 +11,7 @@
 
 .walletTile:hover {
     scale: 1.05;
-    background-color: #b43434;
+    background-color: #1976d2;
     box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, .2);
 }
 

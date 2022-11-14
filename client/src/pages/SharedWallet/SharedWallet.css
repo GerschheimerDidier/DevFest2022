@@ -6,14 +6,33 @@
 .shared-wallet .header-wallet {
     display: flex;
     justify-content: center;
-
+    margin: 25px 0px;
 }
+
 .shared-wallet .header-wallet h2 {
     font-size: 25px;
 }
 
-.section-your-allowance {
-    border: 1px solid black;
+.shared-wallet .section-allowance {
     width: 100%;
     margin: 30px 0;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 8px 4px 4px grey;
+    background: #D3D3D350;
+}
+
+.shared-wallet .section-add-allowance,
+.shared-wallet .section-send-money-contract,
+.shared-wallet .section-get-money {
+    margin: 30px 0;
+    width: 100%;
+    background: #D3D3D350;
+    box-shadow: 8px 4px 4px grey;
+    padding: 20px 0;
+}
+
+form Button {
+    width: 100%;
+    margin: 0 20px;
 }

@@ -55,7 +55,7 @@ const Dashboard = () => {
                 // Ensure user has wallets to display
                 subscriptions.length > 0 &&
 
-                <div>
+                <div className={"wallet-list"}>
                     <br />
                     <h2>My Wallets ({subscriptions.length})</h2>
                     <div className="subscriptions-container">
