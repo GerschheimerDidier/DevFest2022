@@ -34,9 +34,8 @@ contract WalletFactory is ISubscription {
     event UnsubscribedFromWallet(address _who, address _walletAddress);
 
     // Create a Shared Wallet on behalf of user
-    function createSharedWallet(string memory _walletName) external {
+    function createSharedWallet() external {
         Wallet wallet = new Wallet(
-            _walletName,
             msg.sender,
             address(this),
             uint8(EWalletType.SHARED_WALLET)
