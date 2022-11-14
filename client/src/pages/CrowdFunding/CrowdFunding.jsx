@@ -2,10 +2,13 @@ import { useEth } from "../../contexts/EthContext";
 import web3 from "web3";
 import { useState, useEffect } from "react";
 import './CrowdFunding.css';
-import {InputAdornment, TextField} from "@mui/material";
+import Button from '@mui/material/Button';
+import {InputAdornment, TextField, TextareaAutosize, Select, MenuItem} from "@mui/material";
+import InputLabel from '@mui/material/InputLabel';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useLocation } from "react-router-dom";
+import RankTile from "../../components/RankTile";
 
 
 
@@ -28,7 +31,7 @@ function CrowdFunding() {
 
     const [description, refreshDescription] = useState(null);
 
-    const [address, refreshAddress] = useState(null);
+    const [address, refreshAddress] = useState("");
 
     const [fundsReceived, refreshFundsReceived] = useState(null);
 
@@ -40,7 +43,7 @@ function CrowdFunding() {
 
     const [myParticipation, refreshMyParticipation] = useState(null);
 
-    const [allActiveRanks, refreshAllActiveRanks] = useState(null);
+    const [allActiveRanks, refreshAllActiveRanks] = useState([]);
 
     const [deposit, setDeposit] = useState(0);
 
@@ -48,18 +51,52 @@ function CrowdFunding() {
 
     const [rankId, setRankId] = useState(0);
 
+    const [isOwner, setIsOwner] = useState(false);
+
+    const [owner, setOwner] = useState(null);
+
+    const [retrievingResult, setRetrievingResult] = useState("");
+
+    const [giveUpResult, setGiveUpResult] = useState("");
+
+    const [requestRefundResult, setRequestRefundResult] = useState("");
+
+    const [newDescription, setNewDescription] = useState("");
+
+    const [rankToCreateName, setRankToCreateName] = useState("");
+
+    const [rankToCreateMinimumPart, setRankToCreateMinimumPart] = useState(0);
+
+    const [rankToCreateDescription, setRankToCreateDescription] = useState("");
+
+    const [rankToCreateUses, setRankToCreateUses] = useState(-1);
+
+    const [rankToEditId, setrankToEditId] = useState(0);
+
+    const [rankToEditMinimumPart, setrankToEditMinimumPart] = useState(0);
+
+    const [rankToEditDescription, setrankToEditDescription] = useState("");
+
+    const [rankToEditUses, setrankToEditUses] = useState(-1);
+
+    const [rankToDeactivateId, setrankToDeactivateId] = useState(0);
+
+    const [rankToActivateId, setrankToActivateId] = useState(0);
+
     useEffect(() => {
+        if (!contract || !account){return}
         refreshAddress(location.pathname.split("/").pop());
         console.log("ADDRESS 00 : ", address);
-        // setContract(new web3.eth.Contract(instance.abi, address));  // set here address of contract deployed from factory
+        //setContract(new web3.eth.Contract(instance.abi, address));  // set here address of contract deployed from factory
         _getDescription();
-        
+        _getOwner();
         _getTotal();
         _getContractBalance();
         _getGoal();
         _getEndDate();
         _getAllActiveRanks();
-    }, [useEth()])
+        _getMyParticipation();
+    }, [contract, account])
 
     console.log("CONTRACT : ", contract)
     console.log("BALANCE 1 : ", crowdFundingBalance);
@@ -115,7 +152,7 @@ function CrowdFunding() {
     async function _getMyParticipation() {
         try {
             console.log("MY PARTICIPATION --");
-            refreshMyParticipation(await contract.getMyParticipation().call({from : account[0]}));
+            refreshMyParticipation(await contract.methods.getMyParticipation().call({from : account[0]}));
             console.log("MY PARTICIPATION : ", myParticipation);
         }
         catch (err) {
@@ -124,9 +161,11 @@ function CrowdFunding() {
     }
     async function _getRankInfo(id) {
         try {
-            setCrdfundingAddr(
-                    await contract.methods.getRankInfo()
-            );
+
+          
+            return await contract.methods.getRankInfo(id).call({from : account[0]});
+
+            
         }
         catch (err) {
             console.log(err);
@@ -144,8 +183,8 @@ function CrowdFunding() {
     }
     async function _getOwner() {
         try {
-            setCrdfundingAddr(
-                    await contract.methods.owner()
+            setOwner(
+                    await contract.methods.owner().call({from : account[0]})
             );
         }
         catch (err) {
@@ -155,7 +194,7 @@ function CrowdFunding() {
     async function _isOwner() {
         try {
             setCrdfundingAddr(
-                    await contract.methods.isOwner()
+                    await contract.methods.isOwner().call({from: account[0]})
             );
         }
         catch (err) {
@@ -175,66 +214,73 @@ function CrowdFunding() {
         }
     }
 
-    async function _createRank(_name, minInvestement, _description, usageNumber) {
+    async function _createRank() {
         try {
-            setCrdfundingAddr(
-                    await contract.methods.createRank(_name, minInvestement, _description, usageNumber)
-            );
+           
+            await contract.methods.createRank(rankToCreateName, rankToCreateMinimumPart, rankToCreateDescription, rankToCreateUses).send({from : account[0]})
+
+            _getAllActiveRanks();
+          
         }
         catch (err) {
             console.log(err);
         }
     }
 
-    async function _editRank(_id, _minimumInvestment, _description, _uses) {
+    async function _editRank() {
         try {
-            setCrdfundingAddr(
-                    await contract.methods.editRank(
-                        _id,
-                        _minimumInvestment,
-                        _description,
-                        _uses
-                    )
+            
+            await contract.methods.editRank(
+                rankToEditId,
+                rankToEditMinimumPart,
+                rankToEditDescription,
+                rankToEditUses
             );
+            _getAllActiveRanks();
+           
         }
         catch (err) {
             console.log(err);
         }
     }
 
-    async function _deactivateRank(_id) {
+    async function _deactivateRank() {
         try {
-            setCrdfundingAddr(
+            
                     await contract.methods.deactivateRank(
-                        _id
-                    )
-            );
+                        rankToDeactivateId
+                    ).send({from : account[0]});
+            
+            _getAllActiveRanks();
         }
         catch (err) {
             console.log(err);
         }
     }
 
-    async function _activateRank(_id) {
+    async function _activateRank() {
         try {
-            setCrdfundingAddr(
+            
                     await contract.methods.activateRank(
-                        _id
-                    )
-            );
+                        rankToActivateId
+                    ).send({from : account[0]});
+            
+            _getAllActiveRanks();
         }
         catch (err) {
             console.log(err);
         }
     }
 
-    async function _setDescription(_description) {
+    async function _setDescription() {
         try {
+            console.log("SEND 1")
             setCrdfundingAddr(
                     await contract.methods.setDescription(
-                        _description
-                    )
+                        newDescription
+                    ).send({from : account[0]})
             );
+            //_getDescription();
         }
         catch (err) {
             console.log(err);
@@ -243,6 +289,7 @@ function CrowdFunding() {
 
     async function _sendDonation() {
         try {
+            console.log("SEND 2")
             console.log("SEND DONATION : ", rankId, claimReward, account[0], deposit)
             await contract.methods.sendDonation(rankId, claimReward).send({ from : account[0], value : deposit});
             _getContractBalance();
@@ -256,9 +303,11 @@ function CrowdFunding() {
 
     async function _retrieveFunding() {
         try {
-            setCrdfundingAddr(
-                    await contract.methods.retrieveFunding()
-            );
+            console.log("SEND 3")
+                const result = await contract.methods.retrieveFunding().send({from : account[0]})
+                console.log("RETRIEVE : ", result);
+                setRetrievingResult(result);
+
         }
         catch (err) {
             console.log(err);
@@ -267,9 +316,11 @@ function CrowdFunding() {
 
     async function _requestRefundGoalNotCompleted() {
         try {
-            setCrdfundingAddr(
-                    await contract.methods.requestRefundGoalNotCompleted()
-            );
+            console.log("SEND 3")
+                const result = await contract.methods.requestRefundGoalNotCompleted().send({from : account[0]})
+                console.log("REFUND : ", result);
+                setRequestRefundResult(result);
+
         }
         catch (err) {
             console.log(err);
@@ -278,9 +329,11 @@ function CrowdFunding() {
 
     async function _giveUpBenefitsAndParticipation() {
         try {
-            setCrdfundingAddr(
-                    await contract.methods.giveUpBenefitsAndParticipation()
-            );
+            console.log("SEND 3")
+                const result = await contract.methods.giveUpBenefitsAndParticipation().send({from : account[0]})
+                console.log("GIVEUP : ", result);
+                setGiveUpResult(result);
+
         }
         catch (err) {
             console.log(err);
@@ -289,13 +342,9 @@ function CrowdFunding() {
 
 
     function handleChangeClaimReward(e){
-        console.log("EE : ", e)
-        if (e==="on" && !claimReward){
-            setClaimReward(true);
-        }
-        else if (e==="off" && claimReward){
-            setClaimReward(false);
-        }
+
+        setClaimReward(e);
+
     }
 
     function handleChangeRankId (e){
@@ -310,6 +359,12 @@ function CrowdFunding() {
         }
     }
 
+    function handleChangeNewDescription(e){
+        
+        console.log("NEW DESCC : ", e)
+        setNewDescription(e);
+
+    }
 
     return (
         
@@ -328,6 +383,8 @@ function CrowdFunding() {
                 <h4> Goal : {goal} </h4>
                 <br/>
                 <h4> End Date : {endDate} </h4>
+                <br/>
+                <h4> Owner : {owner} </h4>
             </section>
 
             <section className="section-your-allowance">
@@ -339,20 +396,35 @@ function CrowdFunding() {
             </section>     
 
             <section className="section-your-allowance">
+                <button onClick={ _getMyParticipation } type={"button"}>Refresh</button>
                 <h4>My participation : {myParticipation}</h4>
             </section>   
 
             <section className="section-your-allowance">
+                <button onClick={ _getAllActiveRanks } type={"button"}>Refresh</button>
                 <h4>All active donation ranks : {allActiveRanks}</h4>
-            </section>  
+            </section> 
+
+            <section>
+                <div>
+                {
+                            // For each wallet
+                            allActiveRanks.map((rank) => (
+                                <RankTile key={rank.id} rankInfo={rank} address={address} />
+                            ))
+                        }
+                </div>
+            </section> 
 
             <section className="section-your-allowance">
                 <article>
-                    <form onSubmit={_sendDonation}>
+                    <form>
                         
-                        <button onClick={ _sendDonation } type={"button"}>Send Money on contract</button>
+                        <button onClick={ _sendDonation } type={"button"}>Send Donnation</button>
 
-                        <TextField id="outlined-basicTextField " value={deposit} variant="standard"
+            
+
+                        <TextField value={deposit} variant="standard"
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start">Wei</InputAdornment>,
                                     style: {
@@ -363,14 +435,8 @@ function CrowdFunding() {
                                 onChange={e => handleChangeDeposit(e.target.value)}
                         />
 
-                        <FormControlLabel
-                            control={
-                                <Switch checked={claimReward} onChange={e => handleChangeClaimReward(e.target.value)}/>
-                            }
-                            label="label"
-                        />
 
-                        <TextField id="outlined-basicTextField " value={rankId} variant="standard"
+                        <TextField value={rankId} variant="standard"
                                InputProps={{
                                    startAdornment: <InputAdornment position="start">Rank Id</InputAdornment>,
                                    style: {
@@ -382,6 +448,199 @@ function CrowdFunding() {
                         />
                     </form>
                 </article>    
+            </section> 
+
+            <section className="section-your-allowance">
+                <h4>_createRank :</h4>
+
+                <article>
+                    <form>
+                        
+                        <button onClick={ _createRank } type={"button"}>Create Rank</button>
+
+
+                        <TextField value={rankToCreateName} variant="standard"
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start">Name</InputAdornment>,
+                                    style: {
+                                        marginLeft: 20
+                                    }
+                                }}
+                                type="text"
+                                onChange={e => setRankToCreateName(e.target.value)}
+                        />
+
+                        <TextField value={rankToCreateMinimumPart} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">Minimum doonnation</InputAdornment>,
+                                   style: {
+                                       marginLeft: 20,
+                                   }
+                               }}
+                               type="number"
+                               onChange={e => setRankToCreateMinimumPart(e.target.value)}
+                        />
+                        
+                        <TextField value={rankToCreateDescription} variant="standard"
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start">Description</InputAdornment>,
+                                    style: {
+                                        marginLeft: 20
+                                    }
+                                }}
+                                type="text"
+                                onChange={e => setRankToCreateDescription(e.target.value)}
+                        />
+
+                        <TextField value={rankToCreateUses} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">uses (-1 for no limit)</InputAdornment>,
+                                   style: {
+                                       marginLeft: 20,
+                                   }
+                               }}
+                               type="number"
+                               onChange={e => setRankToCreateUses(e.target.value)}
+                        />
+                    </form>
+                </article>   
+            </section> 
+
+            <section className="section-your-allowance">
+                <h4>_editRank : </h4>
+
+                <article>
+                    <form>
+                        
+                        <button onClick={ _editRank } type={"button"}>Edit Rank</button>
+
+
+                        <TextField value={rankToEditId} variant="standard"
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start">Id</InputAdornment>,
+                                    style: {
+                                        marginLeft: 20
+                                    }
+                                }}
+                                type="number"
+                                onChange={e => setrankToEditId(e.target.value)}
+                        />
+
+                        <TextField value={rankToEditMinimumPart} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">Minimum doonnation</InputAdornment>,
+                                   style: {
+                                       marginLeft: 20,
+                                   }
+                               }}
+                               type="number"
+                               onChange={e => setrankToEditMinimumPart(e.target.value)}
+                        />
+                        
+                        <TextField value={rankToEditDescription} variant="standard"
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start">Description</InputAdornment>,
+                                    style: {
+                                        marginLeft: 20
+                                    }
+                                }}
+                                type="text"
+                                onChange={e => setrankToEditDescription(e.target.value)}
+                        />
+
+                        <TextField value={rankToEditUses} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">uses (-1 for no limit)</InputAdornment>,
+                                   style: {
+                                       marginLeft: 20,
+                                   }
+                               }}
+                               type="number"
+                               onChange={e => setrankToEditUses(e.target.value)}
+                        />
+                    </form>
+                </article>   
+
+            </section> 
+
+            <section className="section-your-allowance">
+                <h4>_deactivateRank : </h4>
+
+                <article>
+                    <form>
+                        
+                        <button onClick={ _deactivateRank } type={"button"}>Deactivate Rank</button>
+
+
+                        <TextField value={rankToDeactivateId} variant="standard"
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start">Id</InputAdornment>,
+                                    style: {
+                                        marginLeft: 20
+                                    }
+                                }}
+                                type="number"
+                                onChange={e => setrankToDeactivateId(e.target.value)}
+                        />
+                    </form>
+                </article>   
+            </section> 
+
+            <section className="section-your-allowance">
+                <h4>_activateRank : </h4>
+
+                <article>
+                    <form>
+                        
+                        <button onClick={ _activateRank } type={"button"}>Activate Rank</button>
+
+
+                        <TextField value={rankToActivateId} variant="standard"
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start">Id</InputAdornment>,
+                                    style: {
+                                        marginLeft: 20
+                                    }
+                                }}
+                                type="number"
+                                onChange={e => setrankToActivateId(e.target.value)}
+                        />
+                    </form>
+                </article>   
+            </section> 
+
+            <section className="section-your-allowance">
+                <form>
+
+                    <button onClick={ _setDescription } type={"button"}>Set new description</button>
+                    
+                    <TextareaAutosize
+                        aria-label="New Description"
+                        minRows={3}
+                        placeholder="new description"
+                        style={{ width: 200 }}
+                        onChange={e => setNewDescription(e.target.value)}
+                        />
+                    
+
+
+
+                </form>
+                            </section> 
+
+            <section className="section-your-allowance">
+                <button onClick={ _retrieveFunding } type={"button"}>Retrieve Funding</button>
+                <h4>Result : {retrievingResult}</h4>
+            </section> 
+
+            <section className="section-your-allowance">
+                <button onClick={ _requestRefundGoalNotCompleted } type={"button"}>Request Refund</button>
+                <h4>_requestRefundGoalNotCompleted : {requestRefundResult}</h4>
+            </section> 
+
+            <section className="section-your-allowance">
+                <button onClick={ _giveUpBenefitsAndParticipation } type={"button"}>Give Up Following and Benefices</button>
+                <h4>_giveUpBenefitsAndParticipation : {giveUpResult}</h4>
             </section> 
 
 

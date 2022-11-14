@@ -178,6 +178,7 @@ contract CrdFunding is Subscribable, Ownable {
 
     function deactivateRank(uint256 _id) public onlyOwner {
         require(Ranks[_id].usesLeft != 0, "No such active ranks");
+        require(_id != 0, "Can't deactivate _noRank");
         Ranks[_id].usesLeft = 0;
         emit RanksActivation(Ranks[_id].name, "DEACTIVATE");
     }
@@ -274,6 +275,10 @@ contract CrdFunding is Subscribable, Ownable {
     }
 
     function giveUpBenefitsAndParticipation() external {
+        require(
+            msg.sender != owner(),
+            "As the owner u cant give up this contract - transfer ownership then retry"
+        );
         uint256 nbOfDonations = Donations[msg.sender].donations.length;
         for (uint256 i = 0; i < nbOfDonations; i++) {
             Donations[msg.sender].donations[i].claimReward = false;

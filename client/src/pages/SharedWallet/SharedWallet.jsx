@@ -105,7 +105,7 @@ const SharedWallet = () => {
             </section>
 
             <section className={"section-your-allowance"}>
-                <h4>Votre solde disponible => { allowanceAddr } ETH</h4>
+                <h4>Votre solde disponible : { allowanceAddr } ETH</h4>
             </section>
 
             <br/>
