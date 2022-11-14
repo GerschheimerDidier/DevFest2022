@@ -3,10 +3,11 @@ import web3 from "web3";
 import { useState, useEffect } from "react";
 import './CrowdFunding.css';
 import Button from '@mui/material/Button';
-import {InputAdornment, TextField} from "@mui/material";
+import {InputAdornment, TextField, TextareaAutosize} from "@mui/material";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useLocation } from "react-router-dom";
+import RankTile from "../../components/RankTile";
 
 
 
@@ -34,7 +35,7 @@ function CrowdFunding() {
 
     const [description, refreshDescription] = useState(null);
 
-    const [address, refreshAddress] = useState(null);
+    const [address, refreshAddress] = useState("");
 
     const [fundsReceived, refreshFundsReceived] = useState(null);
 
@@ -46,7 +47,7 @@ function CrowdFunding() {
 
     const [myParticipation, refreshMyParticipation] = useState(null);
 
-    const [allActiveRanks, refreshAllActiveRanks] = useState(null);
+    const [allActiveRanks, refreshAllActiveRanks] = useState([]);
 
     const [deposit, setDeposit] = useState(0);
 
@@ -54,17 +55,26 @@ function CrowdFunding() {
 
     const [rankId, setRankId] = useState(0);
 
+    const [isOwner, setIsOwner] = useState(false);
+
+    const [owner, setOwner] = useState(null);
+
+    const [retrievingResult, setRetrievingResult] = useState("");
+
+    const [newDescription, setNewDescription] = useState("");
+
     useEffect(() => {
         refreshAddress(location.pathname.split("/").pop());
         console.log("ADDRESS 00 : ", address);
         setContract(new web3.eth.Contract(instance.abi, address));  // set here address of contract deployed from factory
         _getDescription();
-        
+        _getOwner();
         _getTotal();
         _getContractBalance();
         _getGoal();
         _getEndDate();
         _getAllActiveRanks();
+        _getMyParticipation();
     }, [useEth()])
 
     console.log("CONTRACT : ", contract)
@@ -121,7 +131,7 @@ function CrowdFunding() {
     async function _getMyParticipation() {
         try {
             console.log("MY PARTICIPATION --");
-            refreshMyParticipation(await contract.getMyParticipation().call({from : account[0]}));
+            refreshMyParticipation(await contract.methods.getMyParticipation().call({from : account[0]}));
             console.log("MY PARTICIPATION : ", myParticipation);
         }
         catch (err) {
@@ -130,9 +140,11 @@ function CrowdFunding() {
     }
     async function _getRankInfo(id) {
         try {
-            setCrdfundingAddr(
-                    await contract.methods.getRankInfo()
-            );
+
+          
+            return await contract.methods.getRankInfo(id).call({from : account[0]});
+
+            
         }
         catch (err) {
             console.log(err);
@@ -150,8 +162,8 @@ function CrowdFunding() {
     }
     async function _getOwner() {
         try {
-            setCrdfundingAddr(
-                    await contract.methods.owner()
+            setOwner(
+                    await contract.methods.owner().call({from : account[0]})
             );
         }
         catch (err) {
@@ -161,7 +173,7 @@ function CrowdFunding() {
     async function _isOwner() {
         try {
             setCrdfundingAddr(
-                    await contract.methods.isOwner()
+                    await contract.methods.isOwner().call({from: account[0]})
             );
         }
         catch (err) {
@@ -239,8 +251,9 @@ function CrowdFunding() {
             setCrdfundingAddr(
                     await contract.methods.setDescription(
                         _description
-                    )
+                    ).send({from : account[0]})
             );
+            _getDescription();
         }
         catch (err) {
             console.log(err);
@@ -262,9 +275,11 @@ function CrowdFunding() {
 
     async function _retrieveFunding() {
         try {
-            setCrdfundingAddr(
-                    await contract.methods.retrieveFunding()
-            );
+
+                const result = await contract.methods.retrieveFunding().send({from : account[0]})
+                console.log("RETRIEVE : ", result);
+                setRetrievingResult(result);
+
         }
         catch (err) {
             console.log(err);
@@ -274,7 +289,7 @@ function CrowdFunding() {
     async function _requestRefundGoalNotCompleted() {
         try {
             setCrdfundingAddr(
-                    await contract.methods.requestRefundGoalNotCompleted()
+                    await contract.methods.requestRefundGoalNotCompleted().send({from : account[0]})
             );
         }
         catch (err) {
@@ -285,7 +300,7 @@ function CrowdFunding() {
     async function _giveUpBenefitsAndParticipation() {
         try {
             setCrdfundingAddr(
-                    await contract.methods.giveUpBenefitsAndParticipation()
+                    await contract.methods.giveUpBenefitsAndParticipation().send({from : account[0]})
             );
         }
         catch (err) {
@@ -316,6 +331,12 @@ function CrowdFunding() {
         }
     }
 
+    function handleChangeNewDescription(){
+        
+        console.log("NEW DESCC : ", e)
+        // setNewDescription(e);
+
+    }
 
     return (
         
@@ -334,6 +355,8 @@ function CrowdFunding() {
                 <h4> Goal : {goal} </h4>
                 <br/>
                 <h4> End Date : {endDate} </h4>
+                <br/>
+                <h4> Owner : {owner} </h4>
             </section>
 
             <section className="section-your-allowance">
@@ -345,16 +368,29 @@ function CrowdFunding() {
             </section>     
 
             <section className="section-your-allowance">
+                <button onClick={ _getMyParticipation } type={"button"}>Refresh</button>
                 <h4>My participation : {myParticipation}</h4>
             </section>   
 
             <section className="section-your-allowance">
+                <button onClick={ _getAllActiveRanks } type={"button"}>Refresh</button>
                 <h4>All active donation ranks : {allActiveRanks}</h4>
-            </section>  
+            </section> 
+{/*
+            <section>
+                <div>
+                {
+                            // For each wallet
+                            allActiveRanks.map((rank) => (
+                                <RankTile rankInfo={rank} address={address} />
+                            ))
+                        }
+                </div>
+                    </section> */}
 
             <section className="section-your-allowance">
                 <article>
-                    <form onSubmit={_sendDonation}>
+                    <form>
                         
                         <button onClick={ _sendDonation } type={"button"}>Send Money on contract</button>
 
@@ -388,6 +424,63 @@ function CrowdFunding() {
                         />
                     </form>
                 </article>    
+            </section> 
+
+            <section className="section-your-allowance">
+                <h4>_createRank : {fundsReceived}</h4>
+            </section> 
+
+            <section className="section-your-allowance">
+                <h4>_editRank : {fundsReceived}</h4>
+            </section> 
+
+            <section className="section-your-allowance">
+                <h4>_deactivateRank : {fundsReceived}</h4>
+            </section> 
+
+            <section className="section-your-allowance">
+                <h4>_activateRank : {fundsReceived}</h4>
+            </section> 
+
+            <section className="section-your-allowance">
+                <button onClick={ _setDescription(newDescription) } type={"button"}>Set new description</button>
+                <form>
+
+                    <TextareaAutosize
+                        aria-label="New Description"
+                        minRows={3}
+                        placeholder="new description"
+                        style={{ width: 200 }}
+                        onChange={e => handleChangeNewDescription(e.target.value)}/>
+                    
+
+
+                  {/*  <TextField id="outlined-basicTextField " value={newDescription} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">New description</InputAdornment>,
+                                   style: {
+                                       marginLeft: 20,
+                                   }
+                               }}
+                               type="text"
+                               onChange={e => handleChangeNewDescription(e.target.value)}/>*/}
+
+                </form>
+            </section> 
+
+            <section className="section-your-allowance">
+                <button onClick={ _retrieveFunding } type={"button"}>Retrieve Funding</button>
+                <h4>Result : {retrievingResult}</h4>
+            </section> 
+
+            <section className="section-your-allowance">
+                <button onClick={ _requestRefundGoalNotCompleted } type={"button"}>Request Refund</button>
+                <h4>_requestRefundGoalNotCompleted : {fundsReceived}</h4>
+            </section> 
+
+            <section className="section-your-allowance">
+                <button onClick={ _giveUpBenefitsAndParticipation } type={"button"}>Give Up Following and Benefices</button>
+                <h4>_giveUpBenefitsAndParticipation : {fundsReceived}</h4>
             </section> 
 
 
