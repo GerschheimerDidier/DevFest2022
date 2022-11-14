@@ -59,9 +59,10 @@ function CrowdFunding() {
     const [newDescription, setNewDescription] = useState("");
 
     useEffect(() => {
+        if (!contract || !account){return}
         refreshAddress(location.pathname.split("/").pop());
         console.log("ADDRESS 00 : ", address);
-        // setContract(new web3.eth.Contract(instance.abi, address));  // set here address of contract deployed from factory
+        //setContract(new web3.eth.Contract(instance.abi, address));  // set here address of contract deployed from factory
         _getDescription();
         _getOwner();
         _getTotal();
@@ -70,7 +71,7 @@ function CrowdFunding() {
         _getEndDate();
         _getAllActiveRanks();
         _getMyParticipation();
-    }, [useEth()])
+    }, [contract, account])
 
     console.log("CONTRACT : ", contract)
     console.log("BALANCE 1 : ", crowdFundingBalance);
@@ -249,7 +250,7 @@ function CrowdFunding() {
                         newDescription
                     ).send({from : account[0]})
             );
-            _getDescription();
+            //_getDescription();
         }
         catch (err) {
             console.log(err);
@@ -391,7 +392,7 @@ function CrowdFunding() {
                 <article>
                     <form onSubmit={_sendDonation}>
                         
-                    
+                        
 
                         <Button variant="contained" type="submit" value="">Send Money on contract</Button>
 
@@ -444,29 +445,23 @@ function CrowdFunding() {
             </section> 
 
             <section className="section-your-allowance">
-                <form onSubmit={_setDescription(newDescription)}>
+                <form >
+
+                    <button onClick={_setDescription } type={"button"}>NEWDESC</button>
                     <Button variant="contained" type="submit" value="">Set new description</Button>
                     <TextareaAutosize
                         aria-label="New Description"
                         minRows={3}
                         placeholder="new description"
                         style={{ width: 200 }}
-                        onChange={e => handleChangeNewDescription(e.target.value)}/>
+                        onChange={e => setNewDescription(e.target.value)}
+                        />
                     
 
 
-                  {/*  <TextField id="outlined-basicTextField " value={newDescription} variant="standard"
-                               InputProps={{
-                                   startAdornment: <InputAdornment position="start">New description</InputAdornment>,
-                                   style: {
-                                       marginLeft: 20,
-                                   }
-                               }}
-                               type="text"
-                               onChange={e => handleChangeNewDescription(e.target.value)}/>*/}
 
                 </form>
-            </section> 
+                            </section> 
 
             <section className="section-your-allowance">
                 <button onClick={ _retrieveFunding } type={"button"}>Retrieve Funding</button>
