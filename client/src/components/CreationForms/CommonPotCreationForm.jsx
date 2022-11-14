@@ -7,6 +7,7 @@ const CommonPotCreationForm = ({notifyWalletCreated}) => {
     const [walletName, setWalletName] = useState("");
 
     async function createSharedWallet() {
+
         const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
         const account = await web3.eth.requestAccounts();
         const networkID = await web3.eth.net.getId();
@@ -16,6 +17,7 @@ const CommonPotCreationForm = ({notifyWalletCreated}) => {
         let address;
         try {
             address = artifact.networks[networkID].address;
+
             const factory = new web3.eth.Contract(abi, address);
 
             console.log('Creating wallet...');
@@ -25,6 +27,7 @@ const CommonPotCreationForm = ({notifyWalletCreated}) => {
             console.log(result);
 
             notifyWalletCreated();
+
         } catch (err) {
             console.error(err);
         }

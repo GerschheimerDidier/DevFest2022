@@ -4,8 +4,10 @@ import './SharedWallet.css';
 import web3 from "web3";
 import Button from "@mui/material/Button";
 import {InputAdornment, TextField} from "@mui/material";
+import {useNavigate} from "react-router-dom";
 
 const SharedWallet = () => {
+    const navigate = useNavigate();
 
     //*********** USE STATE ***********//
     const [allowanceAddr, setAllowanceAddr] = useState(0);
@@ -15,6 +17,7 @@ const SharedWallet = () => {
     const [amountGetMoney, setAmountGetMoney] = useState(0);
 
     /*
+    ***************     USE ETHEREUM PROVIDER   ***************
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
@@ -89,11 +92,16 @@ const SharedWallet = () => {
         }
     }
 
+    function back() {
+        navigate(`/`);
+    }
+
     return (
         <div className={"shared-wallet"}>
+            <button onClick={back}>Retour</button>
 
             <section className={"header-wallet"}>
-                <h2>Vous êtes sur le portefeuille partagé entre différentes personnes</h2>
+                <h2>Vous êtes sur un portefeuille partagé</h2>
             </section>
 
             <section className={"section-your-allowance"}>

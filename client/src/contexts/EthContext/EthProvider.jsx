@@ -10,6 +10,7 @@ function EthProvider({children}) {
     const [account, setAccount] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
+
     const addressFactory = "0x8b76F0C29A381fa8E3bEE727D966156d23bFdbEB";
 
     const init = useCallback(
