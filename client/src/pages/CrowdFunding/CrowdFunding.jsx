@@ -13,22 +13,17 @@ import RankTile from "../../components/RankTile";
 
 function CrowdFunding() {
     //*********** USE STATE ***********//
-    const [contract , setContract] = useState(null);
-
+    // const [contract , setContract] = useState(null);
 
     /*
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
-    const { web3, account } = useEth();
+    const { account, contract, state } = useEth();
 
     const location = useLocation();
 
-    const instance = require("../../contracts/CrdFunding.json");
-
-    //console.log("LOCATION ADD : ", location.state.address);
-
-    
+    // const instance = require("../../contracts/CrdFunding.json");
 
     const [crdfundingAddr, setCrdfundingAddr] = useState(0);
 
@@ -66,7 +61,7 @@ function CrowdFunding() {
     useEffect(() => {
         refreshAddress(location.pathname.split("/").pop());
         console.log("ADDRESS 00 : ", address);
-        setContract(new web3.eth.Contract(instance.abi, address));  // set here address of contract deployed from factory
+        // setContract(new web3.eth.Contract(instance.abi, address));  // set here address of contract deployed from factory
         _getDescription();
         _getOwner();
         _getTotal();

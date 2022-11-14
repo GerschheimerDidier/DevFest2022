@@ -1,10 +1,13 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
+import {useEth} from "../contexts/EthContext";
 
 const WalletTile = ({ walletInfo }) => {
 
     const navigate = useNavigate();
     const [walletType, setWalletType] = useState(-1);
+
+    const { setAddressWallet } = useEth();
 
     useEffect(() => {
         // Get wallet type

@@ -1,29 +1,32 @@
 import { useEth } from "../../contexts/EthContext";
-import Web3 from "web3"
 import React, { useEffect, useState} from "react";
 import './SharedWallet.css';
-import { useLocation } from "react-router-dom";
+import web3 from "web3";
+import Button from "@mui/material/Button";
+import {InputAdornment, TextField} from "@mui/material";
+import {useNavigate} from "react-router-dom";
 
 const SharedWallet = () => {
+    const navigate = useNavigate();
 
     //*********** USE STATE ***********//
     const [allowanceAddr, setAllowanceAddr] = useState(0);
-    const [contract , setContract] = useState(null);
-    const location = useLocation();
+    const [amountAllowance, setAmountAllowance] = useState(0);
+    const [addrAllowance, setAddrAllowance] = useState("");
+    const [amountSendContract, setAmountSendContract] = useState(0);
+    const [amountGetMoney, setAmountGetMoney] = useState(0);
 
     /*
+    ***************     USE ETHEREUM PROVIDER   ***************
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
-    const { account, state } = useEth();
-    const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+    const { account, contract, state } = useEth();
 
     useEffect(() => {
-        const artifact = require("../../contracts/Wallet.json");
-        setContract(new web3.eth.Contract(artifact.abi, location.state.address));  // set here address of contract deployed from factory
-
+        if (!contract || !account) return;
         getMyAllowance()
-    }, [useEth()])
+    }, [contract, account])
 
     async function getMyAllowance() {
         try {
@@ -39,70 +42,143 @@ const SharedWallet = () => {
         }
     }
 
-    function addAllowance() {
-        try {
+    const handleAddAllowance = (evt) => {
+        evt.preventDefault();
+        try
+        {
             contract.methods.defineAllowance(
-                "0x4fe493bE9D13C464329558487B951b1817ed9151",
-                web3.utils.toWei('1', 'ether'),
+                addrAllowance,
+                web3.utils.toWei(amountAllowance, 'ether'),
             ).send({
                 from: account[0],
             });
 
         }
-        catch (err) {
-            console.log(err);
-        }
-    }
-
-    function giveMyMoney() {
-        try {
-            contract.methods.withdrawMoney(web3.utils.toWei('0.002', 'ether'))
-                .send({
-                    from: account[0],
-                });
-
-        }
-        catch (err) {
-            console.log(err);
-        }
-    }
-
-    function sendMoney() {
-        try {
-            contract.methods.sendMoneyOnWallet().send({
-                from: account[0],
-                value: web3.utils.toWei('2', 'ether'),
-            });
-        }
-        catch (err) {
+        catch (err)
+        {
             console.log(err)
         }
+    }
 
+    const handleAddMoneyToContract = (evt) => {
+        evt.preventDefault();
+        try
+        {
+            contract.methods.sendMoneyOnWallet().send({
+                from: account[0],
+                value: web3.utils.toWei(amountSendContract, 'ether'),
+            });
+        }
+        catch (err)
+        {
+            console.log(err)
+        }
+    }
+
+    const handleGetMyMoney = (evt) => {
+        evt.preventDefault();
+        try
+        {
+            contract.methods.withdrawMoney(
+                web3.utils.toWei(amountGetMoney, 'ether')
+            )
+            .send({
+                from: account[0],
+            });
+        }
+        catch (err)
+        {
+            console.log(err)
+        }
+    }
+
+    function back() {
+        navigate(`/`);
     }
 
     return (
         <div className={"shared-wallet"}>
+            <button onClick={back}>Retour</button>
 
             <section className={"header-wallet"}>
-                <h2>Vous êtes sur le shared wallet</h2>
+                <h2>Vous êtes sur un portefeuille partagé</h2>
             </section>
 
             <section className={"section-your-allowance"}>
-                <h4>Your allowance</h4>
-                <p> { allowanceAddr } </p>
-                <p>ETH</p>
+                <h4>Votre solde disponible => { allowanceAddr } ETH</h4>
             </section>
 
             <br/>
             <br/>
             <section className={"section-add-allowance"}>
-            </section>
+                <form onSubmit={handleAddAllowance}  style={{border: "solid black 1px"}}>
+                    <TextField id="outlined-basicTextField " value={amountAllowance} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
+                                   style: {
+                                       margin: 20,
+                                       width: 150,
+                                   }
+                               }}
+                               type="number"
+                               onChange={e => setAmountAllowance(e.target.value)}
+                    />
+                    <TextField id="outlined-basicTextField " value={addrAllowance} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">Address</InputAdornment>,
+                                   style: {
+                                       margin: 20,
+                                       width: 300,
+                                   }
+                               }}
+                               type="string"
+                               onChange={e => setAddrAllowance(e.target.value)}
+                    />
+                    <br/>
+                    <Button variant="contained" type="submit" >Ajout d'un bénéficiaire avec son montant disponible sur le portefeuille</Button>
 
+                </form>
+            </section>
             <br/>
             <br/>
-            <button onClick={ addAllowance }>addAllowance</button>
-            <button onClick={ sendMoney } type={"button"}>Send Money on contract</button>
-            <button onClick={ giveMyMoney } type={"button"}>Withdraw my money</button>
+            <section className={"section-send-money-contract"}>
+                <form onSubmit={handleAddMoneyToContract}  style={{border: "solid black 1px"}}>
+                    <TextField id="outlined-basicTextField " value={amountSendContract} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
+                                   style: {
+                                       margin: 20,
+                                       width: 150,
+                                   }
+                               }}
+                               type="number"
+                               onChange={e => setAmountSendContract(e.target.value)}
+                    />
+                    <br/>
+                    <Button variant="contained" type="submit" >Ajout d'argent sur le portefeuile</Button>
+
+                </form>
+            </section>
+            <br/>
+            <br/>
+            <section className={"section-get-money"}>
+                <form onSubmit={handleGetMyMoney}  style={{border: "solid black 1px"}}>
+                    <TextField id="outlined-basicTextField " value={amountGetMoney} variant="standard"
+                               InputProps={{
+                                   startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
+                                   style: {
+                                       margin: 20,
+                                       width: 150,
+                                   }
+                               }}
+                               type="number"
+                               onChange={e => setAmountGetMoney(e.target.value)}
+                    />
+                    <br/>
+                    <Button variant="contained" type="submit" >Récupération de mon argent disponible</Button>
+
+                </form>
+            </section>
         </div>
     );
 }
