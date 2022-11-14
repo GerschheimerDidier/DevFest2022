@@ -4,6 +4,7 @@ import {useState} from "react";
 import web3 from "web3";
 import Button from '@mui/material/Button';
 import {InputAdornment, TextField} from "@mui/material";
+import {BigNumber} from "@ethersproject/bignumber";
 
 function CommonPot() {
 
@@ -37,7 +38,7 @@ function CommonPot() {
         {
             console.log("Paying..")
             console.log(addressPayment)
-            contract.methods.payWithPot(addressPayment, payment).send({from: account[0]});
+            contract.methods.payWithPot(addressPayment, web3.utils.toWei(BigNumber.from(payment))).send({from: account[0]});
 
         }
         catch (err)
@@ -62,7 +63,8 @@ function CommonPot() {
     async function getContractBalance() {
         try
         {
-            setBalance(await contract.methods.getCurrentGlobalBalance().call({from: account[0]}));
+            var balance = await contract.methods.getCurrentGlobalBalance().call({from: account[0]})
+            setBalance(Number(web3.utils.fromWei(balance)));
         }
         catch (err)
         {
@@ -78,7 +80,7 @@ function CommonPot() {
                 <Button variant="contained" onClick={getContractBalance}>Refresh account balance: </Button>
                 <TextField id="outlined-basicTextField " value={balance} variant="standard"
                            InputProps={{
-                               startAdornment: <InputAdornment position="start">WEI</InputAdornment>,
+                               startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
                                style: {
                                    marginLeft: 20
                                }
@@ -108,7 +110,7 @@ function CommonPot() {
 
                     <TextField id="outlined-basicTextField " value={payment} variant="standard"
                                InputProps={{
-                                   startAdornment: <InputAdornment position="start">WEI</InputAdornment>,
+                                   startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
                                    style: {
                                        marginLeft: 20,
                                    }
