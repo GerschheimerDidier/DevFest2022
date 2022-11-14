@@ -10,7 +10,8 @@ function EthProvider({children}) {
     const [account, setAccount] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
-    const addressFactory = "0xA604FC369F51f9f2475B523242e4b0709a89B327";
+
+    const addressFactory = "0x8b76F0C29A381fa8E3bEE727D966156d23bFdbEB";
 
     const init = useCallback(
         async (artifact, addressWallet) => {

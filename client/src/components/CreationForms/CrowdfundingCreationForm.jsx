@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 
-const CrowdfundingCreationForm = () => {
+const CrowdfundingCreationForm = ({notifyWalletCreated}) => {
 
     // State
     const [description, setDescription] = useState("");
@@ -21,11 +21,17 @@ const CrowdfundingCreationForm = () => {
             address = artifact.networks[networkID].address;
             const factory = new web3.eth.Contract(abi, address);
 
-            console.log('Creating wallet...');
-            const result = await factory.methods.createCrowdfunding(description, goal, endDateEpoch).send({ from: account[0] });
+            console.log('Creating crowdfunding wallet...');
+            const result = await factory.methods.createCrowdfunding(
+                description,
+                web3.utils.toWei(goal, 'ether'),
+                new Date(endDate).getTime()
+            ).send({ from: account[0] });
 
             console.log('wallet created');
             console.log(result);
+
+            notifyWalletCreated();
         } catch (err) {
             console.error(err);
         }
@@ -40,16 +46,17 @@ const CrowdfundingCreationForm = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 />
-            </label>
+            </label><br />
 
             <label>
                 Goal:
                 <input
-                    type="text"
+                    type="number"
                     value={goal}
                     onChange={(e) => setGoal(e.target.value)}
                 />
-            </label>
+                ETH
+            </label><br />
 
             <label>
                 End date:
@@ -61,9 +68,9 @@ const CrowdfundingCreationForm = () => {
                                         setEndDate(e.target.value);
                                         setEndDateEpoch(epoch)}}
                 />
-            </label>
+            </label><br />
 
-            <button type="button" onClick={createCrowdfunding}>Create wallet</button>
+            <button type="button" onClick={createCrowdfunding}>Create CrowdFunding Wallet</button>
         </form>
     );
 }
