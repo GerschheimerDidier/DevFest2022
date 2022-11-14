@@ -3,12 +3,8 @@ import React, {useState, useEffect } from "react";
 import { useEth } from "../../contexts/EthContext";
 import BaseCreationForm from "../../components/CreationForms/BaseCreationForm";
 import WalletTile from "../../components/WalletTile";
-import { useLocation } from "react-router-dom";
-import CommonPotCreationForm from "../../components/CreationForms/CommonPotCreationForm";
 
 const Dashboard = () => {
-
-    const location = useLocation();
 
     // State
     const [subscriptions, onReceiveSubscriptions] = useState([]);
