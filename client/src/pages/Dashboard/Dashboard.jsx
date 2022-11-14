@@ -4,6 +4,7 @@ import SharedWalletCreationForm from "../../components/CreationForms/SharedWalle
 import CrowdfundingCreationForm from "../../components/CreationForms/CrowdfundingCreationForm";
 import WalletTile from "../../components/WalletTile";
 import { useLocation } from "react-router-dom";
+import CommonPotCreationForm from "../../components/CreationForms/CommonPotCreationForm";
 
 const Dashboard = () => {
 
@@ -68,6 +69,7 @@ const Dashboard = () => {
 
             <SharedWalletCreationForm />
             <CrowdfundingCreationForm />
+            <CommonPotCreationForm />
 
             {
                 // Ensure user has wallets to display

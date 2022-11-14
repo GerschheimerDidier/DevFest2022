@@ -4,6 +4,7 @@ import {useState} from "react";
 import web3 from "web3";
 import Button from '@mui/material/Button';
 import {InputAdornment, TextField} from "@mui/material";
+import {BigNumber} from "@ethersproject/bignumber";
 
 function CommonPot() {
 
@@ -11,14 +12,13 @@ function CommonPot() {
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
-    const { contract, account } = useEth();
+    const { contract, account, address } = useEth();
 
     const [balance, setBalance] = useState(-1);
     const [deposit, setDeposit] = useState(0);
     const [payment, setPayment] = useState(0);
     const [addressPayment, setAddressPayment] = useState("");
 
-    console.log("Contract : ", contract)
 
     const handleDepositSubmit = (evt) => {
         evt.preventDefault();
@@ -36,7 +36,9 @@ function CommonPot() {
         evt.preventDefault();
         try
         {
-            contract.methods.payWithPot(addressPayment, payment);
+            console.log("Paying..")
+            console.log(addressPayment)
+            contract.methods.payWithPot(addressPayment, web3.utils.toWei(BigNumber.from(payment))).send({from: account[0]});
 
         }
         catch (err)
@@ -49,7 +51,8 @@ function CommonPot() {
         evt.preventDefault();
         try
         {
-            contract.methods.withdraw().call();
+            console.log("withdrawing")
+            contract.methods.withdraw().send({from: account[0], gas: 5000});
         }
         catch (err)
         {
@@ -60,8 +63,8 @@ function CommonPot() {
     async function getContractBalance() {
         try
         {
-            console.log(contract)
-            setBalance(await contract.methods.getCurrentGlobalBalance().call({from: "0xDC0d4Db1dFBF26Bf333e803DED24040B5d643821"}));
+            var balance = await contract.methods.getCurrentGlobalBalance().call({from: account[0]})
+            setBalance(Number(web3.utils.fromWei(balance)));
         }
         catch (err)
         {
@@ -72,7 +75,7 @@ function CommonPot() {
     return (
         <div className={"common-pot"}>
 
-            <h2>Your common pot : "common pot addr", </h2>
+            <h2>Your common pot : {contract._address} </h2>
             <article>
                 <Button variant="contained" onClick={getContractBalance}>Refresh account balance: </Button>
                 <TextField id="outlined-basicTextField " value={balance} variant="standard"
@@ -131,7 +134,7 @@ function CommonPot() {
 
             <article>
                 <form onSubmit={handleWithdraw}>
-                    <Button variant="contained" value="Withdraw fund on the pot:">Withdraw fund on the pot:</Button>
+                    <Button type="submit" variant="contained" value="Withdraw fund on the pot:">Withdraw fund on the pot:</Button>
                 </form>
             </article>
 
