@@ -1,38 +1,76 @@
-.crowdfunding {
-    height: 89%;
-    margin: 20px 20vw 0px;
+.back-button {
+    margin: 1.5rem;
 }
 
-.crowdfunding .header-wallet {
+.crowdfunding-title {
     display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    margin: 1.6rem;
+}
+
+.crowdfunding-introduction {
+    margin-top: 2rem;
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+    margin-left: 5rem;
+    margin-right: 5rem;
+}
+
+label {
+    font-size: 1.2rem;
+}
+
+.item-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    flex-direction : column;
-
-}
-.crowdfunding .header-wallet h2 {
-    font-size: 25px;
-    width: 100%;
 }
 
-.crowdfunding .header-wallet p {
-    margin : 5px 0;
+.crowdfunding-participation {
+    margin-top: 5rem;
+    flex-direction: row;
+    display: flex;
+    justify-content: flex-start;
+    margin-left: 5rem;
+    margin-right: 5rem;
+    border: 2px solid;
 }
 
-Button {
+.refresh {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    margin-right: 3rem;
+    margin-top: 1.5rem;
+}
+
+.crowdfunding-owner {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    margin-left: 5rem;
+    margin-right: 5rem;
+}
+
+.spacer {
     margin: 1rem;
 }
 
-input {
-    margin: 1rem;
+.rank-handle {
+    display: flex;
+    margin-left: 4rem;
+    margin-right: 4rem;
+    flex-direction: column;
 }
 
-article, span {
-    margin: 2rem;
-}
-
-.section-your-allowance {
-    border: 1px solid black;
-    width: 100%;
-    margin: 30px 0;
-    padding: 5px;
+.height-control {
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+    justify-content: start;
+    margin-bottom: 1rem;
 }
