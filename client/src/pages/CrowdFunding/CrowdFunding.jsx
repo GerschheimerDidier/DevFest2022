@@ -396,7 +396,7 @@ function CrowdFunding() {
                         <label> {crowdFundingBalance} ETH </label>
                     </div>
                     <div className={"item-card"}>
-                        <label>My participation : </label>
+                        <label>Ma participation : </label>
                         <label>{myParticipation} ETH</label>
                     </div>
                 </section>
@@ -432,7 +432,7 @@ function CrowdFunding() {
                             />
                             <TextField value={rankId} variant="standard"
                                        InputProps={{
-                                           startAdornment: <InputAdornment position="start">Rank Id</InputAdornment>,
+                                           startAdornment: <InputAdornment position="start">Rang Id</InputAdornment>,
                                            style: {
                                                marginLeft: 20,
                                            }
@@ -448,12 +448,12 @@ function CrowdFunding() {
                     <div className={"spacer"}>
                         <form>
 
-                            <Button variant="contained" onClick={ _createRank } type={"button"}>Create Rank</Button>
+                            <Button variant="contained" onClick={ _createRank } type={"button"}>Créer un rang</Button>
 
 
                             <TextField value={rankToCreateName} variant="standard"
                                     InputProps={{
-                                        startAdornment: <InputAdornment position="start">Name</InputAdornment>,
+                                        startAdornment: <InputAdornment position="start">Nom:</InputAdornment>,
                                         style: {
                                             marginLeft: 20
                                         }
@@ -464,7 +464,7 @@ function CrowdFunding() {
 
                             <TextField value={rankToCreateMinimumPart} variant="standard"
                                    InputProps={{
-                                       startAdornment: <InputAdornment position="start">Minimum doonnation</InputAdornment>,
+                                       startAdornment: <InputAdornment position="start">Donation minimum</InputAdornment>,
                                        style: {
                                            marginLeft: 20,
                                        }
@@ -486,7 +486,7 @@ function CrowdFunding() {
 
                             <TextField value={rankToCreateUses} variant="standard"
                                    InputProps={{
-                                       startAdornment: <InputAdornment position="start">uses (-1 for no limit)</InputAdornment>,
+                                       startAdornment: <InputAdornment position="start">Nombre de place (-1 pour illimité)</InputAdornment>,
                                        style: {
                                            marginLeft: 20,
                                        }
@@ -499,7 +499,7 @@ function CrowdFunding() {
 
                     <div className={"spacer"}>
                         <form>
-                            <Button variant="contained" onClick={ _editRank } type={"button"}>Edit Rank</Button>
+                            <Button variant="contained" onClick={ _editRank } type={"button"}>Editer un rang</Button>
 
                             <TextField value={rankToEditId} variant="standard"
                                     InputProps={{
@@ -514,7 +514,7 @@ function CrowdFunding() {
 
                             <TextField value={rankToEditMinimumPart} variant="standard"
                                    InputProps={{
-                                       startAdornment: <InputAdornment position="start">Minimum doonnation</InputAdornment>,
+                                       startAdornment: <InputAdornment position="start">Donation minimum</InputAdornment>,
                                        style: {
                                            marginLeft: 20,
                                        }
@@ -536,7 +536,7 @@ function CrowdFunding() {
 
                             <TextField value={rankToEditUses} variant="standard"
                                    InputProps={{
-                                       startAdornment: <InputAdornment position="start">uses (-1 for no limit)</InputAdornment>,
+                                       startAdornment: <InputAdornment position="start">Nombre de place (-1 pour illimité)</InputAdornment>,
                                        style: {
                                            marginLeft: 20,
                                        }
@@ -550,7 +550,7 @@ function CrowdFunding() {
                     <div className={"spacer"}>
                         <form>
 
-                            <Button variant="contained" onClick={ _deactivateRank } type={"button"}>Deactivate Rank</Button>
+                            <Button variant="contained" onClick={ _deactivateRank } type={"button"}>Désactiver un rang</Button>
 
 
                             <TextField value={rankToDeactivateId} variant="standard"
@@ -568,7 +568,7 @@ function CrowdFunding() {
 
                     <div className={"spacer"}>
                         <form>
-                            <Button variant="contained" onClick={ _activateRank } type={"button"}>Activate Rank</Button>
+                            <Button variant="contained" onClick={ _activateRank } type={"button"}>Activer un rang</Button>
                             <TextField value={rankToActivateId} variant="standard"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start">Id</InputAdornment>,
@@ -585,7 +585,7 @@ function CrowdFunding() {
                     <div className={"spacer"}>
                         <form>
                             <div className={"height-control"}>
-                                <Button variant="contained" onClick={ _setDescription } type={"button"}>Set new description</Button>
+                                <Button variant="contained" onClick={ _setDescription } type={"button"}>Modifier la description description</Button>
                             </div>
                             <TextareaAutosize
                                 aria-label="New Description"
