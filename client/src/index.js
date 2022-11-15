@@ -7,6 +7,7 @@ import SharedWallet from "./pages/SharedWallet/SharedWallet";
 import * as ReactDOM from "react-dom/client";
 import CommonPot from "./pages/CommonPot/CommonPot";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import About from "./pages/About/About";
 
 export const router = createBrowserRouter([
     {
@@ -28,6 +29,10 @@ export const router = createBrowserRouter([
             {
                 path: "commonPot/:address",
                 element: <CommonPot/>
+            },
+            {
+                path: "about",
+                element: <About/>
             }
         ]
     },

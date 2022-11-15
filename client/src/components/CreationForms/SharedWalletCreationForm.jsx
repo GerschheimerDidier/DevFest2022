@@ -1,20 +1,12 @@
 import React, { useState } from "react";
 import Web3 from "web3";
+import {Button} from "@mui/material";
+import {useEth} from "../../contexts/EthContext";
 
 const SharedWalletCreationForm = ({notifyWalletCreated}) => {
 
     async function createSharedWallet() {
-        const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-        const account = await web3.eth.requestAccounts();
-        const networkID = await web3.eth.net.getId();
-
-        const artifact = require("../../contracts/WalletFactory.json");
-        const { abi } = artifact;
-        let address;
         try {
-            address = artifact.networks[networkID].address;
-            const factory = new web3.eth.Contract(abi, address);
-
             console.log('Creating wallet...');
             const result = await factory.methods.createSharedWallet().send({ from: account[0] });
 
@@ -29,7 +21,7 @@ const SharedWalletCreationForm = ({notifyWalletCreated}) => {
 
     return (
         <form>
-            <button type="button" onClick={createSharedWallet}>Create Shared Wallet</button>
+            <Button variant={"contained"} type="button" onClick={createSharedWallet}>Create Shared Wallet</Button>
         </form>
     );
 }

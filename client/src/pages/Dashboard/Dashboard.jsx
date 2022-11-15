@@ -3,12 +3,8 @@ import React, {useState, useEffect } from "react";
 import { useEth } from "../../contexts/EthContext";
 import BaseCreationForm from "../../components/CreationForms/BaseCreationForm";
 import WalletTile from "../../components/WalletTile";
-import { useLocation } from "react-router-dom";
-import CommonPotCreationForm from "../../components/CreationForms/CommonPotCreationForm";
 
 const Dashboard = () => {
-
-    const location = useLocation();
 
     // State
     const [subscriptions, onReceiveSubscriptions] = useState([]);
@@ -55,7 +51,7 @@ const Dashboard = () => {
                 // Ensure user has wallets to display
                 subscriptions.length > 0 &&
 
-                <div>
+                <div className={"wallet-list"}>
                     <br />
                     <h2>My Wallets ({subscriptions.length})</h2>
                     <div className="subscriptions-container">

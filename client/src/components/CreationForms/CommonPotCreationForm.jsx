@@ -1,27 +1,23 @@
 import React, { useState } from "react";
 import Web3 from "web3";
+import {Button} from "@mui/material";
+import {useEth} from "../../contexts/EthContext";
 
 const CommonPotCreationForm = ({notifyWalletCreated}) => {
+
+    /*
+    * desc => contract is instance of contract. He contains method, abi, ...
+    * desc => account is addr of wallet connected with application
+     */
+    const { account, contract } = useEth();
 
     // State
     const [walletName, setWalletName] = useState("");
 
     async function createSharedWallet() {
-
-        const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-        const account = await web3.eth.requestAccounts();
-        const networkID = await web3.eth.net.getId();
-
-        const artifact = require("../../contracts/WalletFactory.json");
-        const { abi } = artifact;
-        let address;
         try {
-            address = artifact.networks[networkID].address;
-
-            const factory = new web3.eth.Contract(abi, address);
-
             console.log('Creating wallet...');
-            const result = await factory.methods.createCommonPot().send({ from: account[0] });
+            const result = await contract.methods.createCommonPot().send({ from: account[0] });
 
             console.log('wallet created');
             console.log(result);
@@ -35,7 +31,7 @@ const CommonPotCreationForm = ({notifyWalletCreated}) => {
 
     return (
         <form>
-            <button type="button" onClick={createSharedWallet}>Create Common Pot Wallet</button>
+            <Button variant={"contained"}  type="button" onClick={createSharedWallet} style={{"marginTop": "20px"}}>Create Common Pot Wallet</Button>
         </form>
     );
 }

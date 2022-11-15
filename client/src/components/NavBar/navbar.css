@@ -21,7 +21,7 @@ li a:hover {
 .navbar {
     display: flex;
     justify-content: space-between;
-    background-color: gray;
+    background-color: #1976d2EE;
     color: white;
 }
 
