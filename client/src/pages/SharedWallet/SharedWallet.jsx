@@ -149,7 +149,9 @@ const SharedWallet = () => {
                                    onChange={e => setAddrAllowance(e.target.value)}
                         />
                         <br/>
-                        <Button variant="contained" type="submit" >Ajout d'un bénéficiaire avec son montant disponible sur le portefeuille</Button>
+                        <div className={"button"}>
+                            <Button variant="contained" type="submit" >Ajout d'un bénéficiaire avec son montant disponible sur le portefeuille</Button>
+                        </div>
 
                     </form>
                 </section>
@@ -169,8 +171,9 @@ const SharedWallet = () => {
                                onChange={e => setAmountSendContract(e.target.value)}
                     />
                     <br/>
-                    <Button variant="contained" type="submit" >Ajout d'argent sur le portefeuile</Button>
-
+                    <div className={"button"}>
+                        <Button variant="contained" type="submit" >Ajout d'argent sur le portefeuile</Button>
+                    </div>
                 </form>
             </section>
 
@@ -189,8 +192,9 @@ const SharedWallet = () => {
                                onChange={e => setAmountGetMoney(e.target.value)}
                     />
                     <br/>
-                    <Button variant="contained" type="submit" >Récupération de mon argent disponible</Button>
-
+                    <div className={"button"}>
+                        <Button variant="contained" type="submit" >Récupération de mon argent disponible</Button>
+                    </div>
                 </form>
             </section>
         </div>
