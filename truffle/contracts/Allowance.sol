@@ -4,7 +4,6 @@ pragma solidity ^0.8.17;
 import "./Subscribable.sol";
 
 abstract contract Allowance is Subscribable {
-    string public walletName;
     address[] public allowance;
     address public owner;
 
@@ -18,12 +17,10 @@ abstract contract Allowance is Subscribable {
     mapping(address => uint256) public accountBeneficiary;
 
     constructor(
-        string memory _walletName,
         address _owner,
         address _factoryAddress,
         uint8 _walletType
     ) Subscribable(_factoryAddress, _walletType) {
-        walletName = _walletName;
         owner = _owner;
     }
 

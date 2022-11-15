@@ -9,11 +9,10 @@ contract Wallet is Allowance {
     event MoneyDeposited(address indexed _from, uint256 _amount);
 
     constructor(
-        string memory _walletName,
         address _owner,
         address _factoryAddress,
         uint8 _walletType
-    ) Allowance(_walletName, _owner, _factoryAddress, _walletType) {}
+    ) Allowance(_owner, _factoryAddress, _walletType) {}
 
 
     function withdrawMoney(uint256 _amount) public hasFundOnWallet(msg.sender) {
