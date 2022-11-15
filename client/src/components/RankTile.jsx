@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { useEth } from "../contexts/EthContext";
+import './RankTile.css';
+
 
 const RankTile = ({ rankInfo, address }) => {
 
@@ -30,13 +32,25 @@ const RankTile = ({ rankInfo, address }) => {
         setRankDetail(await contract.methods.getRankInfo(Number(rankInfo.id)).call({from : account[0]}));
     }
     return (
-        <div>
-            <span>Id {rankInfo.id}</span><br/>
-            <span>Name {rankDetail[0]}</span><br/>
-            <span>Description {rankDetail[1]}</span><br/>
-            <span>Minimum Donation {rankDetail[2]}</span><br/>
-            <span>Uses Left {rankDetail[3]}</span><br/>
-            <br/>
+        <div className={"card"}>
+            <div className={"item-card-retribution"}>
+                <label>Numéro: {rankInfo.id}</label>
+            </div>
+            <div className={"item-card-retribution"}>
+                <label>Intitulé: {rankDetail[0]}</label>
+            </div>
+
+            <div className={"item-card-retribution"}>
+                <label>Donation minimal: {rankDetail[2]}</label>
+            </div>
+
+            <div className={"item-card-retribution"}>
+                <label>Rétributions restantes: {rankDetail[3]}</label>
+            </div>
+
+            <div className={"item-card-retribution"}>
+                <label>Description: {rankDetail[1]}</label>
+            </div>
         </div>
     )
 }

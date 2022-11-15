@@ -27,7 +27,7 @@ function CrowdFunding() {
 
     const [fundsReceived, refreshFundsReceived] = useState(null);
 
-    const [crowdFundingBalance, refreshCrowdFundingBalance] = useState(null);
+    const [crowdFundingBalance, refreshCrowdFundingBalance] = useState(0);
 
     const [goal, refreshGoal] = useState(null);
 
@@ -96,9 +96,10 @@ function CrowdFunding() {
 
     async function _getGoal() {
         try {
-            refreshGoal(
-                    await contract.methods.getGoal().call({from : account[0]})
-            );
+
+            const balance = await contract.methods.getGoal().call({from: account[0]});
+            refreshGoal(Number(web3.utils.fromWei(balance)));
+
         }
         catch (err) {
             console.log(err);
@@ -362,286 +363,260 @@ function CrowdFunding() {
     }
 
     return (
-        
-        <div className={"crowdfunding"}>
+        <main>
+            <div className={"back-button"}>
+                <Button variant={"contained"} onClick={back}>Retour</Button>
+            </div>
 
-            <Button variant={"outlined"} onClick={back}>Retour</Button>
+            <div >
 
-            <section className={"header-wallet"}>
-                <h2>Your CrowdFunding :</h2>
-                <br/>
-                <br/>
-                <h4> Contract address : {address} </h4>
-                <h4>Description :</h4>
-                <br/>
-                <p>  {description} </p>
-                <br/>
-                <h4> Goal : {goal} </h4>
-                <br/>
-                <h4> End Date : {endDate} </h4>
-                <br/>
-                <h4> Owner : {owner} </h4>
-            </section>
+                <h1 className={"crowdfunding-title"}>CrowdFunding</h1>
+                <label className={"crowdfunding-title"}> Adresse de votre financement participatif : {address}</label>
+                <label className={"crowdfunding-title"}> {description}</label>
 
-            <section className="section-your-allowance">
-                <h4>Total funds Received : {fundsReceived}</h4>
-            </section>  
+                <section className={"crowdfunding-introduction"}>
+                    <div className={"item-card"}>
+                        <label> Objectif :  </label>
+                        <label> {goal} ETH </label>
+                    </div>
+                    <div className={"item-card"}>
+                        <label> Date de fin :  </label>
+                        <label> {endDate} </label>
+                    </div>
+                    <div className={"item-card"}>
+                        <label> Propriétaire :  </label>
+                        <label> {owner} </label>
+                    </div>
+                    <div className={"item-card"}>
+                        <label> Total des contributions :  </label>
+                        <label> {fundsReceived} ETH </label>
+                    </div>
+                    <div className={"item-card"}>
+                        <label> Crowdfunding balance :   </label>
+                        <label> {crowdFundingBalance} ETH </label>
+                    </div>
+                    <div className={"item-card"}>
+                        <label>Ma participation : </label>
+                        <label>{myParticipation} ETH</label>
+                    </div>
+                </section>
 
-            <section className="section-your-allowance">
-                <h4>Crowdfunding balance : {crowdFundingBalance}</h4>
-            </section>     
-
-            <section className="section-your-allowance">
-                <button onClick={ _getMyParticipation } type={"button"}>Refresh</button>
-                <h4>My participation : {myParticipation}</h4>
-            </section>   
-
-            <section className="section-your-allowance">
-                <button onClick={ _getAllActiveRanks } type={"button"}>Refresh</button>
-                <h4>All active donation ranks : {allActiveRanks}</h4>
-            </section> 
-
-            <section>
-                <div>
-                {
+                <section className={"crowdfunding-participation"}>
+                    <div className={"item-card"}>
+                        <label>Liste des rétributions:</label>
+                        <button onClick={ _getAllActiveRanks } type={"button"}>Refresh</button>
+                    </div>
+                    <div>
+                        {
                             // For each wallet
                             allActiveRanks.map((rank) => (
                                 <RankTile key={rank.id} rankInfo={rank} address={address} />
                             ))
                         }
-                </div>
-            </section> 
+                    </div>
+                </section>
 
-            <section className="section-your-allowance">
-                <article>
-                    <form>
-                        
-                        <button onClick={ _sendDonation } type={"button"}>Send Donnation</button>
+                <section className={"crowdfunding-owner"}>
+                        <div>
+                            {/* todo passer le deposit de wei a ether */}
+                            <Button variant="contained" type="submit" value="">Donner</Button>
+                            <TextField value={deposit} variant="standard"
+                                       InputProps={{
+                                           startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
+                                           style: {
+                                               marginLeft: 20
+                                           }
+                                       }}
+                                       type="number"
+                                       onChange={e => handleChangeDeposit(e.target.value)}
+                            />
+                            <TextField value={rankId} variant="standard"
+                                       InputProps={{
+                                           startAdornment: <InputAdornment position="start">Rang Id</InputAdornment>,
+                                           style: {
+                                               marginLeft: 20,
+                                           }
+                                       }}
+                                       type="number"
+                                       onChange={e => handleChangeRankId(e.target.value)}
+                            />
+                        </div>
 
-            
+                </section>
 
-                        <TextField value={deposit} variant="standard"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start">Wei</InputAdornment>,
-                                    style: {
-                                        marginLeft: 20
-                                    }
-                                }}
-                                type="number"
-                                onChange={e => handleChangeDeposit(e.target.value)}
-                        />
+                <section className={"rank-handle"}>
+                    <div className={"spacer"}>
+                        <form>
 
-
-                        <TextField value={rankId} variant="standard"
-                               InputProps={{
-                                   startAdornment: <InputAdornment position="start">Rank Id</InputAdornment>,
-                                   style: {
-                                       marginLeft: 20,
-                                   }
-                               }}
-                               type="number"
-                               onChange={e => handleChangeRankId(e.target.value)}
-                        />
-                    </form>
-                </article>    
-            </section> 
-
-            <section className="section-your-allowance">
-                <h4>_createRank :</h4>
-
-                <article>
-                    <form>
-                        
-                        <button onClick={ _createRank } type={"button"}>Create Rank</button>
+                            <Button variant="contained" onClick={ _createRank } type={"button"}>Créer un rang</Button>
 
 
-                        <TextField value={rankToCreateName} variant="standard"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start">Name</InputAdornment>,
-                                    style: {
-                                        marginLeft: 20
-                                    }
-                                }}
-                                type="text"
-                                onChange={e => setRankToCreateName(e.target.value)}
-                        />
+                            <TextField value={rankToCreateName} variant="standard"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">Nom:</InputAdornment>,
+                                        style: {
+                                            marginLeft: 20
+                                        }
+                                    }}
+                                    type="text"
+                                    onChange={e => setRankToCreateName(e.target.value)}
+                            />
 
-                        <TextField value={rankToCreateMinimumPart} variant="standard"
-                               InputProps={{
-                                   startAdornment: <InputAdornment position="start">Minimum doonnation</InputAdornment>,
-                                   style: {
-                                       marginLeft: 20,
-                                   }
-                               }}
-                               type="number"
-                               onChange={e => setRankToCreateMinimumPart(e.target.value)}
-                        />
-                        
-                        <TextField value={rankToCreateDescription} variant="standard"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start">Description</InputAdornment>,
-                                    style: {
-                                        marginLeft: 20
-                                    }
-                                }}
-                                type="text"
-                                onChange={e => setRankToCreateDescription(e.target.value)}
-                        />
+                            <TextField value={rankToCreateMinimumPart} variant="standard"
+                                   InputProps={{
+                                       startAdornment: <InputAdornment position="start">Donation minimum</InputAdornment>,
+                                       style: {
+                                           marginLeft: 20,
+                                       }
+                                   }}
+                                   type="number"
+                                   onChange={e => setRankToCreateMinimumPart(e.target.value)}
+                            />
 
-                        <TextField value={rankToCreateUses} variant="standard"
-                               InputProps={{
-                                   startAdornment: <InputAdornment position="start">uses (-1 for no limit)</InputAdornment>,
-                                   style: {
-                                       marginLeft: 20,
-                                   }
-                               }}
-                               type="number"
-                               onChange={e => setRankToCreateUses(e.target.value)}
-                        />
-                    </form>
-                </article>   
-            </section> 
+                            <TextField value={rankToCreateDescription} variant="standard"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">Description</InputAdornment>,
+                                        style: {
+                                            marginLeft: 20
+                                        }
+                                    }}
+                                    type="text"
+                                    onChange={e => setRankToCreateDescription(e.target.value)}
+                            />
 
-            <section className="section-your-allowance">
-                <h4>_editRank : </h4>
+                            <TextField value={rankToCreateUses} variant="standard"
+                                   InputProps={{
+                                       startAdornment: <InputAdornment position="start">Nombre de place (-1 pour illimité)</InputAdornment>,
+                                       style: {
+                                           marginLeft: 20,
+                                       }
+                                   }}
+                                   type="number"
+                                   onChange={e => setRankToCreateUses(e.target.value)}
+                            />
+                        </form>
+                    </div>
 
-                <article>
-                    <form>
-                        
-                        <button onClick={ _editRank } type={"button"}>Edit Rank</button>
+                    <div className={"spacer"}>
+                        <form>
+                            <Button variant="contained" onClick={ _editRank } type={"button"}>Editer un rang</Button>
 
+                            <TextField value={rankToEditId} variant="standard"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">Id</InputAdornment>,
+                                        style: {
+                                            marginLeft: 20
+                                        }
+                                    }}
+                                    type="number"
+                                    onChange={e => setrankToEditId(e.target.value)}
+                            />
 
-                        <TextField value={rankToEditId} variant="standard"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start">Id</InputAdornment>,
-                                    style: {
-                                        marginLeft: 20
-                                    }
-                                }}
-                                type="number"
-                                onChange={e => setrankToEditId(e.target.value)}
-                        />
+                            <TextField value={rankToEditMinimumPart} variant="standard"
+                                   InputProps={{
+                                       startAdornment: <InputAdornment position="start">Donation minimum</InputAdornment>,
+                                       style: {
+                                           marginLeft: 20,
+                                       }
+                                   }}
+                                   type="number"
+                                   onChange={e => setrankToEditMinimumPart(e.target.value)}
+                            />
 
-                        <TextField value={rankToEditMinimumPart} variant="standard"
-                               InputProps={{
-                                   startAdornment: <InputAdornment position="start">Minimum doonnation</InputAdornment>,
-                                   style: {
-                                       marginLeft: 20,
-                                   }
-                               }}
-                               type="number"
-                               onChange={e => setrankToEditMinimumPart(e.target.value)}
-                        />
-                        
-                        <TextField value={rankToEditDescription} variant="standard"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start">Description</InputAdornment>,
-                                    style: {
-                                        marginLeft: 20
-                                    }
-                                }}
-                                type="text"
-                                onChange={e => setrankToEditDescription(e.target.value)}
-                        />
+                            <TextField value={rankToEditDescription} variant="standard"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">Description</InputAdornment>,
+                                        style: {
+                                            marginLeft: 20
+                                        }
+                                    }}
+                                    type="text"
+                                    onChange={e => setrankToEditDescription(e.target.value)}
+                            />
 
-                        <TextField value={rankToEditUses} variant="standard"
-                               InputProps={{
-                                   startAdornment: <InputAdornment position="start">uses (-1 for no limit)</InputAdornment>,
-                                   style: {
-                                       marginLeft: 20,
-                                   }
-                               }}
-                               type="number"
-                               onChange={e => setrankToEditUses(e.target.value)}
-                        />
-                    </form>
-                </article>   
+                            <TextField value={rankToEditUses} variant="standard"
+                                   InputProps={{
+                                       startAdornment: <InputAdornment position="start">Nombre de place (-1 pour illimité)</InputAdornment>,
+                                       style: {
+                                           marginLeft: 20,
+                                       }
+                                   }}
+                                   type="number"
+                                   onChange={e => setrankToEditUses(e.target.value)}
+                            />
+                        </form>
+                    </div>
 
-            </section> 
+                    <div className={"spacer"}>
+                        <form>
 
-            <section className="section-your-allowance">
-                <h4>_deactivateRank : </h4>
-
-                <article>
-                    <form>
-                        
-                        <button onClick={ _deactivateRank } type={"button"}>Deactivate Rank</button>
+                            <Button variant="contained" onClick={ _deactivateRank } type={"button"}>Désactiver un rang</Button>
 
 
-                        <TextField value={rankToDeactivateId} variant="standard"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start">Id</InputAdornment>,
-                                    style: {
-                                        marginLeft: 20
-                                    }
-                                }}
-                                type="number"
-                                onChange={e => setrankToDeactivateId(e.target.value)}
-                        />
-                    </form>
-                </article>   
-            </section> 
+                            <TextField value={rankToDeactivateId} variant="standard"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">Id</InputAdornment>,
+                                        style: {
+                                            marginLeft: 20
+                                        }
+                                    }}
+                                    type="number"
+                                    onChange={e => setrankToDeactivateId(e.target.value)}
+                            />
+                        </form>
+                    </div>
 
-            <section className="section-your-allowance">
-                <h4>_activateRank : </h4>
+                    <div className={"spacer"}>
+                        <form>
+                            <Button variant="contained" onClick={ _activateRank } type={"button"}>Activer un rang</Button>
+                            <TextField value={rankToActivateId} variant="standard"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">Id</InputAdornment>,
+                                        style: {
+                                            marginLeft: 20
+                                        }
+                                    }}
+                                    type="number"
+                                    onChange={e => setrankToActivateId(e.target.value)}
+                            />
+                        </form>
+                    </div>
 
-                <article>
-                    <form>
-                        
-                        <button onClick={ _activateRank } type={"button"}>Activate Rank</button>
+                    <div className={"spacer"}>
+                        <form>
+                            <div className={"height-control"}>
+                                <Button variant="contained" onClick={ _setDescription } type={"button"}>Modifier la description description</Button>
+                            </div>
+                            <TextareaAutosize
+                                aria-label="New Description"
+                                minRows={3}
+                                placeholder="new description"
+                                style={{ width: 1200, height: 150 }}
+                                onChange={e => setNewDescription(e.target.value)}
+                                />
+                        </form>
+                    </div>
+                </section>
 
-
-                        <TextField value={rankToActivateId} variant="standard"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start">Id</InputAdornment>,
-                                    style: {
-                                        marginLeft: 20
-                                    }
-                                }}
-                                type="number"
-                                onChange={e => setrankToActivateId(e.target.value)}
-                        />
-                    </form>
-                </article>   
-            </section> 
-
-            <section className="section-your-allowance">
-                <form>
-
-                    <button onClick={ _setDescription } type={"button"}>Set new description</button>
-                    
-                    <TextareaAutosize
-                        aria-label="New Description"
-                        minRows={3}
-                        placeholder="new description"
-                        style={{ width: 200 }}
-                        onChange={e => setNewDescription(e.target.value)}
-                        />
-                    
-
-
-
-                </form>
-                            </section> 
-
-            <section className="section-your-allowance">
-                <button onClick={ _retrieveFunding } type={"button"}>Retrieve Funding</button>
-                <h4>Result : {retrievingResult}</h4>
-            </section> 
-
-            <section className="section-your-allowance">
-                <button onClick={ _requestRefundGoalNotCompleted } type={"button"}>Request Refund</button>
-                <h4>_requestRefundGoalNotCompleted : {requestRefundResult}</h4>
-            </section> 
-
-            <section className="section-your-allowance">
-                <button onClick={ _giveUpBenefitsAndParticipation } type={"button"}>Give Up Following and Benefices</button>
-                <h4>_giveUpBenefitsAndParticipation : {giveUpResult}</h4>
-            </section> 
+                    <div className={"refresh"}>
+                        <span className={"spacer"}>
+                            <Button variant="contained" onClick={ _getMyParticipation } type={"button"} >Actualiser ma participation</Button>
+                        </span>
+                        <span className={"spacer"}>
+                            <Button variant="contained" onClick={ _retrieveFunding } type={"button"}>Récupérer mes fonds</Button>
+                        </span>
+                        <span className={"spacer"}>
+                            <Button variant="contained" onClick={ _requestRefundGoalNotCompleted } type={"button"}>Demander un remboursement</Button>
+                        </span>
+                        <span className={"spacer"}>
+                            <Button variant="contained" onClick={ _giveUpBenefitsAndParticipation } type={"button"}>Abandonner le projet et ces bénéfices</Button>
+                        </span>
 
 
-        </div>
-    
+                    </div>
+
+            </div>
+        </main>
 
 
     );
