@@ -15,7 +15,7 @@ function CrowdFunding() {
     * desc => contract is instance of contract. He contains method, abi, ...
     * desc => account is addr of wallet connected with application
      */
-    const { account, contract } = useEth();
+    const { web3, account, contract } = useEth();
 
     const location = useLocation();
 
@@ -39,7 +39,7 @@ function CrowdFunding() {
 
     const [deposit, setDeposit] = useState(0);
 
-    const [claimReward, setClaimReward] = useState(false);
+    const [claimReward, setClaimReward] = useState(true);
 
     const [rankId, setRankId] = useState(0);
 
@@ -75,6 +75,7 @@ function CrowdFunding() {
 
     const [rankToActivateId, setrankToActivateId] = useState(0);
 
+
     useEffect(() => {
         if (!contract || !account){return}
         refreshAddress(location.pathname.split("/").pop());
@@ -87,6 +88,8 @@ function CrowdFunding() {
         _getEndDate();
         _getAllActiveRanks();
         _getMyParticipation();
+        _isOwner();
+        console.log("PART", myParticipation)
     }, [contract, account])
 
     console.log("CONTRACT : ", contract)
@@ -185,7 +188,7 @@ function CrowdFunding() {
     }
     async function _isOwner() {
         try {
-            setCrdfundingAddr(
+            setIsOwner(
                     await contract.methods.isOwner().call({from: account[0]})
             );
         }
@@ -221,15 +224,13 @@ function CrowdFunding() {
 
     async function _editRank() {
         try {
-            
             await contract.methods.editRank(
                 rankToEditId,
                 rankToEditMinimumPart,
                 rankToEditDescription,
                 rankToEditUses
-            );
+            ).send({from : account[0]});
             _getAllActiveRanks();
-           
         }
         catch (err) {
             console.log(err);
@@ -266,7 +267,6 @@ function CrowdFunding() {
 
     async function _setDescription() {
         try {
-            console.log("SEND 1")
             setCrdfundingAddr(
                     await contract.methods.setDescription(
                         newDescription
@@ -340,13 +340,13 @@ function CrowdFunding() {
     }
 
     function handleChangeRankId (e){
-        if(e != rankId){
+        if(e !== rankId){
             setRankId(e);
         }
     }
 
     function handleChangeDeposit(e){
-        if(e != deposit){
+        if(e !== deposit){
             setDeposit(e);
         }
     }
@@ -406,7 +406,7 @@ function CrowdFunding() {
                         <label>Liste des rétributions:</label>
                         <button onClick={ _getAllActiveRanks } type={"button"}>Refresh</button>
                     </div>
-                    <div>
+                    <div className="item-elem">
                         {
                             // For each wallet
                             allActiveRanks.map((rank) => (
@@ -419,7 +419,7 @@ function CrowdFunding() {
                 <section className={"crowdfunding-owner"}>
                         <div>
                             {/* todo passer le deposit de wei a ether */}
-                            <Button variant="contained" type="submit" value="">Donner</Button>
+                            <Button variant="contained" onClick={ _sendDonation } type={"button"}>Donner</Button>
                             <TextField value={deposit} variant="standard"
                                        InputProps={{
                                            startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
@@ -444,7 +444,12 @@ function CrowdFunding() {
 
                 </section>
 
-                <section className={"rank-handle"}>
+
+
+
+
+                {   isOwner &&
+                    <section className={"rank-handle"}>
                     <div className={"spacer"}>
                         <form>
 
@@ -596,7 +601,7 @@ function CrowdFunding() {
                                 />
                         </form>
                     </div>
-                </section>
+                </section> }
 
                     <div className={"refresh"}>
                         <span className={"spacer"}>

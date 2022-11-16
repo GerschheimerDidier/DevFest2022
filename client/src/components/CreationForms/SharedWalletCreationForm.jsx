@@ -5,10 +5,12 @@ import {useEth} from "../../contexts/EthContext";
 
 const SharedWalletCreationForm = ({notifyWalletCreated}) => {
 
+    const { account, contract } = useEth();
+
     async function createSharedWallet() {
         try {
             console.log('Creating wallet...');
-            const result = await factory.methods.createSharedWallet().send({ from: account[0] });
+            const result = await contract.methods.createSharedWallet().send({ from: account[0] });
 
             console.log('wallet created');
             console.log(result);

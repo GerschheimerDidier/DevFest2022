@@ -12,8 +12,7 @@ label {
     flex-direction: column;
     display: flex;
     justify-content: space-between;
-    margin-left: 1rem;
-    margin-right: 1rem;
+    padding: 1rem;
     border-left: solid;
     border-right: solid;
     border-width: 2px;

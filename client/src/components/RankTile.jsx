@@ -9,11 +9,9 @@ const RankTile = ({ rankInfo, address }) => {
     console.log("TILE ADDRESS", address);
     //const [contract , setContract] = useState(null);
 
-    const { account, contract, state } = useEth();
+    const { account, contract } = useEth();
 
     const [rankDetail, setRankDetail] = useState([]);
-
-    const instance = require("../contracts/CrdFunding.json");
 
     useEffect(() => {
         
@@ -41,11 +39,11 @@ const RankTile = ({ rankInfo, address }) => {
             </div>
 
             <div className={"item-card-retribution"}>
-                <label>Donation minimal: {rankDetail[2]}</label>
+                <label>Donation minimale: {rankDetail[2]}</label>
             </div>
 
             <div className={"item-card-retribution"}>
-                <label>Rétributions restantes: {rankDetail[3]}</label>
+                <label>Rétributions restantes: {rankDetail[3] == -1? "pas de limite" : rankDetail[3] }</label>
             </div>
 
             <div className={"item-card-retribution"}>
