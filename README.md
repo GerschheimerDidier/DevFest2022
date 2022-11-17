@@ -3,6 +3,11 @@
 This project was made for Strasbourg's Devfest 2022. The point is to show why and when blockchain
 can be implemented instead of traditional REST API.
 
+## Use
+
+There is three type of contract available so far. A Shared wallet, a Crowdfunding and Common pot.
+You can create X instance of each from the home page and share it with their address.
+
 ## Installation
 
 Get the project on your computer
@@ -38,10 +43,7 @@ $ npm start
 ```
 You now have access to everything and can start to toy with the app.
 
-## Use
 
-There is three type of contract available so far. A Shared wallet, a Crowdfunding and Common pot.
-You can create X instance of each from the home page and share it with their address.
 
 ## Disclaimer
 
