@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Web3 from "web3";
 import {Button} from "@mui/material";
 import {useEth} from "../../contexts/EthContext";
 
