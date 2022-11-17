@@ -216,7 +216,7 @@ function CrowdFunding() {
                 BigNumber.from(web3.utils.toWei(rankToEditMinimumPart, "ether")),
                 rankToEditDescription,
                 rankToEditUses
-            );
+            ).send({from : account[0]});
             _getAllActiveRanks();
            
         }
@@ -362,7 +362,7 @@ function CrowdFunding() {
                 <label className={"crowdfunding-title"}> Adresse de votre financement participatif : {address}</label>
                 <label className={"crowdfunding-title"}> {description}</label>
 
-                <section className={"crowdfunding-introduction"}>
+                <section className={"crowdfunding-introduction section-crdfunding"}>
                     <div className={"item-card"}>
                         <label> Objectif :  </label>
                         <label> {goal} ETH </label>
@@ -385,7 +385,7 @@ function CrowdFunding() {
                     </div>
                 </section>
 
-                <section className={"crowdfunding-participation"}>
+                <section className={"crowdfunding-participation section-crdfunding"}>
                     <div className={"item-card"}>
                         <label>Liste des rétributions:</label>
                         <button onClick={ _getAllActiveRanks } type={"button"}>Refresh</button>
@@ -400,7 +400,7 @@ function CrowdFunding() {
                     </div>
                 </section>
 
-                <section className={"crowdfunding-owner"}>
+                <section className={"crowdfunding-owner section-crdfunding"}>
                         <div>
                             {/* todo passer le deposit de wei a ether */}
                             <Button variant="contained" onClick={ _sendDonation } type={"button"}>Donner</Button>
@@ -428,7 +428,7 @@ function CrowdFunding() {
 
                 </section>
 
-                <section className={"crowdfunding-owner"}>
+                <section className={"crowdfunding-owner section-crdfunding"}>
                     <h4>Liste de mes dons</h4>
                         <div className={"item-elem"}>
                             {
@@ -438,7 +438,7 @@ function CrowdFunding() {
 
                 </section>
 
-                <section className={"rank-handle"}>
+                <section className={"rank-handle section-crdfunding"}>
                     <div className={"spacer"}>
                         <form>
 

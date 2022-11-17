@@ -97,3 +97,11 @@ label {
     border-left: solid;
     border-width: 2px;
 }
+
+.section-crdfunding{
+    margin: 30px 0;
+    width: 100%;
+    background: #D3D3D350;
+    box-shadow: 8px 4px 4px grey;
+    padding: 20px 0;
+}
