@@ -1,5 +1,6 @@
 .about {
-    margin: 40px 80px;
+    margin: 40px 15rem;
+    margin-bottom: 5rem;
     text-align: center;
 }
 
@@ -16,4 +17,14 @@
 
 .about p {
     font-size: 15px;
+}
+
+.about a {
+    font-size: 15px;
+}
+
+.explanations{
+    text-align: left;
+    margin-top: 3rem;
+    margin-bottom:50px;
 }
