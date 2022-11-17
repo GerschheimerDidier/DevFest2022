@@ -24,6 +24,8 @@ const About = () => {
             <br/>
 
             <a href='https://github.com/GerschheimerDidier/DevFest2022'><b>Project's Github repository</b></a>
+
+            <h3>Technologies</h3>
             
             <p className={"explanations"}>
                 For interaction with the blockchain you will need a wallet. 
