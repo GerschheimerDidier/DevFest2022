@@ -7,7 +7,7 @@ contract('Wallet', (accounts) => {
   const externalUser = accounts[6];
 
   before(async () => {
-    this.walletInstance = await Wallet.new("name", owner, accounts[0], 0, { from: owner });
+    this.walletInstance = await Wallet.new(owner, "0x0000000000000000000000000000000000000000", 0, { from: owner });
   })
 
   describe("Receive method", () => {
