@@ -43,6 +43,7 @@
 .item-elem{
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .crowdfunding-participation {
@@ -90,13 +91,25 @@
     margin-bottom: 1rem;
 }
 
-.card {
+.card-donation {
     flex-direction: column;
     display: flex;
     justify-content: space-between;
     padding: 1rem;
     border-left: solid;
     border-width: 2px;
+    width: 17%;
+}
+
+.card {
+    flex-direction: column;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    border-left: solid;
+    border-bottom: solid;
+    border-width: 2px;
+    width: 30.8%;
 }
 
 .section-crdfunding{

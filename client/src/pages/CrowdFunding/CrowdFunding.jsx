@@ -319,9 +319,7 @@ function CrowdFunding() {
     }
 
 
-    function handleChangeClaimReward(e){
-
-        setClaimReward(e);
+    function resetInputPreview(){
 
     }
 
@@ -432,7 +430,7 @@ function CrowdFunding() {
                         <h4>Liste de mes dons</h4>
                             <div className={"item-elem"}>
                                 {
-                                    myParticipation.donations.map((don, index) => <div className={"card"}>Don {index + 1} <br/>Valeur : {Number(web3.utils.fromWei(don.amount))} ETH<br/>Rétribution associée : {don.rankName}<br/></div>)
+                                    myParticipation.donations.map((don, index) => <div className={"card-donation"}>Don {index + 1} <br/>Valeur : {Number(web3.utils.fromWei(don.amount))} ETH<br/>Rétribution associée : {don.rankName}<br/></div>)
                                 }
                             </div>
 
