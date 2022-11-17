@@ -580,13 +580,13 @@ function CrowdFunding() {
                         <div className={"spacer"}>
                             <form>
                                 <div className={"height-control"}>
-                                    <Button variant="contained" onClick={ _setDescription } type={"button"}>Modifier la description description</Button>
+                                    <Button variant="contained" onClick={ _setDescription } type={"button"}>Modifier la description</Button>
                                 </div>
                                 <TextareaAutosize
                                     aria-label="New Description"
                                     minRows={3}
                                     placeholder="new description"
-                                    style={{ width: 1200, height: 150 }}
+                                    style={{ width: 900, height: 150 }}
                                     onChange={e => setNewDescription(e.target.value)}
                                     />
                             </form>

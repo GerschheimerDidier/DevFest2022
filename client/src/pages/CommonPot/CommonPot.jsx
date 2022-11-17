@@ -47,7 +47,7 @@ function CommonPot() {
         {
             console.log("Paying..")
             console.log(addressPayment)
-            contract.methods.payWithPot(addressPayment, web3.utils.toWei(BigNumber.from(payment))).send({from: account[0]});
+            contract.methods.payWithPot(addressPayment, web3.utils.toWei(String(payment))).send({from: account[0]});
 
         }
         catch (err)
@@ -61,7 +61,7 @@ function CommonPot() {
         try
         {
             console.log("withdrawing")
-            contract.methods.withdraw().send({from: account[0], gas: 5000});
+            contract.methods.withdraw().send({from: account[0]});
         }
         catch (err)
         {
