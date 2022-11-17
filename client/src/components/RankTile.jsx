@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { useEth } from "../contexts/EthContext";
 import './RankTile.css';
+import web3 from "web3";
 
 
 const RankTile = ({ rankInfo, address }) => {
@@ -12,6 +13,8 @@ const RankTile = ({ rankInfo, address }) => {
     const { account, contract, state } = useEth();
 
     const [rankDetail, setRankDetail] = useState([]);
+
+    const [rankMinDonation, setRankMinDonation] = useState(0)
 
     const instance = require("../contracts/CrdFunding.json");
 
@@ -30,6 +33,7 @@ const RankTile = ({ rankInfo, address }) => {
 
     async function _getRankInfo(){
         setRankDetail(await contract.methods.getRankInfo(Number(rankInfo.id)).call({from : account[0]}));
+        //setRankMinDonation(web3.utils.fromWei(String(rankDetail[2])));
     }
     return (
         <div className={"card"}>
@@ -41,11 +45,11 @@ const RankTile = ({ rankInfo, address }) => {
             </div>
 
             <div className={"item-card-retribution"}>
-                <label>Donation minimal: {rankDetail[2]}</label>
+                <label>Donation minimal: {rankDetail[2]} ETH</label>
             </div>
 
             <div className={"item-card-retribution"}>
-                <label>Rétributions restantes: {rankDetail[3]}</label>
+                <label>Rétributions restantes: {rankDetail[3] == -1? "pas de limite" : rankDetail[3] }</label>
             </div>
 
             <div className={"item-card-retribution"}>
