@@ -285,7 +285,6 @@ function CrowdFunding() {
                 const result = await contract.methods.retrieveFunding().send({from : account[0]})
                 console.log("RETRIEVE : ", result);
                 setRetrievingResult(result);
-
         }
         catch (err) {
             console.log(err);
