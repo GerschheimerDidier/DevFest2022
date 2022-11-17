@@ -35,7 +35,7 @@ function CrowdFunding() {
 
     const [endDate, refreshEndDate] = useState(null);
 
-    const [myParticipation, refreshMyParticipation] = useState(["0"]);
+    const [myParticipation, refreshMyParticipation] = useState({donations: [], totalClaimable : "0"});
 
     const [allActiveRanks, refreshAllActiveRanks] = useState([]);
 
@@ -424,6 +424,16 @@ function CrowdFunding() {
                                        type="number"
                                        onChange={e => handleChangeRankId(e.target.value)}
                             />
+                        </div>
+
+                </section>
+
+                <section className={"crowdfunding-owner"}>
+                    <h4>Liste de mes dons</h4>
+                        <div className={"item-elem"}>
+                            {
+                                myParticipation.donations.map((don, index) => <div className={"card"}>Don {index} <br/>Valeur : {Number(web3.utils.fromWei(don.amount))} ETH<br/>Rétribution associée : {don.rankName}<br/></div>)
+                            }
                         </div>
 
                 </section>

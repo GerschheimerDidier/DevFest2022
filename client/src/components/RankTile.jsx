@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useEth } from "../contexts/EthContext";
 import './RankTile.css';
 import web3 from "web3";
+import {BigNumber} from "@ethersproject/bignumber";
 
 
 const RankTile = ({ rankInfo, address }) => {
@@ -12,7 +13,10 @@ const RankTile = ({ rankInfo, address }) => {
 
     const { account, contract, state } = useEth();
 
-    const [rankDetail, setRankDetail] = useState([]);
+    const [rankDetail, setRankDetail] = useState({name : "name",
+        description : "description",
+        minimumInvestment : 0,
+        usesLeft: -1});
 
     const [rankMinDonation, setRankMinDonation] = useState(0)
 
@@ -25,7 +29,8 @@ const RankTile = ({ rankInfo, address }) => {
         console.log("TILE CONTRACT : ",  contract);
 
         _getRankInfo();
-        console.log("DETAIL : ", rankDetail);
+        console.log("DETAILTTT : ", rankDetail);
+        _getMinDonation();
 
     }, [useEth()])
 
@@ -33,7 +38,14 @@ const RankTile = ({ rankInfo, address }) => {
 
     async function _getRankInfo(){
         setRankDetail(await contract.methods.getRankInfo(Number(rankInfo.id)).call({from : account[0]}));
-        //setRankMinDonation(web3.utils.fromWei(String(rankDetail[2])));
+        
+    }
+
+
+    async function _getMinDonation(){
+        console.log("DDDDD", rankDetail[2])
+        setRankMinDonation(rankDetail.minimumInvestment);
+        
     }
     return (
         <div className={"card"}>
@@ -41,19 +53,19 @@ const RankTile = ({ rankInfo, address }) => {
                 <label>Numéro: {rankInfo.id}</label>
             </div>
             <div className={"item-card-retribution"}>
-                <label>Intitulé: {rankDetail[0]}</label>
+                <label>Intitulé: {rankDetail.name}</label>
             </div>
 
             <div className={"item-card-retribution"}>
-                <label>Donation minimal: {rankDetail[2]} ETH</label>
+                <label>Donation minimal: {web3.utils.fromWei(String(rankDetail.minimumInvestment))} ETH</label>
             </div>
 
             <div className={"item-card-retribution"}>
-                <label>Rétributions restantes: {rankDetail[3] == -1? "pas de limite" : rankDetail[3] }</label>
+                <label>Rétributions restantes: {rankDetail.usesLeft == -1? "pas de limite" : rankDetail.usesLeft }</label>
             </div>
 
             <div className={"item-card-retribution"}>
-                <label>Description: {rankDetail[1]}</label>
+                <label>Description: {rankDetail.description}</label>
             </div>
         </div>
     )

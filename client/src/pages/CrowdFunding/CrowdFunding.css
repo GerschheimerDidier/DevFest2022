@@ -88,3 +88,12 @@ label {
     justify-content: start;
     margin-bottom: 1rem;
 }
+
+.card {
+    flex-direction: column;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    border-left: solid;
+    border-width: 2px;
+}
