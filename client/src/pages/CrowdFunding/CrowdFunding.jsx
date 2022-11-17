@@ -88,6 +88,7 @@ function CrowdFunding() {
         _getEndDate();
         _getAllActiveRanks();
         _getMyParticipation();
+        _isOwner();
     }, [contract, account])
 
     console.log("CONTRACT : ", contract)
@@ -183,7 +184,7 @@ function CrowdFunding() {
     }
     async function _isOwner() {
         try {
-            setCrdfundingAddr(
+            setIsOwner(
                     await contract.methods.isOwner().call({from: account[0]})
             );
         }
@@ -435,6 +436,7 @@ function CrowdFunding() {
 
                 </section>
 
+                {isOwner &&
                 <section className={"rank-handle"}>
                     <div className={"spacer"}>
                         <form>
@@ -588,12 +590,13 @@ function CrowdFunding() {
                         </form>
                     </div>
                 </section>
+                }
 
                     <div className={"refresh"}>
                         <span className={"spacer"}>
                             <Button variant="contained" onClick={ _getMyParticipation } type={"button"} >Actualiser ma participation</Button>
                         </span>
-                        { 
+                        { isOwner &&
                         <span className={"spacer"}>
                             <Button variant="contained" onClick={ _retrieveFunding } type={"button"}>Récupérer les fonds</Button>
                         </span>}
