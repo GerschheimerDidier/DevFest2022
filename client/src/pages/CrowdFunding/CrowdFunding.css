@@ -15,19 +15,33 @@
     flex-direction: row;
     display: flex;
     justify-content: space-between;
-    margin-left: 5rem;
-    margin-right: 5rem;
+    margin-left: 15rem;
+    margin-right: 15rem;
+    font-size: 3rem;
 }
 
-label {
-    font-size: 1.2rem;
-}
 
 .item-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 1rem;
+    font-size:3rem !important;
+    font-weight: 300;
+}
+
+.item-card-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1rem;
+}
+
+
+.item-elem{
+    display: flex;
+    flex-direction: row;
 }
 
 .crowdfunding-participation {
@@ -73,4 +87,21 @@ label {
     justify-items: center;
     justify-content: start;
     margin-bottom: 1rem;
+}
+
+.card {
+    flex-direction: column;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    border-left: solid;
+    border-width: 2px;
+}
+
+.section-crdfunding{
+    margin: 30px 0;
+    width: 100%;
+    background: #D3D3D350;
+    box-shadow: 8px 4px 4px grey;
+    padding: 20px 0;
 }

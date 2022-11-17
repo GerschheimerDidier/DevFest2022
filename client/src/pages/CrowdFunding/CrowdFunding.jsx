@@ -6,6 +6,8 @@ import { InputAdornment, TextField, TextareaAutosize } from "@mui/material";
 import {useLocation, useNavigate} from "react-router-dom";
 import RankTile from "../../components/RankTile";
 import Button from "@mui/material/Button";
+import {BigNumber} from "@ethersproject/bignumber";
+
 
 function CrowdFunding() {
 
@@ -27,13 +29,13 @@ function CrowdFunding() {
 
     const [fundsReceived, refreshFundsReceived] = useState(null);
 
-    const [crowdFundingBalance, refreshCrowdFundingBalance] = useState(0);
+
 
     const [goal, refreshGoal] = useState(null);
 
     const [endDate, refreshEndDate] = useState(null);
 
-    const [myParticipation, refreshMyParticipation] = useState(null);
+    const [myParticipation, refreshMyParticipation] = useState({donations: [], totalClaimable : "0"});
 
     const [allActiveRanks, refreshAllActiveRanks] = useState([]);
 
@@ -82,7 +84,6 @@ function CrowdFunding() {
         _getDescription();
         _getOwner();
         _getTotal();
-        _getContractBalance();
         _getGoal();
         _getEndDate();
         _getAllActiveRanks();
@@ -90,7 +91,6 @@ function CrowdFunding() {
     }, [contract, account])
 
     console.log("CONTRACT : ", contract)
-    console.log("BALANCE 1 : ", crowdFundingBalance);
 
     console.log("ADDRESS 1 : ", address);
 
@@ -128,14 +128,12 @@ function CrowdFunding() {
     }
     async function _getEndDate() {
         try {
-
+    
             let epoch = (await contract.methods.getEndDate().call({from : account[0]}));
-
-            var date = new Date(epoch * 1000);
+            var date = new Date(epoch * 1);
             var iso = date.toISOString().match(/(\d{4}\-\d{2}\-\d{2})T(\d{2}:\d{2}:\d{2})/)
-
-            console.log("ISO : ", iso[1] + " | " + iso[2]);
-            refreshEndDate(iso[1] + " | " + iso[2]);
+    
+            refreshEndDate(iso[1]);
         }
         catch (err) {
             console.log(err);
@@ -166,7 +164,7 @@ function CrowdFunding() {
     async function _getTotal() {
         try {
             
-                refreshFundsReceived(await contract.methods.getTotal().call({from : account[0]}));
+                refreshFundsReceived(Number(web3.utils.fromWei(await contract.methods.getTotal().call({from : account[0]}))));
                 console.log("FUNDS RECEIVED : ", fundsReceived);
         }
         catch (err) {
@@ -194,22 +192,11 @@ function CrowdFunding() {
         }
     }
 
-    async function _getContractBalance() {
-        try {
-
-            console.log("ADDRESS 2 : ", address);
-            console.log("BALANCE : ", await web3.eth.getBalance(address));
-            refreshCrowdFundingBalance(await web3.eth.getBalance(address));
-        }
-        catch (err) {
-            console.log(err);
-        }
-    }
 
     async function _createRank() {
         try {
            
-            await contract.methods.createRank(rankToCreateName, rankToCreateMinimumPart, rankToCreateDescription, rankToCreateUses).send({from : account[0]})
+            await contract.methods.createRank(rankToCreateName, BigNumber.from(web3.utils.toWei(rankToCreateMinimumPart, "ether")), rankToCreateDescription, rankToCreateUses).send({from : account[0]})
 
             _getAllActiveRanks();
           
@@ -224,10 +211,10 @@ function CrowdFunding() {
             
             await contract.methods.editRank(
                 rankToEditId,
-                rankToEditMinimumPart,
+                BigNumber.from(web3.utils.toWei(rankToEditMinimumPart, "ether")),
                 rankToEditDescription,
                 rankToEditUses
-            );
+            ).send({from : account[0]});
             _getAllActiveRanks();
            
         }
@@ -283,8 +270,7 @@ function CrowdFunding() {
         try {
             console.log("SEND 2")
             console.log("SEND DONATION : ", rankId, claimReward, account[0], deposit)
-            await contract.methods.sendDonation(rankId, claimReward).send({ from : account[0], value : deposit});
-            _getContractBalance();
+            await contract.methods.sendDonation(rankId, claimReward).send({ from : account[0], value : web3.utils.toWei(deposit, "ether")});
             _getTotal();
             _getMyParticipation();
         }
@@ -391,12 +377,8 @@ function CrowdFunding() {
                         <label> {fundsReceived} ETH </label>
                     </div>
                     <div className={"item-card"}>
-                        <label> Crowdfunding balance :   </label>
-                        <label> {crowdFundingBalance} ETH </label>
-                    </div>
-                    <div className={"item-card"}>
                         <label>Ma participation : </label>
-                        <label>{myParticipation} ETH</label>
+                        <label>{(web3.utils.fromWei(myParticipation[Object.keys(myParticipation)[Object.keys(myParticipation).length - 1]]))} ETH</label>
                     </div>
                 </section>
 
@@ -405,7 +387,7 @@ function CrowdFunding() {
                         <label>Liste des rétributions:</label>
                         <button onClick={ _getAllActiveRanks } type={"button"}>Refresh</button>
                     </div>
-                    <div>
+                    <div className="item-elem">
                         {
                             // For each wallet
                             allActiveRanks.map((rank) => (
@@ -418,7 +400,7 @@ function CrowdFunding() {
                 <section className={"crowdfunding-owner"}>
                         <div>
                             {/* todo passer le deposit de wei a ether */}
-                            <Button variant="contained" type="submit" value="">Donner</Button>
+                            <Button variant="contained" onClick={ _sendDonation } type={"button"}>Donner</Button>
                             <TextField value={deposit} variant="standard"
                                        InputProps={{
                                            startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
@@ -439,6 +421,16 @@ function CrowdFunding() {
                                        type="number"
                                        onChange={e => handleChangeRankId(e.target.value)}
                             />
+                        </div>
+
+                </section>
+
+                <section className={"crowdfunding-owner"}>
+                    <h4>Liste de mes dons</h4>
+                        <div className={"item-elem"}>
+                            {
+                                myParticipation.donations.map((don, index) => <div className={"card"}>Don {index} <br/>Valeur : {Number(web3.utils.fromWei(don.amount))} ETH<br/>Rétribution associée : {don.rankName}<br/></div>)
+                            }
                         </div>
 
                 </section>
@@ -601,11 +593,12 @@ function CrowdFunding() {
                         <span className={"spacer"}>
                             <Button variant="contained" onClick={ _getMyParticipation } type={"button"} >Actualiser ma participation</Button>
                         </span>
+                        { 
                         <span className={"spacer"}>
-                            <Button variant="contained" onClick={ _retrieveFunding } type={"button"}>Récupérer mes fonds</Button>
-                        </span>
+                            <Button variant="contained" onClick={ _retrieveFunding } type={"button"}>Récupérer les fonds</Button>
+                        </span>}
                         <span className={"spacer"}>
-                            <Button variant="contained" onClick={ _requestRefundGoalNotCompleted } type={"button"}>Demander un remboursement</Button>
+                            <Button variant="contained" onClick={ _requestRefundGoalNotCompleted } type={"button"}>Demander un remboursement (Objectif non atteint)</Button>
                         </span>
                         <span className={"spacer"}>
                             <Button variant="contained" onClick={ _giveUpBenefitsAndParticipation } type={"button"}>Abandonner le projet et ces bénéfices</Button>
