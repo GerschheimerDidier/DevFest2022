@@ -23,7 +23,7 @@ contract('Factory', (accounts) => {
 
     it('should create a new shared wallet for owner', async() => {
     
-        await this.factoryInstance.createSharedWallet("_nameSRDWLLT", {from : owner});
+        await this.factoryInstance.createSharedWallet({from : owner});
         let subscriptions = await this.factoryInstance.getSubscriptions.call({from : owner})
 
         assert.strictEqual(1, subscriptions.length, "owner should have 1 subscription");

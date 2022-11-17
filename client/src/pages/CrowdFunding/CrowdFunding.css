@@ -18,6 +18,7 @@
     margin-left: 15rem;
     margin-right: 15rem;
     font-size: 3rem;
+    
 }
 
 
@@ -42,6 +43,7 @@
 .item-elem{
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .crowdfunding-participation {
@@ -89,13 +91,25 @@
     margin-bottom: 1rem;
 }
 
-.card {
+.card-donation {
     flex-direction: column;
     display: flex;
     justify-content: space-between;
     padding: 1rem;
     border-left: solid;
     border-width: 2px;
+    width: 17%;
+}
+
+.card {
+    flex-direction: column;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    border-left: solid;
+    border-bottom: solid;
+    border-width: 2px;
+    width: 30.8%;
 }
 
 .section-crdfunding{
@@ -104,4 +118,20 @@
     background: #D3D3D350;
     box-shadow: 8px 4px 4px grey;
     padding: 20px 0;
+}
+
+.shadow-wrap{
+    margin-top: 2rem;
+    margin-left: 5rem;
+    margin-right: 5rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    margin-bottom: 4rem;
+    background: #D3D3D350;
+    box-shadow: 8px 4px 4px grey;
+    padding: 20px 0;
+}
+
+.marge-bott{
+    margin-bottom: 2rem;
 }
